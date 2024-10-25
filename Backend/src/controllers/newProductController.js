@@ -51,14 +51,14 @@ const createProduct = async (req, res) => {
          
        
         const childrenData = JSON.parse(req.body.childrenData || '[]'); // Parse if needed
-        const newSKU = await productService.generateNextSKU();
+       
         const productData = {
             name,
             category,
             ID,
             Description,
             children: children,
-            SKU: newSKU, // Generate SKU here
+           // Generate SKU here
         };
 
         const newProduct = await productService.createProduct(productData);

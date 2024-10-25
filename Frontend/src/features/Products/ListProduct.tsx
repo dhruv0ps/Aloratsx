@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useReactToPrint } from "react-to-print";
 import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
 import { Button, Select, TextInput } from 'flowbite-react'; 
-import { MdEdit, } from 'react-icons/md';
+import { MdEdit } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
+import debounce from 'lodash/debounce';
+
+
 const ListProduct: React.FC = () => {
   const [childrenProducts, setChildrenProducts] = useState<any[]>([]); 
   const [loading, setLoading] = useState<boolean>(true); 
@@ -14,18 +17,26 @@ const ListProduct: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState<number | "">("");
   const [sortField, setSortField] = useState<string>(""); 
   const [sortOrder, setSortOrder] = useState<string>("asc"); 
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null); 
-
-  console.log(error)
-  console.log(loading)
   const barcodeRef = useRef<HTMLDivElement>(null);
-const navigate = useNavigate();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Initial fetch function to get all children products
     fetchProducts();
   }, []);
+console.log(error);
+console.log(loading)
 
-  
+  useEffect(() => {
+    // Debounced function for filtering products
+    const debouncedSearch = debounce(handleFilter, 300);
+    debouncedSearch();
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [searchQuery, minPrice, maxPrice, sortField, sortOrder, childrenProducts]);
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -34,6 +45,7 @@ const navigate = useNavigate();
         .filter((product: any) => product.children && product.children.length > 0)
         .flatMap((product: any) => product.children);
       setChildrenProducts(allChildren);
+      setFilteredProducts(allChildren); // Initially set all products to filtered list
     } catch (error) {
       setError("Failed to fetch products");
     } finally {
@@ -41,25 +53,37 @@ const navigate = useNavigate();
     }
   };
 
-  // Handle search input change
+  // Debounced handler for filtering products
+  const handleFilter = useCallback(() => {
+    const filtered = childrenProducts.filter((child: any) => {
+      const matchesSearch =
+        child.SKU.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        child.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesPrice =
+        (minPrice === "" || child.selling_price >= minPrice) &&
+        (maxPrice === "" || child.selling_price <= maxPrice);
+
+      return matchesSearch && matchesPrice;
+    });
+
+    // Sorting logic based on selected field
+    const sorted = filtered.sort((a: any, b: any) => {
+      if (sortField === "name") {
+        return sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      } else if (sortField === "price") {
+        return sortOrder === "asc" ? a.selling_price - b.selling_price : b.selling_price - a.selling_price;
+      }
+      return 0; // Default: no sorting
+    });
+
+    setFilteredProducts(sorted);
+  }, [searchQuery, minPrice, maxPrice, sortField, sortOrder, childrenProducts]);
+
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  // Filter products based on search query and price
-  const filteredProducts = childrenProducts.filter((child: any) => {
-    const matchesSearch =
-      child.SKU.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      child.name.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesPrice =
-      (minPrice === "" || child.selling_price >= minPrice) &&
-      (maxPrice === "" || child.selling_price <= maxPrice);
-
-    return matchesSearch && matchesPrice;
-  });
-
-  // Function to handle barcode generation
   const handleGenerateBarcode = (child: any) => {
     setSelectedProduct(child);
     handlePrint();
@@ -68,6 +92,7 @@ const navigate = useNavigate();
   const handlePrint = useReactToPrint({
     content: () => barcodeRef.current,
   });
+
   const BarcodeContent: React.FC<{ product: any }> = React.memo(({ product }) => (
     <div key={product.SKU} style={{
       pageBreakInside: 'avoid',
@@ -86,6 +111,7 @@ const navigate = useNavigate();
       </div>
     </div>
   ));
+
   return (
     <div className="mx-auto p-4 lg:px-8">
       <div className='mb-12 flex items-center justify-between'>
@@ -135,7 +161,7 @@ const navigate = useNavigate();
           <option value="desc">Descending</option>
         </Select>
 
-        <Button color="purple" onClick={() => alert('Filters Applied')}>
+        <Button color="purple" onClick={handleFilter}>
           Apply Filters
         </Button>
       </div>
@@ -180,14 +206,14 @@ const navigate = useNavigate();
 
       {/* Hidden div for barcode printing */}
       <div style={{ display: "none" }}>
-            <div ref={barcodeRef}>
-            {selectedProduct && <BarcodeContent product={selectedProduct} />}
-            </div>
-          </div>
-
+        <div ref={barcodeRef}>
+          {selectedProduct && <BarcodeContent product={selectedProduct} />}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ListProduct;
+
 
