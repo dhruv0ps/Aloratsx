@@ -14,7 +14,7 @@ import AutocompleteLocation from '../../util/AutoCompleteInvLocation';
 
 const DamagedProducts: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [child, setChild] = useState<Child | null>(null);
+    const [child, setChild] = useState<any | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [comments, setComments] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -163,7 +163,7 @@ const DamagedProducts: React.FC = () => {
                         {damagedProducts.map((product) => (
                             <Table.Row key={product._id}>
                                 <Table.Cell>{product.product.name}</Table.Cell>
-                                <Table.Cell>{product.child.SKU}</Table.Cell>
+                                {/* <Table.Cell>{product.child.SKU}</Table.Cell> */}
                                 <Table.Cell>{product.quantity}</Table.Cell>
                                 <Table.Cell>{product.comments}</Table.Cell>
                                 <Table.Cell>{new Date(product.createdAt).toISOString().split("T")[0]}</Table.Cell>

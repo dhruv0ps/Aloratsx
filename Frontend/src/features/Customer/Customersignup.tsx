@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft } from 'react-icons/fa';
-import { BaseCustomer, Address } from '../../config/models/customer';
+import { BaseCustomer } from '../../config/models/customer';
 import { customerApi } from '../../config/apiRoutes/customerApi';
 
 import 'react-phone-input-2/lib/style.css';
@@ -59,9 +59,9 @@ export default function AddCustomer() {
         }
     };
 
-    const handlePhoneChange = (value: string) => {
-        setFormState((prev) => ({ ...prev, cell: value }));
-    };
+    // const handlePhoneChange = (value: string) => {
+    //     setFormState((prev) => ({ ...prev, cell: value }));
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

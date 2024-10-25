@@ -2,7 +2,7 @@ import { Sidebar } from "flowbite-react";
 import { BiBuoy } from "react-icons/bi";
 import { BsBarChartFill, BsIncognito } from "react-icons/bs";
 import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaWarehouse, FaUserTie, FaBoxes } from "react-icons/fa";
-import { HiChartPie,HiUser, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag } from "react-icons/hi";
+import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag } from "react-icons/hi";
 import { MdManageAccounts } from "react-icons/md";
 
 import { Link } from "react-router-dom";

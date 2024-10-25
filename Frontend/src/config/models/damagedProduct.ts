@@ -1,4 +1,4 @@
-import { Child } from "./Child";
+// import { Child } from "./Child";
 import { Product } from "./product";
 
 export interface DamagedProductFormData {
@@ -12,7 +12,7 @@ export interface DamagedProductFormData {
 export interface DamagedProduct {
     _id: string;
     product: Product;
-    child: Child;
+    // child: Child;
     quantity: number;
     comments: string;
     location: Location;

@@ -145,9 +145,9 @@ const InventoryTable: React.FC = () => {
                             {filteredInventories.map((inventory) => (
                                 <Table.Row key={inventory._id}>
                                     <Table.Cell>{inventory.product.name}</Table.Cell>
-                                    <Table.Cell>
+                                    {/* <Table.Cell>
                                         {inventory.childInfo?.name} ({inventory.childInfo?.SKU})
-                                    </Table.Cell>
+                                    </Table.Cell> */}
                                     <Table.Cell title={inventory.location.name}>
                                         {inventory.location.name}
                                     </Table.Cell>

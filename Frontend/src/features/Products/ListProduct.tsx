@@ -3,7 +3,7 @@ import { useReactToPrint } from "react-to-print";
 import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
 import { Button, Select, TextInput } from 'flowbite-react'; 
-import { MdEdit, MdImageNotSupported } from 'react-icons/md';
+import { MdEdit, } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 const ListProduct: React.FC = () => {
   const [childrenProducts, setChildrenProducts] = useState<any[]>([]); 
@@ -16,6 +16,8 @@ const ListProduct: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>("asc"); 
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null); 
 
+  console.log(error)
+  console.log(loading)
   const barcodeRef = useRef<HTMLDivElement>(null);
 const navigate = useNavigate();
   useEffect(() => {

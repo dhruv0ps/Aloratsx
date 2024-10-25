@@ -144,7 +144,7 @@ const InboundPage: React.FC = () => {
         <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
             <p><strong>Name:</strong> {currentDraft.parentName} - {currentDraft.name}</p>
-            <p><strong>Color:</strong> {currentDraft.color.name}</p>
+            {/* <p><strong>Color:</strong> {currentDraft.color.name}</p> */}
           </div>
           <div>
             <p><strong>Current Stock:</strong> {currentDraft.stock}</p>
@@ -178,7 +178,7 @@ const InboundPage: React.FC = () => {
                 <Table.Row key={item.SKU}>
                   <Table.Cell>{item.SKU}</Table.Cell>
                   <Table.Cell>{item.parentName} - {item.name}</Table.Cell>
-                  <Table.Cell>{item.color.name}</Table.Cell>
+                  {/* <Table.Cell>{item.color.name}</Table.Cell> */}
                   <Table.Cell>{item.quantity}</Table.Cell>
                   <Table.Cell>
                     <Button color="failure" onClick={() => handleRemoveItem(index)}>Remove</Button>

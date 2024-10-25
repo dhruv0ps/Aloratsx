@@ -79,6 +79,7 @@ const ProductForm: React.FC = () => {
         rawMaterials: [{ material: '', materialId: '', quantity: 0, unit: '' }],
         product_size: { L: 0, W: 0, H: 0 },
     });
+   
 
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<any>(undefined);
@@ -92,7 +93,8 @@ const ProductForm: React.FC = () => {
     const params = useParams<{ id?: string }>();
     const { id } = params;
     const navigate = useNavigate();
-
+    console.log(selectedCategory)
+    console.log(tags)
     useEffect(() => {
         fetchAllTags();
         fetchRawMaterials();

@@ -49,7 +49,7 @@ const AutocompleteChildInput: React.FC<AutocompleteChildInputProps> = ({ product
         setShowDropdown(true);
 
         const filtered = children.filter(child =>
-            `${child.name} ${child.color} ${child.SKU}`.toLowerCase().includes(query)
+            `${child.name} ${child.SKU}`.toLowerCase().includes(query)
         );
 
         setFilteredChildren(filtered);
@@ -78,7 +78,7 @@ const AutocompleteChildInput: React.FC<AutocompleteChildInputProps> = ({ product
                             onClick={() => handleChildSelect(child)}
                             className="px-4 py-2 cursor-pointer hover:bg-indigo-100"
                         >
-                            {child.name} - {child.color.name} | (SKU: {child.SKU})
+                            {/* {child.name} - {child.color.name} | (SKU: {child.SKU}) */}
                         </li>
                     ))}
                 </ul>
