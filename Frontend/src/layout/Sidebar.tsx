@@ -261,6 +261,7 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
     //         }}
     //         >
     //         <Link to={"/yellowadmin/customer/add"}><Sidebar.Item>Add customer</Sidebar.Item></Link>
+    //         <Link to={"/yellowadmin/customercategory/add"}><Sidebar.Item>Categories</Sidebar.Item></Link>
     //         </Sidebar.Collapse>
     //     )
     // }

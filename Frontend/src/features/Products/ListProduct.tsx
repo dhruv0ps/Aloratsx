@@ -3,11 +3,15 @@ import { useReactToPrint } from "react-to-print";
 import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
 import { Button, Select, TextInput } from 'flowbite-react'; 
-import { MdEdit } from 'react-icons/md';
+import { MdEdit,MdDelete } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 import debounce from 'lodash/debounce';
-
-
+import showConfirmationModal from '../../util/confirmationUtil';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import ReactPaginate from 'react-paginate';
+import "../../Listproduct.css";
 const ListProduct: React.FC = () => {
   const [childrenProducts, setChildrenProducts] = useState<any[]>([]); 
   const [loading, setLoading] = useState<boolean>(true); 
@@ -19,6 +23,8 @@ const ListProduct: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>("asc"); 
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null); 
+  const [currentPage, setCurrentPage] = useState<number>(0);  // Current page
+  const [productsPerPage] = useState<number>(5); 
   const barcodeRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -29,7 +35,7 @@ console.log(error);
 console.log(loading)
 
   useEffect(() => {
-    // Debounced function for filtering products
+  
     const debouncedSearch = debounce(handleFilter, 300);
     debouncedSearch();
     return () => {
@@ -43,7 +49,12 @@ console.log(loading)
       const response = await productApis.getAllProducts(); 
       const allChildren = response.data
         .filter((product: any) => product.children && product.children.length > 0)
-        .flatMap((product: any) => product.children);
+        .flatMap((product: any) => 
+          product.children.map((child: any) => ({
+            ...child, 
+            parentProductId: product._id, // Add parent product ID to each child
+          }))
+        );
       setChildrenProducts(allChildren);
       setFilteredProducts(allChildren); // Initially set all products to filtered list
     } catch (error) {
@@ -53,7 +64,7 @@ console.log(loading)
     }
   };
 
-  // Debounced handler for filtering products
+  
   const handleFilter = useCallback(() => {
     const filtered = childrenProducts.filter((child: any) => {
       const matchesSearch =
@@ -92,6 +103,44 @@ console.log(loading)
   const handlePrint = useReactToPrint({
     content: () => barcodeRef.current,
   });
+  const handleEditProduct = (productId: string) => {
+   
+    navigate(`/products/manage/${productId}`);
+  };
+  const handleDeleteChild = async (productId: string, childSKU: string) => {
+    
+    const confirm = await showConfirmationModal("Are you sure you would like to delete this child product? This action cannot be undone.");
+
+  
+    if (!confirm) return;
+
+    try {
+        
+        const response = await productApis.deleteChildProduct(productId, childSKU);
+        console.log(response)
+
+        if (response.status) {
+          toast.success(response.message);
+      
+        }else {
+          toast.error(response.message);
+      }
+        
+        
+        fetchProducts();
+    } catch (error) {
+       
+        console.error('Failed to delete child product:', error);
+       
+    }
+};
+
+const pageCount = Math.ceil(filteredProducts.length/productsPerPage);
+const currentProducts = filteredProducts.slice(currentPage * productsPerPage ,(currentPage + 1) * productsPerPage)
+
+const handlePageClick = (selectedItem: { selected: number }) => {
+  setCurrentPage(selectedItem.selected);
+};
 
   const BarcodeContent: React.FC<{ product: any }> = React.memo(({ product }) => (
     <div key={product.SKU} style={{
@@ -168,7 +217,7 @@ console.log(loading)
 
       {/* Table Section */}
       <div className="overflow-x-auto">
-        {filteredProducts.length > 0 ? (
+        {currentProducts.length > 0 ? (
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
@@ -182,12 +231,12 @@ console.log(loading)
               </tr>
             </thead>
             <tbody className="text-gray-900 text-sm font-light">
-              {filteredProducts.map((child: any) => (
+              {currentProducts.map((child: any) => (
                 <tr key={child.SKU} className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="py-3 px-6 text-left">{child.SKU}</td>
                   <td className="py-3 px-6 text-left">{child.name}</td>
                   <td className="py-3 px-6 text-left">${child.selling_price.toFixed(2)}</td>
-                  <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td>
+                  {/* <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td> */}
                   <td className="py-3 px-6 text-left">{child.status}</td>
                   <td className="py-3 px-6 text-left">{child.stock}</td>
                   <td className="py-3 px-6 text-center">
@@ -195,6 +244,17 @@ console.log(loading)
                       Barcode
                     </Button>
                   </td>
+                  <td className="py-3 px-6 text-center">
+  <div className="flex justify-center space-x-2">
+    <Button size="sm" color="warning" onClick={() => handleEditProduct(child.parentProductId)}>
+      <MdEdit className="h-5 w-5" /> Edit
+    </Button>
+    <Button size="sm" color="failure" onClick={() => handleDeleteChild(child.parentProductId, child.SKU)}>
+      <MdDelete className="h-5 w-5" /> Delete
+    </Button>
+  </div>
+</td>
+
                 </tr>
               ))}
             </tbody>
@@ -203,8 +263,19 @@ console.log(loading)
           <p className='text-center text-gray-500 my-16'>No Products Found</p>
         )}
       </div>
-
-      {/* Hidden div for barcode printing */}
+      <ReactPaginate
+        previousLabel={"Previous"}
+        nextLabel={"Next"}
+        pageCount={pageCount}
+        onPageChange={handlePageClick}
+        containerClassName="pagination"
+        previousLinkClassName="pagination__link pagination__link--previous"
+        nextLinkClassName="pagination__link pagination__link--next"
+        disabledClassName="pagination__link--disabled"
+        activeClassName="pagination__link--active"
+      />
+      <ToastContainer />
+     
       <div style={{ display: "none" }}>
         <div ref={barcodeRef}>
           {selectedProduct && <BarcodeContent product={selectedProduct} />}

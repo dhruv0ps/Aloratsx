@@ -56,7 +56,7 @@ router.get('/products', productController.getAllProducts);
 router.get('/products/:id', productController.getProductById);
 router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProductById);
-router.delete('/products/:id', productController.deleteProductById);
+router.delete('/products/:parentId/child/:childSKU', productController.deleteProductById);
 // Color Routes
 router.post('/colors', configController.addColor);
 router.get('/colors', configController.getAllColors);
@@ -161,4 +161,5 @@ router.post('/addLogs', logsController.addLog)
 
 router.post("/customercategory/add",customercategoryController.createCategory)
 router.get("/customercategory",customercategoryController.getCategories)
+router.patch("/customercategory/:id",customercategoryController.updateCategory)
 module.exports = router;

@@ -1,0 +1,60 @@
+/* Pagination Container */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  /* Pagination Links */
+  .pagination__link {
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #f3f4f6; /* Light gray background */
+    color: #4b5563; /* Gray text */
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  /* Hover Effect */
+  .pagination__link:hover {
+    background-color: #e5e7eb; /* Slightly darker gray on hover */
+    border-color: #d1d5db; /* Border on hover */
+  }
+  
+  /* Active Page */
+  .pagination__link--active {
+    background-color: #3b82f6; /* Primary blue color for active page */
+    color: white;
+    border-color: #3b82f6;
+    height: 25px; 
+    margin: 10px;
+    width: 20px;
+    padding-left: 5px;
+  }
+  
+  /* Disabled State */
+  .pagination__link--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  /* Adjust Previous and Next Button Styles */
+  .pagination__link--previous,
+  .pagination__link--next {
+    font-weight: bold;
+    margin-left: 10px;
+    background-color: #e2e8f0; /* Lighter blue background */
+    color: #1f2937; /* Dark text */
+  }
+  
+  .pagination__link--previous:hover,
+  .pagination__link--next:hover {
+    background-color: #d1d5db; /* Slightly darker on hover */
+  }
+  

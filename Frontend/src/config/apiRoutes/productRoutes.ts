@@ -6,12 +6,14 @@ import { axiosRequest } from "../apiConfig/axiosRequest";
 const getAllProducts = async (config = {}) => {
     return await axiosRequest.get<any>(`${apiUrl.product}`, config);
   };
-  
+const deleteChildProduct = async (productId: string, childSKU: string) => {
+    return await axiosRequest.del<any>(`${apiUrl.product}/${productId}/child/${childSKU}`);
+}
 const getProductById = async (param: any) => {
     return await axiosRequest.get<any>(`${apiUrl.product}/${param}`)
 }
 const updateProduct = async (param: any, body: any) => {
-    return await axiosRequest.post<any>(`${apiUrl.product}/${param}`, body)
+    return await axiosRequest.put<any>(`${apiUrl.product}/${param}`, body)
 }
 const createProduct = async (body: any) => {
     return await axiosRequest.post<any>(`${apiUrl.product}`, body)
@@ -88,6 +90,7 @@ export const productApis = {
     getAllProducts,
     createProduct,
     updateProduct,
+    deleteChildProduct,
     getProductById,
     bulkUpload,
     AddsubCategory,

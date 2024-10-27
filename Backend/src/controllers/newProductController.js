@@ -30,11 +30,13 @@ const getAllProducts = async (req, res) => {
 // Get a product by ID
 const getProductById = async (req, res) => {
     const { id } = req.params;
+   
     try {
         const product = await productService.getProductById(id);
         if (!product) {
             return res.status(404).json({ status: false, message: 'Product not found' });
         }
+        
         res.status(200).json({ status: true, data: product });
     } catch (error) {
         res.status(500).json({ status: false, message: error.message });
@@ -45,7 +47,7 @@ const getProductById = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         const {children} =req.body
-        console.log(children);
+     
         const { name, category, ID, Description } = req.body; // For form fields
          console.log(name);
          
@@ -80,20 +82,26 @@ const updateProductById = async (req, res) => {
         }
         res.status(200).json({ status: true, message: 'Product updated successfully', data: updatedProduct });
     } catch (error) {
+        
         res.status(400).json({ status: false, message: error.message });
     }
 };
 
 // Delete a product by ID
 const deleteProductById = async (req, res) => {
-    const { id } = req.params;
+    const { parentId, childSKU } = req.params; // Extract parentId and childSKU from the URL parameters
+
     try {
-        const deletedProduct = await productService.deleteProductById(id);
-        if (!deletedProduct) {
-            return res.status(404).json({ status: false, message: 'Product not found' });
-        }
-        res.status(200).json({ status: true, message: 'Product deleted successfully' });
+        const updatedProduct = await productService.deleteProductById(parentId, childSKU);
+
+        res.status(200).json({
+            status: true,
+            message: 'Child product deleted successfully',
+            data: updatedProduct,
+        });
     } catch (error) {
+        console.log(error)
+
         res.status(500).json({ status: false, message: error.message });
     }
 };
