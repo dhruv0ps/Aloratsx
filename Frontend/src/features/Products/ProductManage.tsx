@@ -89,6 +89,7 @@ const ProductForm: React.FC = () => {
     const [rawMaterialsOptions, setRawMaterialsOptions] = useState<RawMaterial[]>([]);
     const navigate = useNavigate();
     const { id } = useParams();
+console.log(tags)
 
     useEffect(() => {
         fetchAllTags();

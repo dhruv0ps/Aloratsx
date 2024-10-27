@@ -24,6 +24,7 @@ const ListProduct: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null); 
   const [currentPage, setCurrentPage] = useState<number>(0);  // Current page
+  const [barcodeReady, setBarcodeReady] = useState<boolean>(false);
   const [productsPerPage] = useState<number>(5); 
   const barcodeRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -94,15 +95,21 @@ console.log(loading)
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
-
-  const handleGenerateBarcode = (child: any) => {
-    setSelectedProduct(child);
-    handlePrint();
-  };
-
   const handlePrint = useReactToPrint({
     content: () => barcodeRef.current,
+    onAfterPrint: () => setBarcodeReady(false),
   });
+  const handleGenerateBarcode = (child: any) => {
+    setSelectedProduct(child);
+    setBarcodeReady(true);
+
+    // Trigger print after a delay to ensure the barcode is fully rendered
+    setTimeout(() => {
+      handlePrint();
+    }, 500);
+  };
+
+ 
   const handleEditProduct = (productId: string) => {
    
     navigate(`/products/manage/${productId}`);
@@ -226,7 +233,8 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                 <th className="py-3 px-6 text-left">Selling Price</th>
                 <th className="py-3 px-6 text-left">Cost Price</th>
                 <th className="py-3 px-6 text-left">Status</th>
-                <th className="py-3 px-6 text-left">Stock</th>
+                <th className="py-3 px-6 text-left">Barcode</th>
+                {/* <th className="py-3 px-6 text-left">Stock</th> */}
                 <th className="py-3 px-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -278,7 +286,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
      
       <div style={{ display: "none" }}>
         <div ref={barcodeRef}>
-          {selectedProduct && <BarcodeContent product={selectedProduct} />}
+        {barcodeReady && selectedProduct && <BarcodeContent product={selectedProduct} />}
         </div>
       </div>
     </div>
