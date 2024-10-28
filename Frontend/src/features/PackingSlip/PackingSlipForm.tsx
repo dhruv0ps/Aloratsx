@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Table, Button, Checkbox } from 'flowbite-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import logo from "../../assets/logo1.png"
+import logo from "../../assets/alora.png"
 import { PackingSlip } from '../../config/models/PackingSlip';
 
 interface EnhancedPackingSlipProps {

@@ -105,11 +105,26 @@ const deleteProductById = async (req, res) => {
         res.status(500).json({ status: false, message: error.message });
     }
 };
+const updateProductStatus = async(req,res) => {
+    const { parentProductId, childSKU } = req.params;
+    const { isActive } = req.body;
+
+    try{
+         
+            const product = await productService.updateProductStatus(parentProductId, childSKU, isActive);
+            const statusMessage = isActive ? 'activated' : 'deactivated';
+        res.status(200).json({  status: true, message: `Child product ${statusMessage} successfully`, product });
+    }   
+    catch (error) {
+        res.status(500).json({ error: error.message || 'Failed to update child product status' });
+    }
+}
 
 module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
     updateProductById,
-    deleteProductById
+    deleteProductById,
+    updateProductStatus
 };

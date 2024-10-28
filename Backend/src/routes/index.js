@@ -22,7 +22,7 @@ const PaymentController = require('../controllers/paymentController');
 const customercategoryController = require("../controllers/customercategoryController");
 const rawMaterialController =require("../controllers/rawMaterialController");
 const tagController = require('../controllers/tagContreller');
-
+const customerController = require ("../controllers/customerController");
 
 var jsonParser = bodyParser.json()
 router.use(jsonParser)
@@ -57,6 +57,7 @@ router.get('/products/:id', productController.getProductById);
 router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProductById);
 router.delete('/products/:parentId/child/:childSKU', productController.deleteProductById);
+router.put('/products/:parentProductId/children/:childSKU',productController.updateProductStatus)
 // Color Routes
 router.post('/colors', configController.addColor);
 router.get('/colors', configController.getAllColors);
@@ -158,8 +159,17 @@ router.post('/addLogs', logsController.addLog)
 
 
 //Customer 
+router.post('/customers', customerController.createCustomer);
+router.get('/customers', customerController.getCustomers);
+router.get('/customers/:id', customerController.getCustomerById);
+router.put('/customers/:id', customerController.updateCustomer);
+router.delete('/customers/:id', customerController.deleteCustomer);
+router.patch('/customers/:id/activate', customerController.activateCustomer);
 
 router.post("/customercategory/add",customercategoryController.createCategory)
 router.get("/customercategory",customercategoryController.getCategories)
-router.patch("/customercategory/:id",customercategoryController.updateCategory)
+router.put("/customercategory/:id",customercategoryController.updateCategory)
+router.get("/customercategory/:id",customercategoryController.getCategoryById);
+router.put("/cutomercategory/activate/:id",customercategoryController.activateCategory);
+
 module.exports = router;

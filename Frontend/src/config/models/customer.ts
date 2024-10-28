@@ -8,6 +8,7 @@ export interface Address{
     isDefault: boolean;
 }
 export interface BaseCustomer {
+  _id?: string;
     firstName: string;
   lastName: string;
   phoneNumber?: string;
@@ -17,4 +18,5 @@ export interface BaseCustomer {
   businessName: string;
   customerCategory?: string;
   addresses: Address[];
+  isActive ? :  boolean;
 }

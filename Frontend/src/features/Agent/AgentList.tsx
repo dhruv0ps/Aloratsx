@@ -118,7 +118,7 @@ export default function AgentList() {
                             </Table.Body>
                         </Table>
                     </div>
-                )}
+                )} 
             </div>
         </div>
     );

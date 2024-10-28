@@ -8,6 +8,9 @@ const CustomerCategory = require("../config/models/customerCategoryModel");
 const getCategories = async() => {
     return CustomerCategory.find()
 }
+const getCategoryById = async (id) => {
+    return await CustomerCategory.findById(id);
+  };
 
 const updateCategory = async (id, updateData) => {
     try {
@@ -16,9 +19,14 @@ const updateCategory = async (id, updateData) => {
         throw new Error('Failed to update category');
     }
 };
+const activateCategory = async (id, isActive) => {
+    return await CustomerCategory.findByIdAndUpdate(id, { isActive }, { new: true });
+  };
 
 module.exports = {
     createCategory,
-    getCategories,
-    updateCategory
+  getCategories,
+  getCategoryById,  
+  updateCategory,
+  activateCategory 
 }

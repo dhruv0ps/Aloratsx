@@ -4,6 +4,7 @@ import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
 import { Button, Select, TextInput } from 'flowbite-react'; 
 import { MdEdit,MdDelete } from 'react-icons/md';
+import {FaTimes , FaCheck} from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import debounce from 'lodash/debounce';
 import showConfirmationModal from '../../util/confirmationUtil';
@@ -53,11 +54,11 @@ console.log(loading)
         .flatMap((product: any) => 
           product.children.map((child: any) => ({
             ...child, 
-            parentProductId: product._id, // Add parent product ID to each child
+            parentProductId: product._id, 
           }))
         );
       setChildrenProducts(allChildren);
-      setFilteredProducts(allChildren); // Initially set all products to filtered list
+      setFilteredProducts(allChildren); 
     } catch (error) {
       setError("Failed to fetch products");
     } finally {
@@ -141,6 +142,31 @@ console.log(loading)
        
     }
 };
+const handleActivateDeactivateChild = async (parentProductId: string, childSKU: string, currentStatus: boolean) => {
+  const newStatus = !currentStatus;  // Flip the status
+
+  try {
+    // Call the API to update the status of the child product
+    const response = await productApis.updateChildProductStatus(parentProductId, childSKU, { isActive: newStatus });
+
+    // Log the response for debugging
+  
+    console.log(response)
+    
+    if (response && response.message) {
+      toast.success(response.message); 
+      fetchProducts(); 
+    } else {
+      toast.error('Failed to update child product status');
+    }
+  } catch (error) {
+    
+    console.error('Error:', error);
+    toast.error('Error updating child product status');
+  }
+};
+
+
 
 const pageCount = Math.ceil(filteredProducts.length/productsPerPage);
 const currentProducts = filteredProducts.slice(currentPage * productsPerPage ,(currentPage + 1) * productsPerPage)
@@ -260,6 +286,15 @@ const handlePageClick = (selectedItem: { selected: number }) => {
     <Button size="sm" color="failure" onClick={() => handleDeleteChild(child.parentProductId, child.SKU)}>
       <MdDelete className="h-5 w-5" /> Delete
     </Button>
+    <Button
+    size="sm"
+    color={child.isActive ? 'failure' : 'success'}
+    onClick={() => handleActivateDeactivateChild(child.parentProductId, child.SKU, child.isActive)}
+>
+    {child.isActive ? <FaTimes className="h-5 w-5" /> : <FaCheck className="h-5 w-5" />}
+    {child.isActive ? 'Deactivate' : 'Activate'}
+</Button>
+
   </div>
 </td>
 

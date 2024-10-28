@@ -4,7 +4,7 @@ import { Table, Button, Checkbox } from 'flowbite-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import SignaturePad from "react-signature-canvas";
-import logo from "../../assets/logo1.png";
+import logo from "../../assets/alora.png";
 import { packingSlipApis } from "../../config/apiRoutes/PackingslipRoutes";
 import Loading from "../../util/Loading";
 import { toast } from 'react-toastify';

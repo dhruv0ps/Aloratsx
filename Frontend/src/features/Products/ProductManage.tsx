@@ -312,7 +312,7 @@ console.log(tags)
 
             if (response.status) {
                 toast.success(response.message);
-                navigate('/products');
+                navigate('/yellowadmin/products/view');
             } else {
                 toast.error(response.message);
             }
@@ -431,13 +431,55 @@ console.log(tags)
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor={`dimensions_${index}`} className="block text-sm font-medium text-gray-700 mb-2">Dimensions:</label>
-                        <div className="flex gap-4">
-                            <TextInput id={`product_size_L_${index}`} name="product_size.L" type="number" placeholder="Length" min={0} value={child.product_size.L} onChange={(e) => handleChildInputChange(index, e)} />
-                            <TextInput id={`product_size_W_${index}`} name="product_size.W" type="number" placeholder="Width" min={0} value={child.product_size.W} onChange={(e) => handleChildInputChange(index, e)} />
-                            <TextInput id={`product_size_H_${index}`} name="product_size.H" type="number" placeholder="Height" min={0} value={child.product_size.H} onChange={(e) => handleChildInputChange(index, e)} />
-                        </div>
-                    </div>
+    <label htmlFor={`dimensions_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+        Dimensions (L x W x H):
+    </label>
+    <div className="flex gap-4">
+        <div className="flex-1">
+            <label htmlFor={`product_size_L_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Length:
+            </label>
+            <TextInput 
+                id={`product_size_L_${index}`} 
+                name="product_size.L" 
+                type="number" 
+                placeholder="Length" 
+                min={0} 
+                value={child.product_size.L} 
+                onChange={(e) => handleChildInputChange(index, e)} 
+            />
+        </div>
+        <div className="flex-1">
+            <label htmlFor={`product_size_W_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Width:
+            </label>
+            <TextInput 
+                id={`product_size_W_${index}`} 
+                name="product_size.W" 
+                type="number" 
+                placeholder="Width" 
+                min={0} 
+                value={child.product_size.W} 
+                onChange={(e) => handleChildInputChange(index, e)} 
+            />
+        </div>
+        <div className="flex-1">
+            <label htmlFor={`product_size_H_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Height:
+            </label>
+            <TextInput 
+                id={`product_size_H_${index}`} 
+                name="product_size.H" 
+                type="number" 
+                placeholder="Height" 
+                min={0} 
+                value={child.product_size.H} 
+                onChange={(e) => handleChildInputChange(index, e)} 
+            />
+        </div>
+    </div>
+</div>
+
 
                     {/* Tags */}
                     <div className="mb-4">

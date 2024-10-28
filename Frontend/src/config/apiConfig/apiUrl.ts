@@ -28,7 +28,7 @@ export const apiUrl = {
 
     rawmaterial :`${base}/rawmaterial`,
     tag : `${base}/tags`,
-    customer :`${base}/customer`,
+    customer :`${base}/customers`,
     customerCategory : `${base}/customercategory`,
 
 

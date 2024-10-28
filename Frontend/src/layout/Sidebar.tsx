@@ -2,7 +2,7 @@ import { Sidebar } from "flowbite-react";
 import { BiBuoy } from "react-icons/bi";
 import { BsBarChartFill, BsIncognito } from "react-icons/bs";
 import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaWarehouse, FaUserTie, FaBoxes } from "react-icons/fa";
-import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag } from "react-icons/hi";
+import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag,HiUser } from "react-icons/hi";
 import { MdManageAccounts } from "react-icons/md";
 
 import { Link } from "react-router-dom";
@@ -250,21 +250,21 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
             </Sidebar.Collapse>
         );
     }
-    // const CustomerSection = () => {
-    //     return(
-    //         <Sidebar.Collapse
-    //         icon={HiUser}
-    //         label="Customer"
-    //         renderChevronIcon={(theme, open) => {
-    //             const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-    //             return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
-    //         }}
-    //         >
-    //         <Link to={"/yellowadmin/customer/add"}><Sidebar.Item>Add customer</Sidebar.Item></Link>
-    //         <Link to={"/yellowadmin/customercategory/add"}><Sidebar.Item>Categories</Sidebar.Item></Link>
-    //         </Sidebar.Collapse>
-    //     )
-    // }
+    const CustomerSection = () => {
+        return(
+            <Sidebar.Collapse
+            icon={HiUser}
+            label="Customer"
+            renderChevronIcon={(theme, open) => {
+                const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+                return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
+            }}
+            >
+            <Link to={"/yellowadmin/customer/view"}><Sidebar.Item>View customer</Sidebar.Item></Link>
+            <Link to={"/yellowadmin/customercategory/view"}><Sidebar.Item>Categories</Sidebar.Item></Link>
+            </Sidebar.Collapse>
+        )
+    }
     const LogsSection = () => {
         return (
             <Sidebar.Collapse
@@ -290,7 +290,7 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                     <ProductSection />
                     <OrderSection />
                     <DealerSection />
-                    {/* <CustomerSection/> */}
+                    <CustomerSection/>
                     <AgentSection />
                     <PackingSlip />
                     <Invoice />

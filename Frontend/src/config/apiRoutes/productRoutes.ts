@@ -18,6 +18,11 @@ const updateProduct = async (param: any, body: any) => {
 const createProduct = async (body: any) => {
     return await axiosRequest.post<any>(`${apiUrl.product}`, body)
 }
+const updateChildProductStatus = async (id: string, childSKU: string, body: any) => {
+    return await axiosRequest.put<any>(`${apiUrl.product}/${id}/children/${childSKU}`, body);
+};
+
+
 const AddColor = async (body: any) => {
     return await axiosRequest.post<any>(apiUrl.color, body)
 }
@@ -81,6 +86,7 @@ const deleteTag = async (id: string) => {
     return await axiosRequest.del<any>(`${apiUrl.tag}/${id}`);
 };
 export const productApis = {
+    updateChildProductStatus,
     AddColor,
     GetColors,
     UpdateColors,

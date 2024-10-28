@@ -9,6 +9,8 @@ export const axiosRequest = {
         axios.post<T>(url, body,{ responseType: type, params }).then(responseBody),
     put: <T>(url: string, body: {}) => axios.put<T>(url, body).then(responseBody),
     del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
+    patch: <T>(url: string, body: {}) => 
+        axios.patch<T>(url, body).then(responseBody),
 };
 
 axios.interceptors.request.use(config => {

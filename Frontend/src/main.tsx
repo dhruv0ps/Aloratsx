@@ -55,6 +55,8 @@ import AddCustomerCategory from './features/Customer/AddCustomerCategory.tsx';
 import RawMaterialManager from './features/Products/RawmaterialManage.tsx';
 import TagManager from './features/Products/TagManegar.tsx';
 import ListProduct from './features/Products/ListProduct.tsx';
+import CategoryView from './features/Customer/CategoryView.tsx';
+import CustomerView from './features/Customer/CustomerView.tsx';
 // import { newProductManger } from './features/Products/newProductManger.tsx';
 const stores = { authStore };
 const router = createBrowserRouter([
@@ -248,6 +250,16 @@ const router = createBrowserRouter([
       {
         path:"/yellowadmin/customercategory/add",
         element : <AddCustomerCategory/>
+      },
+      {
+        path:"/customers/edit/:id",
+        element : <Addcustomer/>
+      },{
+        path : "/yellowadmin/customer/view",
+        element : <CustomerView/>
+      },{
+        path:"/yellowadmin/customercategory/view",
+        element : <CategoryView/>
       }
     ]
   },

@@ -226,12 +226,34 @@ const generateChildSKU = (parentSKU, index) => {
     return `${parentSKU}-${index + 1}`;
 };
 
+const updateProductStatus = async (parentProductId, childSKU, status) => {
+    try {
+        
+        const product = await NewProduct.findOneAndUpdate(
+            { _id: parentProductId, 'children.SKU': childSKU }, 
+            { $set: { 'children.$.isActive': status } },         
+            { new: true }                                       
+        );
+
+        if (!product) {
+            throw new Error('Product or child product not found');
+        }
+
+        return product; 
+    } catch (error) {
+        // Catch and throw the error with a proper message
+        throw new Error(error.message || 'Failed to update child product status');
+    }
+};
+
+
+
 module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
     updateProductById,
     deleteProductById,
-  
+  updateProductStatus,
     generateChildSKU
 };
