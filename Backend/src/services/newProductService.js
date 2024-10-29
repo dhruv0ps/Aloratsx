@@ -73,12 +73,13 @@ const getAllProducts = async ({ search, page, limit, sortField, sortOrder, minPr
 
     
     if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } }, 
-        { SKU: { $regex: search, $options: 'i' } },  
-        { "children.name": { $regex: search, $options: "i" } }  
-      ];
-    }
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },              // Search in parent product's name
+          { SKU: { $regex: search, $options: 'i' } },               // Search in parent product's SKU
+          { "children.SKU": { $regex: search, $options: 'i' } },    // Search in children's SKU
+          { "children.name": { $regex: search, $options: 'i' } },   // Search in children's name
+        ];
+      }
 
   
     const skip = (page - 1) * limit;

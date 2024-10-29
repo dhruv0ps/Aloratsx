@@ -215,12 +215,12 @@ const ViewPackingSlip: React.FC = () => {
       <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg tracking-widest font-thin" ref={pdfRef}>
         <div className="flex justify-between items-start mb-8">
           <div className='text-xs'>
-            <h1 className="text-xl font-normal mb-2">LITTLESPILLS INC</h1>
-            <p>324 TRADERS BLVD EAST</p>
-            <p>MISSISSAUGA ON L4Z 1W7</p>
-            <p>647-227-2525</p>
-            <p>littlespills.001@gmail.com</p>
-            <p>www.littlespills.com</p>
+            <h1 className="text-xl font-normal mb-2">ALORA BEDDING</h1>
+            <p>1580 Trinity Dr. #6-8</p>
+            <p>MISSISSAUGA </p>
+            <p>9O5-458-9835</p>
+            <p>info@alorabedding.com</p>
+            <p>www.alorabedding.com</p>
           </div>
           <img src={logo} alt="LITTLE SPILLS INC" className="w-48 mb-4" />
           <div className="text-right font-normal">

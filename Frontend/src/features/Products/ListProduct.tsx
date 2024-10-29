@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useReactToPrint } from "react-to-print";
 import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
-import { Button, Select, TextInput } from 'flowbite-react'; 
+import { Button, Select, TextInput,Modal } from 'flowbite-react'; 
 import { MdEdit,MdDelete } from 'react-icons/md';
-import {FaTimes , FaCheck} from 'react-icons/fa';
+// import {FaTimes , FaCheck} from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import debounce from 'lodash/debounce';
 import showConfirmationModal from '../../util/confirmationUtil';
@@ -24,6 +24,7 @@ const ListProduct: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>("asc"); 
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null); 
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);  // Current page
   const [barcodeReady, setBarcodeReady] = useState<boolean>(false);
   const [productsPerPage] = useState<number>(5); 
@@ -55,6 +56,7 @@ console.log(loading)
           product.children.map((child: any) => ({
             ...child, 
             parentProductId: product._id, 
+            parentProductName: product.name,
           }))
         );
       setChildrenProducts(allChildren);
@@ -71,7 +73,8 @@ console.log(loading)
     const filtered = childrenProducts.filter((child: any) => {
       const matchesSearch =
         child.SKU.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        child.name.toLowerCase().includes(searchQuery.toLowerCase());
+        child.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        child.parentProductName.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesPrice =
         (minPrice === "" || child.selling_price >= minPrice) &&
@@ -91,6 +94,7 @@ console.log(loading)
     });
 
     setFilteredProducts(sorted);
+    setCurrentPage(0);
   }, [searchQuery, minPrice, maxPrice, sortField, sortOrder, childrenProducts]);
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +104,15 @@ console.log(loading)
     content: () => barcodeRef.current,
     onAfterPrint: () => setBarcodeReady(false),
   });
+
+  const handleViewProduct = (product: any) => {
+    setSelectedProduct(product); // Set the selected product for the modal
+    setShowModal(true); // Show the modal
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false); // Hide the modal
+  };
   const handleGenerateBarcode = (child: any) => {
     setSelectedProduct(child);
     setBarcodeReady(true);
@@ -142,29 +155,29 @@ console.log(loading)
        
     }
 };
-const handleActivateDeactivateChild = async (parentProductId: string, childSKU: string, currentStatus: boolean) => {
-  const newStatus = !currentStatus;  // Flip the status
+// const handleActivateDeactivateChild = async (parentProductId: string, childSKU: string, currentStatus: boolean) => {
+//   const newStatus = !currentStatus;  // Flip the status
 
-  try {
-    // Call the API to update the status of the child product
-    const response = await productApis.updateChildProductStatus(parentProductId, childSKU, { isActive: newStatus });
+//   try {
+//     // Call the API to update the status of the child product
+//     const response = await productApis.updateChildProductStatus(parentProductId, childSKU, { isActive: newStatus });
 
-    // Log the response for debugging
+//     // Log the response for debugging
   
-    console.log(response)
+//     console.log(response)
     
-    if (response && response.message) {
-      toast.success(response.message); 
-      fetchProducts(); 
-    } else {
-      toast.error('Failed to update child product status');
-    }
-  } catch (error) {
+//     if (response && response.message) {
+//       toast.success(response.message); 
+//       fetchProducts(); 
+//     } else {
+//       toast.error('Failed to update child product status');
+//     }
+//   } catch (error) {
     
-    console.error('Error:', error);
-    toast.error('Error updating child product status');
-  }
-};
+//     console.error('Error:', error);
+//     toast.error('Error updating child product status');
+//   }
+// };
 
 
 
@@ -254,7 +267,9 @@ const handlePageClick = (selectedItem: { selected: number }) => {
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+             
                 <th className="py-3 px-6 text-left">SKU</th>
+                <th className="py-3 px-6 text-left">Parent Name</th>
                 <th className="py-3 px-6 text-left">Name</th>
                 <th className="py-3 px-6 text-left">Selling Price</th>
                 <th className="py-3 px-6 text-left">Cost Price</th>
@@ -267,7 +282,9 @@ const handlePageClick = (selectedItem: { selected: number }) => {
             <tbody className="text-gray-900 text-sm font-light">
               {currentProducts.map((child: any) => (
                 <tr key={child.SKU} className="border-b border-gray-200 hover:bg-gray-100">
+                 
                   <td className="py-3 px-6 text-left">{child.SKU}</td>
+                  <td className="py-3 px-6 text-left">{child.parentProductName}</td>
                   <td className="py-3 px-6 text-left">{child.name}</td>
                   <td className="py-3 px-6 text-left">${child.selling_price.toFixed(2)}</td>
                   {/* <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td> */}
@@ -279,21 +296,26 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                     </Button>
                   </td>
                   <td className="py-3 px-6 text-center">
+                 
+
   <div className="flex justify-center space-x-2">
+  <Button size="sm" color="info" onClick={() => handleViewProduct(child)}>
+                        View
+                      </Button>
     <Button size="sm" color="warning" onClick={() => handleEditProduct(child.parentProductId)}>
       <MdEdit className="h-5 w-5" /> Edit
     </Button>
     <Button size="sm" color="failure" onClick={() => handleDeleteChild(child.parentProductId, child.SKU)}>
       <MdDelete className="h-5 w-5" /> Delete
     </Button>
-    <Button
+    {/* <Button
     size="sm"
     color={child.isActive ? 'failure' : 'success'}
     onClick={() => handleActivateDeactivateChild(child.parentProductId, child.SKU, child.isActive)}
 >
     {child.isActive ? <FaTimes className="h-5 w-5" /> : <FaCheck className="h-5 w-5" />}
     {child.isActive ? 'Deactivate' : 'Activate'}
-</Button>
+</Button> */}
 
   </div>
 </td>
@@ -324,6 +346,48 @@ const handlePageClick = (selectedItem: { selected: number }) => {
         {barcodeReady && selectedProduct && <BarcodeContent product={selectedProduct} />}
         </div>
       </div>
+      <Modal show={showModal} onClose={handleCloseModal}>
+        <Modal.Header>Product Details</Modal.Header>
+        <Modal.Body>
+          {selectedProduct && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="font-semibold">Parent Product Name:</p>
+                <p>{selectedProduct.parentProductName}</p>
+              </div>
+              <div>
+                <p className="font-semibold">SKU:</p>
+                <p>{selectedProduct.SKU}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Name:</p>
+                <p>{selectedProduct.name}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Selling Price:</p>
+                <p>${selectedProduct.selling_price.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Cost Price:</p>
+                <p>${selectedProduct.cost_price?.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Status:</p>
+                <p>{selectedProduct.status}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Stock:</p>
+                <p>{selectedProduct.stock}</p>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="gray" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
