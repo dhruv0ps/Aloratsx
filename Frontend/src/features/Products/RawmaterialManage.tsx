@@ -11,7 +11,6 @@ const RawMaterialManager: React.FC = () => {
     const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [currentRawMaterial, setCurrentRawMaterial] = useState<RawMaterial | null>(null);
-
     const [formData, setFormData] = useState({
         material: '',
         description: '',
@@ -19,6 +18,10 @@ const RawMaterialManager: React.FC = () => {
         imagePreview: null as string | null,
         measuringUnit: '',
     });
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5; // Number of raw materials per page
 
     const navigate = useNavigate();
 
@@ -38,6 +41,14 @@ const RawMaterialManager: React.FC = () => {
     useEffect(() => {
         fetchRawMaterials();
     }, []);
+
+    // Calculate current raw materials to display
+    const indexOfLastMaterial = currentPage * itemsPerPage;
+    const indexOfFirstMaterial = indexOfLastMaterial - itemsPerPage;
+    const currentMaterials = rawMaterials.slice(indexOfFirstMaterial, indexOfLastMaterial);
+
+    // Calculate total number of pages
+    const totalPages = Math.ceil(rawMaterials.length / itemsPerPage);
 
     const handleSubmit = async () => {
         const formDataToSend = new FormData();
@@ -130,8 +141,21 @@ const RawMaterialManager: React.FC = () => {
         }
     };
 
+    // Pagination Controls
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     return (
-        <div className="max-w-7xl mx-auto p-5 rounded-lg bg-white"> 
+        <div className="max-w-7xl mx-auto p-5 rounded-lg bg-white">
             <div className='mb-12 flex items-center justify-between'>
                 <Button color='gray' onClick={() => navigate(-1)}>
                     <span className='flex gap-2 items-center'><FaChevronLeft />Back</span>
@@ -152,7 +176,7 @@ const RawMaterialManager: React.FC = () => {
                             <Table.HeadCell className='justify-end flex'>Actions</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                            {rawMaterials.map((rawMaterial) => (
+                            {currentMaterials.map((rawMaterial) => (
                                 <Table.Row key={rawMaterial._id}>
                                     <Table.Cell>
                                         {rawMaterial.image && (
@@ -182,6 +206,19 @@ const RawMaterialManager: React.FC = () => {
                             ))}
                         </Table.Body>
                     </Table>
+
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+                        <Button onClick={goToPreviousPage} disabled={currentPage === 1} color="gray">
+                            Previous
+                        </Button>
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button onClick={goToNextPage} disabled={currentPage === totalPages} color="gray">
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
 

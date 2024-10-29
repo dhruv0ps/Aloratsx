@@ -1,28 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, Table } from 'flowbite-react';
 import { toast } from 'react-toastify';
-import { productApis } from '../../config/apiRoutes/productRoutes'; // Adjust the path as necessary
+import { productApis } from '../../config/apiRoutes/productRoutes'; 
 import showConfirmationModal from '../../util/confirmationUtil';
-import { Tag } from '../../config/models/tag'; // Ensure this path is correct
+import { Tag } from '../../config/models/tag'; 
 import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft } from 'react-icons/fa6';
 
 const TagManager: React.FC = () => {
-    const [tags, setTags] = useState<Tag[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]); 
     const [showModal, setShowModal] = useState(false);
     const [currentTag, setCurrentTag] = useState<Tag | null>(null);
+    const [formData, setFormData] = useState({ name: '' });
 
-    const [formData, setFormData] = useState({
-        name: '',
-    });
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1); // Current page
+    const itemsPerPage = 10; // Number of items per page
 
     const navigate = useNavigate();
 
+    // Fetch all tags
     const fetchTags = async () => {
         try {
-            const res = await productApis.getAllTags(); // Ensure you have a corresponding API endpoint
+            const res = await productApis.getAllTags(); // Fetch all tags
             if (res.status) {
-                setTags(res.data);
+                setTags(res.data); // Store all tags
                 console.log(res.data);
             }
         } catch (error) {
@@ -32,8 +34,16 @@ const TagManager: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchTags();
+        fetchTags(); // Fetch tags on component mount
     }, []);
+
+    // Calculate the tags to display on the current page
+    const indexOfLastTag = currentPage * itemsPerPage;
+    const indexOfFirstTag = indexOfLastTag - itemsPerPage;
+    const currentTags = tags.slice(indexOfFirstTag, indexOfLastTag);
+
+    // Calculate total number of pages
+    const totalPages = Math.ceil(tags.length / itemsPerPage);
 
     const handleSubmit = async () => {
         try {
@@ -49,7 +59,7 @@ const TagManager: React.FC = () => {
                 }
             }
             setShowModal(false);
-            fetchTags();
+            fetchTags(); // Refresh the tags after adding/updating
         } catch (error) {
             console.error('Error handling tag:', error);
             toast.error('Failed to handle tag');
@@ -64,7 +74,7 @@ const TagManager: React.FC = () => {
             const res = await productApis.deleteTag(tag._id ?? ''); // Adjust API call for delete
             if (res.status) {
                 toast.success('Tag successfully deleted.');
-                fetchTags();
+                fetchTags(); // Refresh the tags after deletion
             } else {
                 toast.error('Failed to delete tag');
             }
@@ -90,6 +100,19 @@ const TagManager: React.FC = () => {
         setShowModal(true);
     };
 
+    // Handle page navigation
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-5 rounded-lg bg-white">
             <div className='mb-12 flex items-center justify-between'>
@@ -109,7 +132,7 @@ const TagManager: React.FC = () => {
                             <Table.HeadCell className='justify-end flex'>Actions</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                            {tags.map((tag) => (
+                            {currentTags.map((tag) => (
                                 <Table.Row key={tag._id}>
                                     <Table.Cell>{tag.name}</Table.Cell>
                                     <Table.Cell className='flex gap-x-3 items-center justify-end'>
@@ -124,6 +147,19 @@ const TagManager: React.FC = () => {
                             ))}
                         </Table.Body>
                     </Table>
+
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+                        <Button onClick={goToPreviousPage} disabled={currentPage === 1} color="gray">
+                            Previous
+                        </Button>
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button onClick={goToNextPage} disabled={currentPage === totalPages} color="gray">
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -155,3 +191,4 @@ const TagManager: React.FC = () => {
 };
 
 export default TagManager;
+

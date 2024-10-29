@@ -20,6 +20,14 @@ const CategoryManager: React.FC = () => {
     const [subcategories, setSubcategories] = useState<subCategory[]>([]);
     const [currentSubcategory, setCurrentSubcategory] = useState<subCategory | null>(null);
 
+    // Pagination state for categories
+    const [categoryCurrentPage, setCategoryCurrentPage] = useState(1);
+    const categoriesPerPage = 5; // Number of categories per page
+
+    // Pagination state for subcategories
+    const [subcategoryCurrentPage, setSubcategoryCurrentPage] = useState(1);
+    const subcategoriesPerPage = 5; // Number of subcategories per page
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -54,6 +62,20 @@ const CategoryManager: React.FC = () => {
         fetchCategories();
     }, []);
 
+    // Paginate categories
+    const indexOfLastCategory = categoryCurrentPage * categoriesPerPage;
+    const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
+    const currentCategories = categories.slice(indexOfFirstCategory, indexOfLastCategory);
+
+    const totalCategoryPages = Math.ceil(categories.length / categoriesPerPage);
+
+    // Paginate subcategories
+    const indexOfLastSubcategory = subcategoryCurrentPage * subcategoriesPerPage;
+    const indexOfFirstSubcategory = indexOfLastSubcategory - subcategoriesPerPage;
+    const currentSubcategories = subcategories.slice(indexOfFirstSubcategory, indexOfLastSubcategory);
+
+    const totalSubcategoryPages = Math.ceil(subcategories.length / subcategoriesPerPage);
+
     const handleSubmit = async () => {
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name);
@@ -84,13 +106,6 @@ const CategoryManager: React.FC = () => {
 
     const handleSubcategorySubmit = async () => {
         if (!currentCategoryForSubcategories?._id) return;
-
-        // const formDataToSend = new FormData();
-        // formDataToSend.append('name', subcategoryFormData.name);
-        // formDataToSend.append('category', currentCategoryForSubcategories._id);
-        // if (subcategoryFormData.image) {
-        //     formDataToSend.append('image', subcategoryFormData.image);
-        // }
 
         try {
             if (currentSubcategory) {
@@ -293,7 +308,7 @@ const CategoryManager: React.FC = () => {
                             <Table.HeadCell className='justify-end flex'>Action</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                            {categories.map((category) => (
+                            {currentCategories.map((category) => (
                                 <Table.Row key={category._id}>
                                     <Table.Cell>{toTitleCase(category.name)}</Table.Cell>
                                     <Table.Cell>
@@ -324,6 +339,19 @@ const CategoryManager: React.FC = () => {
                             ))}
                         </Table.Body>
                     </Table>
+
+                    {/* Pagination Controls for Categories */}
+                    <div className="flex justify-between items-center mt-4">
+                        <Button onClick={() => setCategoryCurrentPage(categoryCurrentPage - 1)} disabled={categoryCurrentPage === 1} color="gray">
+                            Previous
+                        </Button>
+                        <span>
+                            Page {categoryCurrentPage} of {totalCategoryPages}
+                        </span>
+                        <Button onClick={() => setCategoryCurrentPage(categoryCurrentPage + 1)} disabled={categoryCurrentPage === totalCategoryPages} color="gray">
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -366,6 +394,7 @@ const CategoryManager: React.FC = () => {
                     </Table>
                 </div>
             </div>
+
             {/* Category Form Modal */}
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <Modal.Header>{currentCategory ? 'Edit Category' : 'Add Category'}</Modal.Header>
@@ -478,7 +507,7 @@ const CategoryManager: React.FC = () => {
                                 <Table.HeadCell className='justify-end flex'>Action</Table.HeadCell>
                             </Table.Head>
                             <Table.Body>
-                                {subcategories.map((subcategory) => (
+                                {currentSubcategories.map((subcategory) => (
                                     <Table.Row key={subcategory._id}>
                                         <Table.Cell>{toTitleCase(subcategory.name)}</Table.Cell>
                                         {/* <Table.Cell>
@@ -512,6 +541,19 @@ const CategoryManager: React.FC = () => {
                                 ))}
                             </Table.Body>
                         </Table>
+
+                        {/* Pagination Controls for Subcategories */}
+                        <div className="flex justify-between items-center mt-4">
+                            <Button onClick={() => setSubcategoryCurrentPage(subcategoryCurrentPage - 1)} disabled={subcategoryCurrentPage === 1} color="gray">
+                                Previous
+                            </Button>
+                            <span>
+                                Page {subcategoryCurrentPage} of {totalSubcategoryPages}
+                            </span>
+                            <Button onClick={() => setSubcategoryCurrentPage(subcategoryCurrentPage + 1)} disabled={subcategoryCurrentPage === totalSubcategoryPages} color="gray">
+                                Next
+                            </Button>
+                        </div>
                     </div>
                 </Modal.Body>
             </Modal>
@@ -542,38 +584,6 @@ const CategoryManager: React.FC = () => {
                                 className="border border-gray-300 rounded-lg p-2 w-full"
                             />
                         </div>
-                        {/* <div className="mb-4">
-                            <label htmlFor="subcategoryImage" className="block text-gray-700 font-semibold mb-1">
-                                Subcategory Image:
-                            </label>
-                            {currentSubcategory && currentSubcategory.image && !subcategoryFormData.imagePreview && (
-                                <div className="mb-2">
-                                    <p className="text-sm text-gray-600 mb-1">Current Image:</p>
-                                    <img
-                                        src={`${import.meta.env.VITE_BASE_IMAGE_URL}/${currentSubcategory.image}`}
-                                        alt={currentSubcategory.name}
-                                        className="w-32 h-32 object-cover rounded-lg"
-                                    />
-                                </div>
-                            )}
-                            {subcategoryFormData.imagePreview && (
-                                <div className="mb-2">
-                                    <p className="text-sm text-gray-600 mb-1">New Image Preview:</p>
-                                    <img
-                                        src={subcategoryFormData.imagePreview}
-                                        alt="New subcategory image"
-                                        className="w-32 h-32 object-cover rounded-lg"
-                                    />
-                                </div>
-                            )}
-                            <input
-                                type="file"
-                                id="subcategoryImage"
-                                accept="image/*"
-                                onChange={(e) => handleImageChange(e, true)}
-                                className="border border-gray-300 rounded-lg p-2 w-full"
-                            />
-                        </div> */}
                         <Button type="submit" color="green">
                             {currentSubcategory ? 'Update' : 'Add'} Subcategory
                         </Button>

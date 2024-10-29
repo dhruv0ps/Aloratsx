@@ -149,9 +149,9 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                     return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
                 }}
             >
-                <Link to={"/yellowadmin/orders/request"}><Sidebar.Item>Orders Request</Sidebar.Item></Link>
-                <Link to={"/yellowadmin/orders/approvals"}><Sidebar.Item>Orders Approvals</Sidebar.Item></Link>
-                <Link to={"/yellowadmin/orders/approved"}><Sidebar.Item>Orders Management</Sidebar.Item></Link>
+                <Link to={"/yellowadmin/orders/request"}><Sidebar.Item>Back Orders Request</Sidebar.Item></Link>
+                <Link to={"/yellowadmin/orders/approvals"}><Sidebar.Item> Back Orders Approvals</Sidebar.Item></Link>
+                <Link to={"/yellowadmin/orders/approved"}><Sidebar.Item> Back Orders Management</Sidebar.Item></Link>
             </Sidebar.Collapse>
         );
     };

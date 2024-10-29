@@ -21,30 +21,44 @@ const AutocompleteProductInput: React.FC<{ value: string, setInputValue: (any), 
 
     const fetchProducts = async (search: string) => {
         try {
-            if (search.length < 1)
-                return
+            if (search.length < 1) return;
             setLoading(true);
-            const response = await productApis.getAllProducts({ page: 1, limit: 25, filters: { nameSearch:search} });
-            let data: Product[] = response.data.products
-            setFilteredProducts(data.flatMap(product => {
-                // console.log('Parent ID:', product._id); 
-                return product.children.map((child:any) => {
-                    // console.log('Child ID:', child._id);   
-                    return {
+    
+         
+            const response = await productApis.getAllProducts({ page: 1, limit: 25, filters: { nameSearch: search } });
+    
+            
+            if (!response || !response.data || !Array.isArray(response.data)) {
+                console.error("Invalid API response structure:", response);
+                return; 
+            }
+    
+            const data: Product[] = response.data; 
+    
+           
+            const filteredProducts = data.flatMap(product =>
+                product.children
+                    .filter(child => 
+                        child.name.toLowerCase().includes(search.toLowerCase()) || 
+                        product.name.toLowerCase().includes(search.toLowerCase())
+                        || child.SKU.toLowerCase().includes(search.toLowerCase())
+                    )
+                    .map(child => ({
                         ...child,
                         parentName: product.name,
-                        parent_id: product._id 
-                    };
-                });
-            }));
+                        parent_id: product._id,
+                    }))
+            );
+    
+            setFilteredProducts(filteredProducts);
         } catch (error: any) {
-
-            console.log(error)
+            console.error("Failed to fetch products:", error);
         } finally {
             setLoading(false);
         }
-
     };
+    
+    
     const debouncedFetchProducts = useCallback(
         _.debounce((query: string) => fetchProducts(query), 1000), 
         []
@@ -97,7 +111,7 @@ const AutocompleteProductInput: React.FC<{ value: string, setInputValue: (any), 
                                 onClick={() => handleProductSelect(product)}
                                 className="px-4 py-2 cursor-pointer hover:bg-indigo-100"
                             >
-                                {product.SKU} | {product.parentName} {product.name}
+                                {product.SKU} | {product.parentName} {product.name} | 
                             </li>
                         )) : !loading && value.length < 1 ? <li className="px-4 py-2">Start typing to see products available</li> : !loading && <li className="px-4 py-2">No Products Found</li>
                     }

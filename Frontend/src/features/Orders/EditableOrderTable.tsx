@@ -29,13 +29,13 @@
 //       (total, product) => total + product.quantity * product.price, 0
 //     );
   
-//     const taxRate = editableOrder.taxSlab && !editableOrder.checkboxState
-//       ? (editableOrder.taxSlab.gst + editableOrder.taxSlab.hst) / 100
-//       : 0;
-    
+//     const taxRate = editableOrder.taxSlab && !(editableOrder.checkboxState ?? false)
+//   ? ((editableOrder.taxSlab.gst ?? 0) + (editableOrder.taxSlab.hst ?? 0)) / 100
+//   : 0;
+
 //     const taxAmount = totalBeforeTax * taxRate;
 //     const grandTotal = totalBeforeTax + taxAmount;
-  
+    
 //     setEditableOrder(prevOrder => ({
 //       ...prevOrder,
 //       products: updatedProducts,
@@ -47,15 +47,15 @@
 //   const handleSave = async () => {
 //     try {
 //       console.log(editableOrder,".............editable order")
-//       // Assuming you have an API to update the order
-//       // const response = await orderApis.updateOrder(editableOrder?._id, editableOrder);
-//       // if (response.status) {
-//       //   onOrderUpdate(editableOrder);
-//       //   toast.success('Order updated successfully');
-//       //   onClose();
-//       // } else {
-//       //   toast.error('Failed to update order');
-//       // }
+    
+//       const response = await orderApis.updateOrder(editableOrder?._id, editableOrder);
+//       if (response.status) {
+//         onOrderUpdate(editableOrder);
+//         toast.success('Order updated successfully');
+//         onClose();
+//       } else {
+//         toast.error('Failed to update order');
+//       }
 //     } catch (error) {
 //       console.error('Error updating order:', error);
 //       toast.error('An error occurred while updating the order');

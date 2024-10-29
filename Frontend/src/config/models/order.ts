@@ -2,6 +2,8 @@ import { Address } from "./address";
 import { AgentWithData } from "./agent";
 import { ApprovedDealer as Dealer } from "./dealer";
 import { Product } from "./product";
+
+
 export interface OrderBase {
     purchaseOrderNumber: string;
     date: string;
@@ -20,6 +22,7 @@ export interface OrderBase {
     qst: number;
     pst: number;
     transportation: number;
+    checkboxState?: boolean;
     grandTotal: number;
 }
 
@@ -46,7 +49,7 @@ export interface OrderWithData extends OrderBase {
         quantity: number;
         price: number;
     }>;
-
+    
     phase: string,
     status: string,
     invoiceStatus: string,
