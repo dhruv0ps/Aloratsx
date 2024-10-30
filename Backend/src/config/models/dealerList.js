@@ -8,6 +8,11 @@ const dealerlist = new mongoose.Schema({
     address: addressSchema,
     province: { type: String, required: true, trim: true },
     company: { type: String, required: true, trim: true },
+    customercategory: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'CustomerCategory',  // Assuming you have a separate model for customer categories
+        required: true,
+      },
 }, {
     timestamps: true
 });

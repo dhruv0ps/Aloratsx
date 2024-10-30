@@ -31,7 +31,7 @@ export default function AddAgent() {
             const res = await agentApis.createAgent(formState);
             if (res.status) {
                 toast.success('New agent added successfully');
-                navigate('yellowadmin/agents');
+                navigate('/yellowadmin/agents');
             }
         } catch (error) {
             toast.error('Failed to add agent');

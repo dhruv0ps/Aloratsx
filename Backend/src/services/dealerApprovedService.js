@@ -66,7 +66,7 @@ const getAllDealers = async () => {
 
 const getDealerById = async (id) => {
   try {
-    const dealer = await ApprovedDealer.findById(id).populate("province").select('-password');
+    const dealer = await ApprovedDealer.findById(id).populate("province").populate("customercategory").select('-password');
     if (!dealer) {
       throw new Error("Dealer not found");
     }

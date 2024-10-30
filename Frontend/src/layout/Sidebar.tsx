@@ -1,8 +1,8 @@
 import { Sidebar } from "flowbite-react";
 import { BiBuoy } from "react-icons/bi";
-import { BsBarChartFill, BsIncognito } from "react-icons/bs";
-import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaWarehouse, FaUserTie, FaBoxes } from "react-icons/fa";
-import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag,HiUser } from "react-icons/hi";
+import {  BsIncognito } from "react-icons/bs";
+import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaUserTie, FaBoxes } from "react-icons/fa";
+import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag, } from "react-icons/hi";
 import { MdManageAccounts } from "react-icons/md";
 
 import { Link } from "react-router-dom";
@@ -123,16 +123,17 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
         return (
             <Sidebar.Collapse
                 icon={BsIncognito}
-                label="Dealer"
+                label="Customer"
                 renderChevronIcon={(theme, open) => {
                     const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
                     return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
                 }}
             >
-                <Link to={"/dealer/signup"}><Sidebar.Item>Dealer Onboard</Sidebar.Item></Link>
-                <Link to={"/dealer/approvals"}><Sidebar.Item>Dealer Approvals</Sidebar.Item></Link>
-                <Link to={"/dealer"}><Sidebar.Item>Dealer Management</Sidebar.Item></Link>
+                <Link to={"/dealer/signup"}><Sidebar.Item>Customer Onboard</Sidebar.Item></Link>
+                <Link to={"/dealer/approvals"}><Sidebar.Item>Customer Approvals</Sidebar.Item></Link>
+                <Link to={"/dealer"}><Sidebar.Item>Customer Management</Sidebar.Item></Link>
                 <Link to={"/taxslabs"}><Sidebar.Item>Tax Slabs</Sidebar.Item></Link>
+                <Link to={"/yellowadmin/customercategory/view"}><Sidebar.Item>Categories</Sidebar.Item></Link>
             </Sidebar.Collapse>
         );
     };
@@ -216,25 +217,25 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
             </Sidebar.Collapse>
         );
     };
-    const InventorySection = () => {
-        return (
-            <Sidebar.Collapse
-                icon={FaWarehouse}
-                label="Inventory"
-                renderChevronIcon={(theme, open) => {
-                    const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-                    return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
-                }}
-            >
-                <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link>
-                <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link>
-                <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
-                <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
-                <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
-                <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link>
-            </Sidebar.Collapse>
-        );
-    }
+    // const InventorySection = () => {
+    //     return (
+    //         <Sidebar.Collapse
+    //             icon={FaWarehouse}
+    //             label="Inventory"
+    //             renderChevronIcon={(theme, open) => {
+    //                 const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+    //                 return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+    //             }}
+    //         >
+    //             <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link>
+    //             <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link>
+    //             <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
+    //             <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
+    //             <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
+    //             <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link>
+    //         </Sidebar.Collapse>
+    //     );
+    // }
     const AgentSection = () => {
         return (
             <Sidebar.Collapse
@@ -250,35 +251,35 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
             </Sidebar.Collapse>
         );
     }
-    const CustomerSection = () => {
-        return(
-            <Sidebar.Collapse
-            icon={HiUser}
-            label="Customer"
-            renderChevronIcon={(theme, open) => {
-                const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-                return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
-            }}
-            >
-            <Link to={"/yellowadmin/customer/view"}><Sidebar.Item>View customer</Sidebar.Item></Link>
-            <Link to={"/yellowadmin/customercategory/view"}><Sidebar.Item>Categories</Sidebar.Item></Link>
-            </Sidebar.Collapse>
-        )
-    }
-    const LogsSection = () => {
-        return (
-            <Sidebar.Collapse
-                icon={BsBarChartFill}
-                label="Activity"
-                renderChevronIcon={(theme, open) => {
-                    const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-                    return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
-                }}
-            >
-                <Link to={"/logs"}> <Sidebar.Item> Activity Logs</Sidebar.Item> </Link>
-            </Sidebar.Collapse>
-        );
-    }
+    // const CustomerSection = () => {
+    //     return(
+    //         <Sidebar.Collapse
+    //         icon={HiUser}
+    //         label="Customer"
+    //         renderChevronIcon={(theme, open) => {
+    //             const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+    //             return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
+    //         }}
+    //         >
+    //         <Link to={"/yellowadmin/customer/view"}><Sidebar.Item>View customer</Sidebar.Item></Link>
+    //         <Link to={"/yellowadmin/customercategory/view"}><Sidebar.Item>Categories</Sidebar.Item></Link>
+    //         </Sidebar.Collapse>
+    //     )
+    // }
+    // const LogsSection = () => {
+    //     return (
+    //         <Sidebar.Collapse
+    //             icon={BsBarChartFill}
+    //             label="Activity"
+    //             renderChevronIcon={(theme, open) => {
+    //                 const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+    //                 return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+    //             }}
+    //         >
+    //             <Link to={"/logs"}> <Sidebar.Item> Activity Logs</Sidebar.Item> </Link>
+    //         </Sidebar.Collapse>
+    //     );
+    // }
     return (
         <Sidebar theme={sidebarTheme} aria-label="Sidebar" className={`${isSidebarOpen ? "" : "hidden"} h-[calc(100vh-4rem)] overflow-hidden w-screen sm:w-[18rem] sm:overflow-auto`}>
             <Sidebar.Items className="text-xl">
@@ -290,13 +291,13 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                     <ProductSection />
                     <OrderSection />
                     <DealerSection />
-                    <CustomerSection/>
+                    {/* <CustomerSection/> */}
                     <AgentSection />
                     <PackingSlip />
                     <Invoice />
                     <Transaction />
-                    <InventorySection />
-                    <LogsSection />
+                    {/* <InventorySection /> */}
+                    {/* <LogsSection /> */}
                     {role === 'admin' && (
                         <Sidebar.Collapse
                             icon={MdManageAccounts}

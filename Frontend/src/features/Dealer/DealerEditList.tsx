@@ -9,7 +9,7 @@ import Loading from '../../util/Loading';
 import { Button } from 'flowbite-react';
 import { FaChevronLeft } from 'react-icons/fa6';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
-
+import { customerCategoryApi } from '../../config/apiRoutes/customerCategoryApi';
 interface FormErrors {
     [key: string]: string;
 }
@@ -36,55 +36,73 @@ const DealerEditList: React.FC = () => {
         paidAmount: 0,
         totalBalance: 0,
         totalOpenBalance: 0,
+        customercategory: '' // Added customercategory field
     });
+
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState<FormErrors>({});
     const [taxSlabs, setTaxSlabs] = useState<taxSlab[]>([]);
+    const [customerCategories, setCustomerCategories] = useState<{ _id: string, customercategoryName: string }[]>([]); // Customer categories state
     const [loading, setLoading] = useState<boolean>(true);
-    // const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTaxSlabs = async () => {
-            setLoading(true)
+            setLoading(true);
             try {
-                const response = await commonApis.getAllTaxSlabs()
+                const response = await commonApis.getAllTaxSlabs();
                 setTaxSlabs(response.data);
             } catch (err) {
-                // setError('Failed to fetch tax slabs');
+                console.error('Failed to fetch tax slabs', err);
             } finally {
-                setLoading(false)
+                setLoading(false);
+            }
+        };
+
+        const fetchCustomerCategories = async () => {
+            try {
+                const response = await customerCategoryApi.getCustomercategories();; // Assuming this API exists
+                setCustomerCategories(response.data);
+            } catch (err) {
+                console.error('Failed to fetch customer categories', err);
             }
         };
 
         fetchTaxSlabs();
+        fetchCustomerCategories();
     }, []);
 
     useEffect(() => {
         const fetchDealerDetails = async () => {
-            setLoading(true)
+            setLoading(true);
             try {
                 if (aid) {
-                    const response = await dealerApis.getApprovedDealerbyId(aid)
-                    setFormData(response.data);
+                    const response = await dealerApis.getApprovedDealerbyId(aid);
+                    setFormData({
+                        ...response.data,
+                        customercategory: response.data.customercategory?._id || "", // Ensure customercategory is populated
+                    });
                 } else if (id) {
-                    const response = await dealerApis.getTempDealerbyId(id)
-                    let data: Dealer = response.data
+                    const response = await dealerApis.getTempDealerbyId(id);
+                    let data: Dealer = response.data;
+                    console.log(response.data)
                     setFormData(prev => ({
-                        ...prev, contactPersonName: data.username,
+                        ...prev,
+                        contactPersonName: data.username,
                         contactPersonCell: data.mobile,
                         province: data.province._id ?? "",
                         emailId: data.email,
                         contactPersonEmail: data.email,
                         address: data.address,
                         designation: data.designation,
-                        companyName: data.company
+                        companyName: data.company,
+                        customercategory: data.customercategory || "" // Ensure customercategory is handled
                     }));
                 }
             } catch (err) {
-                // setError('Failed to fetch dealer details');
+                console.error('Failed to fetch dealer details', err);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         };
 
@@ -99,6 +117,7 @@ const DealerEditList: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+
         if (
             [
                 'contactPersonName',
@@ -116,7 +135,6 @@ const DealerEditList: React.FC = () => {
         ) {
             return;
         }
-
 
         if ((name === 'creditDueAmount' || name === 'priceDiscount' || name === 'creditDueDays') && Number(value) < 0) {
             return;
@@ -140,19 +158,8 @@ const DealerEditList: React.FC = () => {
         });
     };
 
-    // const handleAddressChange = (address: Address) => {
-    //     setFormData(prev => ({
-    //         ...prev,
-    //         address: {
-    //             ...prev.address,
-    //             ...address,
-    //         },
-    //     }));
-    // };
-
     const validateForm = (): FormErrors => {
         const newErrors: FormErrors = {};
-        // Validation logic
         if (!formData.contactPersonName) newErrors.contactPersonName = 'Contact Person Name is required';
         if (!formData.contactPersonCell) newErrors.contactPersonCell = 'Contact Person Cell is required';
         if (!formData.contactPersonEmail) {
@@ -160,35 +167,33 @@ const DealerEditList: React.FC = () => {
         } else if (!/\S+@\S+\.\S+/.test(formData.contactPersonEmail)) {
             newErrors.contactPersonEmail = 'Email must be a valid email address';
         }
-        // Other validation logic...
         return newErrors;
     };
 
     const handleSaveEdits = async () => {
         try {
-            setLoading(true)
+            setLoading(true);
             const validationErrors = validateForm();
             if (Object.keys(validationErrors).length > 0) {
                 setErrors(validationErrors);
                 return;
             }
-            // console.log(formData)
             if (id) {
-                const res = await dealerApis.createApprovedDealer({ ...formData, tempid: id })
+                const res = await dealerApis.createApprovedDealer({ ...formData, tempid: id });
                 if (res.status) {
-                    toast.success("Successfully approved dealer application.")
-                    navigate('/dealer')
+                    toast.success("Successfully approved dealer application.");
+                    navigate('/dealer');
                 }
             } else if (aid) {
-                const res = await dealerApis.updateApprovedDealer(aid, formData)
+                const res = await dealerApis.updateApprovedDealer(aid, formData);
                 if (res.status) {
-                    toast.success("Successfully updated dealer details.")
+                    toast.success("Successfully updated dealer details.");
                 }
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
@@ -245,6 +250,28 @@ const DealerEditList: React.FC = () => {
                             {errors.contactPersonName && <p className="text-red-500 text-sm">{errors.contactPersonName}</p>}
                         </div>
 
+                        {/* Customer Category */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2" htmlFor="customercategory">
+                                <span className='text-red-500'>*</span>Select Customer Category
+                            </label>
+                            <select
+                                id="customercategory"
+                                name="customercategory"
+                                value={formData.customercategory}
+                                onChange={handleChange}
+                                className={`w-full border ${errors.customercategory ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
+                                required
+                            >
+                                <option value="">Select a category</option>
+                                {customerCategories.map(category => (
+                                    <option key={category._id} value={category._id}>
+                                        {category.customercategoryName}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.customercategory && <p className="text-red-500 text-sm">{errors.customercategory}</p>}
+                        </div>
                         {/* Contact Person Cell */}
                         <div className="mb-4">
                             <label className="block text-sm font-medium mb-2" htmlFor="contactPersonCell">

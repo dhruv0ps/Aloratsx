@@ -10,6 +10,7 @@ const createCreditMemo = async (data: any) => {
 };
 
 const updateCreditMemo = async (id: string, data: any) => {
+    console.log(`${apiUrl.creditMemo}/update/${id}`); 
     return await axios.put(`${apiUrl.creditMemo}/update/${id}`, data);
 };
 

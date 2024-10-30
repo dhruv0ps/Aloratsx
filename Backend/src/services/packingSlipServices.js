@@ -7,16 +7,18 @@ const getPackingSlipById = async (id) => {
   return await PackingSlip.findById(id).populate('order');
 };
 const generateInvoiceId = async () => {
-  const highestInvoice = await Invoice.findOne({ invoiceNumber: { $regex: /^LSINV/ } }).sort({ invoiceNumber: -1 });
+  const highestInvoice = await Invoice.findOne({ invoiceNumber: { $regex: /^ALINV/ } }).sort({ invoiceNumber: -1 });
 
   let invNumber = 1;
 
   if (highestInvoice) {
     const lastInvoiceNumber = highestInvoice.invoiceNumber;
-    invNumber = parseInt(lastInvoiceNumber.replace('LSINV', '')) + 1;
+    // Replace the "ALINV" prefix and parse the number part
+    invNumber = parseInt(lastInvoiceNumber.replace('ALINV', '')) + 1;
   }
-  // console.log(highestInvoice, invNumber)
-  return `LSINV${invNumber.toString().padStart(3, '0')}`;
+
+  // Generate the new invoice ID with the "ALINV" prefix and ensure it's at least 3 digits
+  return `ALINV${invNumber.toString().padStart(3, '0')}`;
 };
 
 const getAllPackingSlips = async (page = 1, limit = 20, filters = {}) => {

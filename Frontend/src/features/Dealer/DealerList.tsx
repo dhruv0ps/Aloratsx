@@ -16,12 +16,16 @@ const DealersList: React.FC = () => {
     const [deletedDealers, setDeletedDealers] = useState<Dealer[]>([]);
     const [selectedDealer, setSelectedDealer] = useState<Dealer | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const itemsPerPage = 10; // Change this to the number of items you want per page
+
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDealersData = async () => {
             try {
-                const response = await dealerApis.getAllApprovedDealers()
+                const response = await dealerApis.getAllApprovedDealers();
                 setDealersData(response.data.filter((dlr: Dealer) => dlr.status === "ACTIVE"));
                 setDeletedDealers(response.data.filter((dlr: Dealer) => dlr.status === "DELETED"));
             } catch (error) {
@@ -39,34 +43,33 @@ const DealersList: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        const confirm = await showConfirmationModal("Are you sure you would like to deactivate the selected account? Dealer will not be able to login once deactivated.")
-        if (!confirm)
-            return
+        const confirm = await showConfirmationModal("Are you sure you would like to deactivate the selected account? Dealer will not be able to login once deactivated.");
+        if (!confirm) return;
+
         const dealerToDelete = dealersData.find(dealer => dealer._id === id);
-        let res = await dealerApis.updateApprovedDealer(id, { ...dealerToDelete, status: "DELETED" })
+        let res = await dealerApis.updateApprovedDealer(id, { ...dealerToDelete, status: "DELETED" });
         setDealersData(dealersData.filter(dealer => dealer._id !== id));
 
         if (dealerToDelete) {
             setDeletedDealers([...deletedDealers, res.data]);
         }
-        toast.success("Dealer's account deactivated succesfully")
+        toast.success("Dealer's account deactivated successfully");
     };
 
     const handleRestore = async (id: string) => {
-        const confirm = await showConfirmationModal("Are you sure you would like to reactivate selected account? Dealer will be able to access their account again after this action.")
-        if (!confirm)
-            return
+        const confirm = await showConfirmationModal("Are you sure you would like to reactivate selected account? Dealer will be able to access their account again after this action.");
+        if (!confirm) return;
+
         try {
             const dealerToRestore = deletedDealers.find(dealer => dealer._id === id);
-            let res = await dealerApis.updateApprovedDealer(id, { ...dealerToRestore, status: "ACTIVE" })
+            let res = await dealerApis.updateApprovedDealer(id, { ...dealerToRestore, status: "ACTIVE" });
             if (res.status) {
-                toast.success("Dealer's account reactivated succesfully")
+                toast.success("Dealer's account reactivated successfully");
                 setDeletedDealers(deletedDealers.filter(dealer => dealer._id !== id));
                 setDealersData([...dealersData, res.data]);
             }
-
         } catch (error) {
-            toast.error("Account could not be reactivated.")
+            toast.error("Account could not be reactivated.");
         }
     };
 
@@ -80,94 +83,129 @@ const DealersList: React.FC = () => {
         setSelectedDealer(null);
     };
 
+    // Pagination Logic
+    const lastItemIndex = currentPage * itemsPerPage;
+    const firstItemIndex = lastItemIndex - itemsPerPage;
+    const currentDealers = dealersData.slice(firstItemIndex, lastItemIndex);
+
+    const totalPages = Math.ceil(dealersData.length / itemsPerPage);
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+    
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+    
+
     return (
         <div className="container mx-auto p-4">
             <div className='mb-12 flex items-center justify-between'>
                 <Button color='gray' onClick={() => navigate(-1)}>
                     <span className='flex gap-2 items-center'><FaChevronLeft />Back</span>
                 </Button>
-                <h2 className="text-2xl font-semibold ">Dealers List</h2>
+                <h2 className="text-2xl font-semibold">Dealers List</h2>
                 <p></p>
             </div>
-            {loading ? <Loading /> : <>
-                {/* <h2 className="text-xl font-bold mt-8 mb-4 text-gray-500">Active Dealers</h2> */}
-                <div className="overflow-x-auto">
-                    <Table className="" striped>
-                        <Table.Head>
-                            <Table.HeadCell >Contact Person Name</Table.HeadCell>
-                            <Table.HeadCell >Contact Person Cell</Table.HeadCell>
-                            <Table.HeadCell >Contact Person Email ID</Table.HeadCell>
-                            <Table.HeadCell >Company Name</Table.HeadCell>
-                            <Table.HeadCell >Total balance</Table.HeadCell>
-                            <Table.HeadCell >Total Open Balance</Table.HeadCell>
-                            <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body>
-                            {dealersData.map(dealer => (
-                                <Table.Row key={dealer._id} className="hover:bg-gray-50">
-                                    <Table.Cell>{dealer.contactPersonName}</Table.Cell>
-                                    <Table.Cell>{dealer.contactPersonCell}</Table.Cell>
-                                    <Table.Cell>{dealer.contactPersonEmail}</Table.Cell>
-                                    <Table.Cell>{dealer.companyName}</Table.Cell>
-                                    <Table.Cell>{dealer.totalBalance}</Table.Cell>
-                                    <Table.Cell>{dealer.totalOpenBalance}</Table.Cell>
-                                    <Table.Cell >
-                                        <div className="flex space-x-2 justify-center">
-                                            <Button color="info" onClick={() => handleEdit(dealer._id)}>
-                                                <FaEdit />
-                                            </Button>
-                                            <Button color="warning" onClick={() => handleView(dealer)}>
-                                                <HiDocument />
-                                            </Button>
-                                            <Button color="failure" onClick={() => handleDelete(dealer._id)}>
-                                                <FaTrash />
-                                            </Button>
-                                            <Button color="success" onClick={() => handleView(dealer)}>
-                                                <FaEye />
-                                            </Button>
-
-                                        </div>
-                                    </Table.Cell>
-
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                </div>
-
-                {deletedDealers.length > 0 && (
-                    <div>
-                        <h2 className="text-xl font-bold mt-8 mb-4 text-gray-500">Deactivated Dealers</h2>
-                        <div className="overflow-x-auto">
-                            <Table className="">
-                                <Table.Head>
-                                    <Table.HeadCell >Contact Person Name</Table.HeadCell>
-                                    <Table.HeadCell >Contact Person Cell</Table.HeadCell>
-                                    <Table.HeadCell >Contact Person Email ID</Table.HeadCell>
-                                    <Table.HeadCell >Company Name</Table.HeadCell>
-                                    <Table.HeadCell >Actions</Table.HeadCell>
-                                </Table.Head>
-                                <Table.Body>
-                                    {deletedDealers.map(dealer => (
-                                        <Table.Row key={dealer._id} className="hover:bg-gray-50">
-                                            <Table.Cell >{dealer.contactPersonName}</Table.Cell>
-                                            <Table.Cell >{dealer.contactPersonCell}</Table.Cell>
-                                            <Table.Cell >{dealer.contactPersonEmail}</Table.Cell>
-                                            <Table.Cell >{dealer.companyName}</Table.Cell>
-                                            <Table.Cell >
-                                                <Button color="success" onClick={() => handleRestore(dealer._id)}>
-                                                    Restore
+            {loading ? (
+                <Loading />
+            ) : (
+                <>
+                    <div className="overflow-x-auto">
+                        <Table className="" striped>
+                            <Table.Head>
+                                <Table.HeadCell>Contact Person Name</Table.HeadCell>
+                                <Table.HeadCell>Contact Person Cell</Table.HeadCell>
+                                <Table.HeadCell>Contact Person Email ID</Table.HeadCell>
+                                <Table.HeadCell>Company Name</Table.HeadCell>
+                                <Table.HeadCell>Total balance</Table.HeadCell>
+                                <Table.HeadCell>Total Open Balance</Table.HeadCell>
+                                <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
+                            </Table.Head>
+                            <Table.Body>
+                                {currentDealers.map(dealer => (
+                                    <Table.Row key={dealer._id} className="hover:bg-gray-50">
+                                        <Table.Cell>{dealer.contactPersonName}</Table.Cell>
+                                        <Table.Cell>{dealer.contactPersonCell}</Table.Cell>
+                                        <Table.Cell>{dealer.contactPersonEmail}</Table.Cell>
+                                        <Table.Cell>{dealer.companyName}</Table.Cell>
+                                        <Table.Cell>{dealer.totalBalance}</Table.Cell>
+                                        <Table.Cell>{dealer.totalOpenBalance}</Table.Cell>
+                                        <Table.Cell>
+                                            <div className="flex space-x-2 justify-center">
+                                                <Button color="info" onClick={() => handleEdit(dealer._id)}>
+                                                    <FaEdit />
                                                 </Button>
-                                            </Table.Cell>
-                                        </Table.Row>
-                                    ))}
-                                </Table.Body>
-                            </Table>
-                        </div>
+                                                <Button color="warning" onClick={() => handleView(dealer)}>
+                                                    <HiDocument />
+                                                </Button>
+                                                <Button color="failure" onClick={() => handleDelete(dealer._id)}>
+                                                    <FaTrash />
+                                                </Button>
+                                                <Button color="success" onClick={() => handleView(dealer)}>
+                                                    <FaEye />
+                                                </Button>
+                                            </div>
+                                        </Table.Cell>
+                                    </Table.Row>
+                                ))}
+                            </Table.Body>
+                        </Table>
                     </div>
-                )}
 
-            </>}
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+    <Button onClick={goToPreviousPage} disabled={currentPage === 1} color="gray">
+        Previous
+    </Button>
+    <span>
+        Page {currentPage} of {totalPages}
+    </span>
+    <Button onClick={goToNextPage} disabled={currentPage === totalPages} color="gray">
+        Next
+    </Button>
+</div>
+
+
+                    {deletedDealers.length > 0 && (
+                        <div>
+                            <h2 className="text-xl font-bold mt-8 mb-4 text-gray-500">Deactivated Dealers</h2>
+                            <div className="overflow-x-auto">
+                                <Table className="">
+                                    <Table.Head>
+                                        <Table.HeadCell>Contact Person Name</Table.HeadCell>
+                                        <Table.HeadCell>Contact Person Cell</Table.HeadCell>
+                                        <Table.HeadCell>Contact Person Email ID</Table.HeadCell>
+                                        <Table.HeadCell>Company Name</Table.HeadCell>
+                                        <Table.HeadCell>Actions</Table.HeadCell>
+                                    </Table.Head>
+                                    <Table.Body>
+                                        {deletedDealers.map(dealer => (
+                                            <Table.Row key={dealer._id} className="hover:bg-gray-50">
+                                                <Table.Cell>{dealer.contactPersonName}</Table.Cell>
+                                                <Table.Cell>{dealer.contactPersonCell}</Table.Cell>
+                                                <Table.Cell>{dealer.contactPersonEmail}</Table.Cell>
+                                                <Table.Cell>{dealer.companyName}</Table.Cell>
+                                                <Table.Cell>
+                                                    <Button color="success" onClick={() => handleRestore(dealer._id)}>
+                                                        Restore
+                                                    </Button>
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        ))}
+                                    </Table.Body>
+                                </Table>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
             {selectedDealer && (
                 <Modal show={showModal} onClose={closeModal}>
                     <Modal.Header className="text-xl font-semibold text-gray-800">
@@ -228,7 +266,6 @@ const DealersList: React.FC = () => {
                     </Modal.Footer>
                 </Modal>
             )}
-
         </div>
     );
 };

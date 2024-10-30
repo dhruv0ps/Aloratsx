@@ -27,7 +27,7 @@ const ListProduct: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);  // Current page
   const [barcodeReady, setBarcodeReady] = useState<boolean>(false);
-  const [productsPerPage] = useState<number>(5); 
+  const [productsPerPage] = useState<number>(20); 
   const barcodeRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -272,7 +272,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                 <th className="py-3 px-6 text-left">Parent Name</th>
                 <th className="py-3 px-6 text-left">Name</th>
                 <th className="py-3 px-6 text-left">Selling Price</th>
-                <th className="py-3 px-6 text-left">Cost Price</th>
+                <th className="py-3 px-6 text-left">Stock</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Barcode</th>
                 {/* <th className="py-3 px-6 text-left">Stock</th> */}
@@ -367,10 +367,10 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                 <p className="font-semibold">Selling Price:</p>
                 <p>${selectedProduct.selling_price.toFixed(2)}</p>
               </div>
-              <div>
+              {/* <div>
                 <p className="font-semibold">Cost Price:</p>
                 <p>${selectedProduct.cost_price?.toFixed(2)}</p>
-              </div>
+              </div> */}
               <div>
                 <p className="font-semibold">Status:</p>
                 <p>{selectedProduct.status}</p>

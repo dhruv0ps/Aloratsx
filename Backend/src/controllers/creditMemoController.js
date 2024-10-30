@@ -30,7 +30,9 @@ const creditMemoController = {
   getCreditMemoById: async (req, res) => {
     try {
       const { id } = req.body
-      const creditMemo = await creditMemoService.getCreditMemoById(id);
+      // console.log(id)
+      console.log(req.params.creditMemoId)
+      const creditMemo = await creditMemoService.getCreditMemoById(memoId).populate('dealer');
       if (creditMemo) {
         res.status(200).json(creditMemo);
       } else {
@@ -49,7 +51,8 @@ const creditMemoController = {
         reason: req.body.reason,
         status: req.body.status
       };
-      const result = await creditMemoService.updateCreditMemo(req.params.id, updateData);
+      
+      const result = await creditMemoService.updateCreditMemo(req.params.creditMemoId, updateData);
       res.status(200).json(result);
     } catch (error) {
       res.status(400).json({ error: error.message });

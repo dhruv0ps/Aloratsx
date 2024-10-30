@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const orderProductSchema = new Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: "NewProduct",
     required: true,
   },
   childSKU: { type: String, required: true },

@@ -4,8 +4,7 @@ const generateSKU = require("../config/skuGenerator");
 
 const getAllChildSKUs = async () => {
     const existingProducts = await NewProduct.find().select('children.SKU');
-   
- 
+
     const childSKUs = existingProducts.reduce((acc, product) => {
         if (Array.isArray(product.children)) {
             acc.push(...product.children.map(child => child.SKU));
@@ -13,35 +12,40 @@ const getAllChildSKUs = async () => {
         return acc;
     }, []);
 
-    
     return childSKUs || [];
 };
+
+const getDeletedSKUs = async () => {
+    const deletedSKUs = await DeletedSKUs.find().select('SKU');
+    return deletedSKUs.map(sku => sku.SKU) || [];
+};
+
 const generateUniqueChildSKUs = async (children) => {
     const allChildSKUs = await getAllChildSKUs();  // Fetch all existing SKUs
+    const deletedSKUs = await getDeletedSKUs();   // Fetch deleted SKUs
 
-    const childrenWithUniqueSKUs = children.map((child, index) => {
-        // If the child already has a SKU, keep it unchanged
+    const allUsedSKUs = [...allChildSKUs, ...deletedSKUs];  
+    const childrenWithUniqueSKUs = children.map((child) => {
+
         if (child.SKU && !child.SKU.startsWith('TEMP')) {
-            return child;  // Existing children with SKUs are not modified
+            return child;  // Existing children with valid SKUs are not modified
         }
 
-        
-        let skuIndex = allChildSKUs.length + 1;
-        let childSKU = `ALP${skuIndex.toString().padStart(4, '0')}`;  // Generate SKU in ALP0001 format
+        // Generate a new SKU in the format ALP0001
+        let skuIndex = allUsedSKUs.length + 1;
+        let childSKU = `ALP${skuIndex.toString().padStart(4, '0')}`;
 
-        
-        while (allChildSKUs.includes(childSKU)) {
+        // Ensure the generated SKU is not already used (check both active and deleted SKUs)
+        while (allUsedSKUs.includes(childSKU)) {
             skuIndex += 1;
-            childSKU = `ALP${skuIndex.toString().padStart(4, '0')}`;  
+            childSKU = `ALP${skuIndex.toString().padStart(4, '0')}`;
         }
 
-    
-        allChildSKUs.push(childSKU);
-
-       
+        // Add the new SKU to the list of used SKUs to prevent duplication
+        allUsedSKUs.push(childSKU);
         return {
             ...child,
-            SKU: childSKU,  
+            SKU: childSKU,
         };
     });
 

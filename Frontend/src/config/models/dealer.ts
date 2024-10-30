@@ -11,6 +11,7 @@ export interface Dealerbase {
     totalOpenBalance: number,
     totalBalance: number,
     paidAmount: number,
+    customercategory : string,
 }
 export interface DealerForm extends Dealerbase {
     province: string
@@ -42,6 +43,7 @@ export interface ApprovedDealerBase {
     totalOpenBalance: number,
     totalBalance: number,
     paidAmount: number,
+    customercategory?: string;
 }
 
 export interface FormDataApprovedDealer extends ApprovedDealerBase {

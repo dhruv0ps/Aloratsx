@@ -52,7 +52,9 @@ const createProduct = async (req, res) => {
          console.log(name);
          
        
-        const childrenData = JSON.parse(req.body.childrenData || '[]'); // Parse if needed
+    
+
+    const childrenData = JSON.parse(req.body.childrenData || '[]'); // Parse if needed
        
         const productData = {
             name,
@@ -64,26 +66,43 @@ const createProduct = async (req, res) => {
         };
 
         const newProduct = await productService.createProduct(productData);
-        res.status(201).json(newProduct);
+        res.status(201).json({
+            status: 201,  // Include the status in the response body
+            message: 'Product created successfully!',
+            product: newProduct  // You can include product data if needed
+        });
     } catch (error) {
         console.error('Error creating product:', error);
-        res.status(400).json({ message: error.message });
+        res.status(400).json({
+            status: 400,
+            message: error.message || 'Failed to create product'
+        });
     }
 };
-
-
 // Update a product by ID
 const updateProductById = async (req, res) => {
     const { id } = req.params;
     try {
         const updatedProduct = await productService.updateProductById(id, req.body);
         if (!updatedProduct) {
-            return res.status(404).json({ status: false, message: 'Product not found' });
+            return res.status(404).json({ 
+                status: 404,  // Include status code in response body
+                success: false, 
+                message: 'Product not found' 
+            });
         }
-        res.status(200).json({ status: true, message: 'Product updated successfully', data: updatedProduct });
+        res.status(200).json({ 
+            status: 200,  // Include status code in response body
+            success: true, 
+            message: 'Product updated successfully', 
+            data: updatedProduct 
+        });
     } catch (error) {
-        
-        res.status(400).json({ status: false, message: error.message });
+        res.status(400).json({ 
+            status: 400,  // Include status code in response body
+            success: false, 
+            message: error.message 
+        });
     }
 };
 

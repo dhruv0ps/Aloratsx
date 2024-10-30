@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, TextInput, Select } from 'flowbite-react';
 import { MdDelete } from 'react-icons/md';
 import { FaChevronLeft } from 'react-icons/fa6';
 import Loading from '../../util/Loading';
 import { productApis } from '../../config/apiRoutes/productRoutes';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Interface definitions
+
 interface RawMaterial {
     _id: string;
     material: string;
@@ -95,6 +97,7 @@ console.log(tags)
         fetchAllTags();
         fetchRawMaterials();
         fetchCategories();
+        // toast.success("Test toast notification!");
         if (id) {
             fetchProductDetails(id);
         }
@@ -290,7 +293,7 @@ console.log(tags)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-
+    
         const productData = {
             name: formState.name,
             category: formState.categories.map((cat) => ({ _id: cat._id, name: cat.name })),  // Extract only _id and name
@@ -298,34 +301,53 @@ console.log(tags)
             Description: formState.Description,
             children: childState,
         };
-
+    
         try {
             let response;
             if (id) {
-                
+              
                 response = await productApis.updateProduct(id, productData);
+                console.log('Update Response:', response);  
+                toast.success('Product created successfully!');
             } else {
-               
+              
                 response = await productApis.createProduct(productData);
+                console.log('Create Response:', response); 
+            }
+    
+                  console.log('Response status:', response?.status);
             
-            }
-
-            if (response.status) {
-                toast.success(response.message);
+           if(response.status) {
+            toast.success("Product saved Sucessfully")
+           }
+            // if (response?.status === 201) {
+            //     console.log('Triggering success toast for product creation');
+            //     toast.success('Product created successfully!');
+            // } else if (response?.status === 200) {
+            //     console.log('Triggering success toast for product update');
+            //     toast.success('Product updated successfully!');
+            // } else {
+            //     console.log('Triggering error toast');
+            //     toast.error(response.message || 'Failed to submit product');
+            // }
+    
+            
+            setTimeout(() => {
                 navigate('/yellowadmin/products/view');
-            } else {
-                toast.error(response.message);
-            }
+            }, 1000);  
+    
         } catch (error) {
             console.error('Error submitting product:', error);
-            toast.error('Failed to submit product');
+            toast.error('An error occurred while submitting the product.');
         } finally {
             setLoading(false);
         }
     };
-
+    
+    
+    
     if (loading) return <Loading />;
-
+  
     return (
         <form onSubmit={handleSubmit} className="max-w-5xl mx-auto bg-white p-8 shadow-md rounded-lg">
             <div className="mb-6 flex items-center justify-between">
@@ -417,7 +439,22 @@ console.log(tags)
                             </Select>
                         </div>
                     </div>
-
+                    {id && (
+            <div className="mb-4">
+                <label htmlFor={`child_sku_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+                    Child SKU:
+                </label>
+                <TextInput
+                    id={`child_sku_${index}`}
+                    name="SKU"
+                    value={child.SKU}
+                    onChange={(e) => handleChildInputChange(index, e)}
+                    required
+                    disabled
+                    placeholder="SKU (Read-Only in Edit Mode)"
+                />
+            </div>
+        )}
                     <div className="mb-4">
                         <label htmlFor={`firmness_${index}`} className="block text-sm font-medium text-gray-700 mb-2">Firmness:</label>
                         <Select id={`firmness_${index}`} name="firmness" value={child.firmness} onChange={(e) => handleChildInputChange(index, e)} className="block w-full">
@@ -536,17 +573,19 @@ console.log(tags)
                     </div>
                 </div>
             ))}
-
+<ToastContainer/>
             <div className="flex justify-end mb-4">
                 <Button color="success" onClick={handleAddChild}>Add Another Child</Button>
             </div>
-
+      
             <div className="flex justify-end">
                 <Button color="blue" type="submit">
                     {id ? 'Update Product' : 'Create Product'}
                 </Button>
             </div>
+            <ToastContainer position="top-right" autoClose={5000} />
         </form>
+        
     );
 };
 

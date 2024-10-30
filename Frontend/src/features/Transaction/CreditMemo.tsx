@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { FaChevronLeft, FaPlus } from 'react-icons/fa';
+import { FaChevronLeft, FaPlus, FaEdit } from 'react-icons/fa';
 import { creditMemoApis } from '../../config/apiRoutes/creditMemoRoutes';
 import AutoCompleteDealerInput from '../../util/AutoCompleteDealer';
 import { ApprovedDealer } from '../../config/models/dealer';
@@ -23,7 +23,9 @@ export default function CreditMemoManagement() {
   const [selectedDealer, setSelectedDealer] = useState<ApprovedDealer | null>(null);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [editMode, setEditMode] = useState(false); // Track whether we are in edit mode
   const [creditMemos, setCreditMemos] = useState<CreditMemoForm[]>([]);
+  const [selectedCreditMemo, setSelectedCreditMemo] = useState<CreditMemoForm | null>(null); // Store selected credit memo for editing
   const [filters, setFilters] = useState({
     dealer: '',
     status: '',
@@ -75,14 +77,26 @@ export default function CreditMemoManagement() {
         reason: formState.reason,
         status: formState.status
       };
-      const res = await creditMemoApis.createCreditMemo(creditMemoData);
-      if (res.data) {
-        toast.success('New credit memo added successfully');
-        setShowForm(false);
-        loadCreditMemos();
+
+      if (editMode && selectedCreditMemo) {
+        // Update existing credit memo
+    
+        const res = await creditMemoApis.updateCreditMemo(selectedCreditMemo.creditMemoId, creditMemoData);
+        if (res.data) {
+          toast.success('Credit memo updated successfully');
+        }
+      } else {
+        // Create a new credit memo
+        const res = await creditMemoApis.createCreditMemo(creditMemoData);
+        if (res.data) {
+          toast.success('New credit memo added successfully');
+        }
       }
+
+      setShowForm(false);
+      loadCreditMemos();
     } catch (error) {
-      toast.error('Failed to add credit memo');
+      toast.error('Failed to save credit memo');
     } finally {
       setLoading(false);
     }
@@ -104,6 +118,31 @@ export default function CreditMemoManagement() {
     );
   });
 
+  // Handle click on Edit button
+  const handleEdit = (memo: CreditMemoForm) => {
+    setEditMode(true);
+  
+    // Check if dealer and customercategory are objects and handle them accordingly
+    if (typeof memo.dealer === 'object' && 'companyName' in memo.dealer) {
+      setSelectedDealer(memo.dealer as ApprovedDealer);  // Cast as ApprovedDealer
+    } else {
+      setSelectedDealer(null);
+    }
+  
+    setSelectedCreditMemo(memo);
+  
+    setFormState({
+      amount: memo.amount,
+      reason: memo.reason,
+      status: memo.status,
+      // Safely access category name if it's populated
+    });
+  
+    setShowForm(true);
+  };
+  
+  
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 -mt-5">
       <button
@@ -120,11 +159,10 @@ export default function CreditMemoManagement() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">Create and manage credit memos efficiently.</p>
         </div>
 
-
         {/* New Credit Memo Form */}
         <div className="mb-6 flex justify-center sm:justify-start text-black">
           <Button color={'dark'} className='flex items-center' onClick={() => setShowForm(!showForm)}>
-            <FaPlus className="mr-2 h-4 w-4 mt-0.5" /> {showForm ? 'Hide Form' : 'New Credit Memo'}
+            <FaPlus className="mr-2 h-4 w-4 mt-0.5" /> {showForm ? 'Hide Form' : editMode ? 'Edit Credit Memo' : 'New Credit Memo'}
           </Button>
         </div>
 
@@ -166,20 +204,19 @@ export default function CreditMemoManagement() {
                   />
                 </div>
 
-                {/* <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select
+                  <Select
                     name="status"
                     value={formState.status}
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
                   >
-                    <option value="PENDING">Pending</option>
-                    <option value="APPROVED">Approved</option>
-                    <option value="REJECTED">Rejected</option>
-                  </select>
-                </div> */}
+                    <option value="PENDING">PENDING</option>
+                    <option value="REDEEMED">REDEEMED</option>
+                  </Select>
+                </div>
               </div>
 
               <button
@@ -187,7 +224,7 @@ export default function CreditMemoManagement() {
                 disabled={loading}
                 className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-lg"
               >
-                {loading ? 'Processing...' : 'Create Credit Memo'}
+                {loading ? 'Processing...' : editMode ? 'Update Credit Memo' : 'Create Credit Memo'}
               </button>
             </form>
           </div>
@@ -221,12 +258,11 @@ export default function CreditMemoManagement() {
               className="mb-4 md:mb-0"
             >
               <option value="">All Statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="REDEEMED">Redeemed</option>
+              <option value="PENDING">PENDING</option>
+              <option value="REDEEMED">REDEEMED</option>
             </Select>
           </div>
         </div>
-
 
         {/* Credit Memo Table */}
         <div className="bg-white rounded-lg shadow-md overflow-x-auto">
@@ -243,6 +279,7 @@ export default function CreditMemoManagement() {
                 <Table.HeadCell>Reason</Table.HeadCell>
                 <Table.HeadCell>Date</Table.HeadCell>
                 <Table.HeadCell>Status</Table.HeadCell>
+                <Table.HeadCell>Actions</Table.HeadCell> {/* Add an Actions column */}
               </Table.Head>
               <Table.Body className="divide-y">
                 {filteredCreditMemos.map((memo) => (
@@ -253,6 +290,16 @@ export default function CreditMemoManagement() {
                     <Table.Cell>{memo.reason}</Table.Cell>
                     <Table.Cell>{new Date(memo.date).toLocaleDateString()}</Table.Cell>
                     <Table.Cell>{memo.status}</Table.Cell>
+                    <Table.Cell>
+                      <Button
+                        color="warning"
+                        size="xs"
+                        onClick={() => handleEdit(memo)} // Add Edit button functionality
+                        className="mr-2"
+                      >
+                        <FaEdit className="mr-1" /> Edit
+                      </Button>
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

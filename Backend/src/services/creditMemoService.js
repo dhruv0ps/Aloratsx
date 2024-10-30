@@ -104,6 +104,7 @@ module.exports.getCreditMemoById = async (creditMemoId) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
+      
       const creditMemo = await CreditMemo.findOne({ creditMemoId: creditMemoId }).session(session);
       if (!creditMemo) {
         throw new Error("Credit memo not found");

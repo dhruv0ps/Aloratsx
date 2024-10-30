@@ -7,6 +7,7 @@ const approvedDealerSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    customercategory: { type: mongoose.Schema.Types.ObjectId, ref: 'CustomerCategory' },
     contactPersonCell: {
         type: String,
         required: true,
