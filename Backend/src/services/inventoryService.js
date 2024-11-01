@@ -63,14 +63,15 @@ const inventoryService = {
                 .populate('location');
             return inventory;
         } catch (error) {
+            
             throw error;
         }
     },
     getAllInventories: async (filters) => {
         try {
-            const { product, selectedChildren, supplier, category, location, page = 1, limit = 20 } = filters;
-
-            // Initial query to fetch all relevant inventories
+            const { product, selectedChildren, category, page = 1, limit = 20 } = filters;
+            
+            // Initial query to fetch inventories with non-zero quantities, booked, or damaged counts
             const query = {
                 $or: [
                     { quantity: { $ne: 0 } },
@@ -78,73 +79,86 @@ const inventoryService = {
                     { damaged: { $ne: 0 } },
                 ],
             };
-
-            // Pagination
+    
+            // Pagination settings
             const skip = (page - 1) * limit;
-
-            // Fetch inventories with pagination
+    
+            // Step 1: Fetch inventories and populate the `NewProduct` model
             const inventories = await Inventory.find(query)
-                .populate('product')
-                .populate('location')
+                .populate({
+                    path: 'parent_id', // Field in Inventory that references the NewProduct model
+                    model: 'NewProduct', // Name of the referenced model
+                    select: 'children name category', // Fields to select from NewProduct
+                })
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
-
-            // Apply filters in memory
-            const filteredInventories = inventories.filter((inventory) => {
+    
+            // Step 2: Enrich inventories with child name and apply filters
+            const enrichedInventories = inventories.map(inventory => {
+                // Check if `parent_id` and `parent_id.children` are defined
+                if (inventory.parent_id && inventory.parent_id.children) {
+                    // Find the child with the matching SKU
+                    const matchingChild = inventory.parent_id.children.find(child => child.SKU === inventory.child);
+    
+                    // Add childName to the inventory object
+                    const childName = matchingChild ? matchingChild.name : 'Child not found';
+    
+                    // Enrich the inventory object with the child name and other details
+                    return {
+                        ...inventory._doc, // `_doc` to extract the plain object
+                        childName,
+                        productName: inventory.parent_id.name,
+                        category: inventory.parent_id.category,
+                    };
+                } else {
+                    // Handle the case where `parent_id` or `children` is not defined
+                    return {
+                        ...inventory._doc,
+                        childName: 'Parent not found',
+                        productName: null,
+                        category: null,
+                    };
+                }
+            });
+    
+            // Step 3: Apply filters in memory
+            const filteredInventories = enrichedInventories.filter(inventory => {
                 let match = true;
-
+    
                 // Filter by product name
                 if (product) {
-                    match = match && inventory.product.name === product;
+                    match = match && inventory.productName === product;
                 }
-
+    
                 // Filter by selected children (SKUs)
                 if (selectedChildren && selectedChildren.length > 0) {
                     match = match && selectedChildren.includes(inventory.child);
                 }
-
+    
                 // Filter by category
                 if (category) {
-                    match = match && inventory.product.category.toString() === category;
+                    match = match && inventory.category === category;
                 }
-
-                // Filter by location name
-                if (location) {
-                    match = match && inventory.location.name.match(new RegExp(location, 'i'));
-                }
-
-                // Filter by supplier name
-                if (supplier) {
-                    match = match && inventory.product.supplier.name === supplier;
-                }
-
+    
                 return match;
             });
-
-            // Map the results to include the child information
-            const inventoriesWithChild = filteredInventories.map((inventory) => {
-                const childInfo = inventory.product.children.find(
-                    (child) => child.SKU === inventory.child
-                );
-                return {
-                    ...inventory.toObject(),
-                    childInfo: childInfo || null,
-                };
-            });
-
-            // Calculate the total number of inventories matching the query without pagination
-            const total = await Inventory.countDocuments(query);
-
+    
+            // Calculate total pages based on the filtered inventory length
+            const totalPages = Math.ceil(filteredInventories.length / limit);
+    
+            // Return paginated and filtered results
             return {
-                inventories: inventoriesWithChild,
-                totalPages: Math.ceil(total / limit),
-                currentPage: page
+                totalPages,
+                inventories: filteredInventories.slice(0, limit),
             };
         } catch (error) {
+            console.error('Error fetching inventories:', error);
             throw error;
         }
     },
+    
+    
     updateInventory: async (data, isAdding, session) => {
         try {
             const { product, childSKU, location, quantity } = data

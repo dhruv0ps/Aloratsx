@@ -11,7 +11,7 @@ interface AutocompleteProductInputProps {
 }
 
 const AutocompleteProductInput: React.FC<AutocompleteProductInputProps> = ({ value, onChange, setInputValue }) => {
-    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(false);
@@ -30,9 +30,31 @@ const AutocompleteProductInput: React.FC<AutocompleteProductInputProps> = ({ val
             if (search.length < 4)
                 return
             setLoading(true);
-            const response = await productApis.getAllProducts({ page: 1, limit: 25, filters: { search } });
-            const data: Product[] = response.data.products;
-            setFilteredProducts(data);
+            const response = await productApis.getAllProducts({ page: 1, limit: 25, filters: { nameSearch: search } });
+    
+             
+            if (!response || !response.data || !Array.isArray(response.data)) {
+                console.error("Invalid API response structure:", response);
+                return; 
+            }
+    
+            const data: Product[] = response.data; 
+            console.log(response.data)
+            const mappedProducts =data.flatMap(product =>
+                product.children
+                    .filter(child => 
+                        child.name.toLowerCase().includes(search.toLowerCase()) || 
+                        product.name.toLowerCase().includes(search.toLowerCase())
+                        || child.SKU.toLowerCase().includes(search.toLowerCase())
+                    )
+                    .map(child => ({
+                        ...child,
+                        parentName: product.name,
+                        product_id: product._id,
+                    }))
+            );
+            setFilteredProducts(mappedProducts);
+            console.log(mappedProducts)
             setShowDropdown(true);
         } catch (error: any) {
             console.log(error);
@@ -65,11 +87,15 @@ const AutocompleteProductInput: React.FC<AutocompleteProductInputProps> = ({ val
         setInputValue(query);
     };
 
-    const handleProductSelect = (product: Product) => {
-        onChange(product);
+    const handleProductSelect = (product: any) => {
+        // Include parent product information when calling onChange
+        onChange({
+            ...product,
+            parent_id: product.parent_id,  // Ensure parent_id is included
+            parentName: product.parentName,
+        });
         setShowDropdown(false);
     };
-
     return (
         <div className="relative" ref={wrapperRef}>
             <input
@@ -91,7 +117,7 @@ const AutocompleteProductInput: React.FC<AutocompleteProductInputProps> = ({ val
                         onClick={() => handleProductSelect(product)}
                         className="px-4 py-2 cursor-pointer hover:bg-indigo-100"
                     >
-                        {product.name} (ID: {product.ID})
+                        {product.name} (ID: {product.ID})  {product.SKU} | {product.parentName} {product.name} | 
                     </li>
                 )) : value.length < 4 ? <li className="px-4 py-2">Enter 4 characters to start searching</li> : <li className="px-4 py-2">No Products Found</li>
                 }

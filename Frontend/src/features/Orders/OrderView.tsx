@@ -125,7 +125,7 @@ const Orders: React.FC = () => {
                     <div className="flex gap-6 justify-between items-center mb-6">
                         <input
                             type="text"
-                            placeholder="Search by dealer name or order ID"
+                            placeholder="Search by Customer name or order ID"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
@@ -146,8 +146,8 @@ const Orders: React.FC = () => {
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dealer Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dealer Company Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Company Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
@@ -226,7 +226,7 @@ const Orders: React.FC = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-1">
                                     <h4 className="text-lg font-semibold flex items-center mb-4">
-                                        <FaUser className="mr-2" /> Dealer Information
+                                        <FaUser className="mr-2" /> Customer Information
                                     </h4>
                                     <p><span className="font-semibold">Name:</span> {selectedOrder.dealer.contactPersonName}</p>
                                     <p><span className="font-semibold">Company:</span> {selectedOrder.dealer.companyName}</p>

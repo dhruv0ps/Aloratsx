@@ -3,7 +3,7 @@ const { default: mongoose } = require('mongoose');
 const DamagedProductModel = require('../config/models/damagedSupplyModel');
 const Inventory = require('../config/models/inventoryModel');
 const logService = require('./logService');
-const Product = require('../config/models/ProductModel');
+const NewProduct = require('../config/models/newProductgen');
 
 module.exports = {
     addDamagedProduct: async (damageData) => {
@@ -12,25 +12,28 @@ module.exports = {
 
         try {
             const { product, child, quantity, location, comments } = damageData;
+            console.log(damageData)
 
             // Check if the product exists
-            const productDoc = await Product.findById(product).session(session);
+            const productDoc = await NewProduct.findById(product).session(session);
+            console.log(productDoc);
             if (!productDoc) {
                 throw new Error("Product not found");
             }
 
             const childDoc = productDoc.children.find(childItem => childItem.SKU === child);
+
             if (!childDoc) {
                 throw new Error("Child SKU not found in the product");
             }
 
-            const inv = await Inventory.findOne({ product, child, location }).session(session);
+            const inv = await Inventory.findOne({  child }).session(session);
             const damagedProduct = new DamagedProductModel({
                 product,
                 child,
                 quantity,
                 comments,
-                location,
+                
                 // createdBy: user._id
             });
             await damagedProduct.save({ session });
@@ -50,7 +53,7 @@ module.exports = {
             }
 
             // Update product stock
-            let prodDetails = await Product.findOneAndUpdate(
+            let prodDetails = await NewProduct.findOneAndUpdate(
                 { _id: product, "children.SKU": child },
                 { $inc: { "children.$.stock": -quantity } },
                 { session }
@@ -72,6 +75,7 @@ module.exports = {
             await session.commitTransaction();
             return damagedProduct;
         } catch (error) {
+            console.log(error)
             await session.abortTransaction();
             throw error;
         } finally {

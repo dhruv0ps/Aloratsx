@@ -70,8 +70,12 @@ const updatePackingSlip = async (id, packingSlipData) => {
         .populate({
           path: 'dealer',
           populate: { path: 'province' }
-        })
+        }).populate({
+          path: 'products.product',  // Populate product details
+          select: 'name children',   // Ensure children field is selected
+      })
         .session(session);
+        console.log(order)
       if (!order) {
         throw new Error('Associated order not found');
       }
@@ -84,33 +88,40 @@ const updatePackingSlip = async (id, packingSlipData) => {
       const newInvoice = new Invoice({
         invoiceNumber: invoiceNumber,
         dealer: {
-          dealer: order.dealer._id,
-          dealerName: order.billTo.companyName,
-          dealerAddress: order.billTo.address
+            dealer: order.dealer._id,
+            dealerName: order.billTo.companyName,
+            dealerAddress: order.billTo.address
         },
         taxSlab: {
-          gst: order.dealer.province.gst,
-          hst: order.dealer.province.hst,
-          qst: order.dealer.province.qst,
-          pst: order.dealer.province.pst,
-          tax: order.dealer.province._id
+            gst: order.dealer.province.gst,
+            hst: order.dealer.province.hst,
+            qst: order.dealer.province.qst,
+            pst: order.dealer.province.pst,
+            tax: order.dealer.province._id
         },
         order: order._id,
         purchaseOrderNumber: order.purchaseOrderNumber,
-        products: order.products.map(product => ({
-          parentName: product.parentName,
-          childSKU: product.childSKU,
-          childName: product.childName,
-          quantity: product.quantity,
-          description: product.description,
-          price: product.price
-        })),
+        products: order.products.map(product => {
+            // Check if product.product and product.product.children are defined
+            const childrenArray = product.product?.children || [];
+            const child = childrenArray.find(c => c.SKU === product.childSKU);
+    
+            return {
+                parentName: product.product.name,        // The main product's name
+                childSKU: product.childSKU,              // SKU for the child product
+                childName: child ? child.name : '',      // Name of the child product if found
+                quantity: product.quantity,
+                description: product.description,
+                price: product.price
+            };
+        }),
         dueDate: dueDate,
         type: "Invoice",
         totalAmount: order.grandTotal,
         dueAmount: order.grandTotal,
         invoiceStatus: "unpaid"
-      });
+    });
+    
 
       const savedInvoice = await newInvoice.save({ session });
 

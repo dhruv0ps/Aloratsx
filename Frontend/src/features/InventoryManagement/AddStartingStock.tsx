@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextInput } from 'flowbite-react';
@@ -8,51 +8,61 @@ import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
 import Loading from '../../util/Loading';
 import { Child } from '../../config/models/Child';
 import { Product } from '../../config/models/product';
-import AutocompleteLocation from '../../util/AutoCompleteInvLocation';
-import { Location as InvLocation } from '../../config/models/supplier';
 
 const AddStartingStock: React.FC = () => {
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<any| null>(null);
     const [child, setChild] = useState<Child | null>(null);
-    const [location, setLocation] = useState<InvLocation>();
     const [startingQty, setStartingQty] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [productInputValue, setProductInputValue] = useState<string>('');
     const [childInputValue, setChildInputValue] = useState<string>('');
     const navigate = useNavigate();
-
+console.log(child)
     const handleProductSelection = (product: Product) => {
-        setChild(null)
-        setChildInputValue("")
+        // Reset child state and child input value
+        setChild(null);
+        setChildInputValue("");
+
+        // Set the selected product
         setSelectedProduct(product);
         setProductInputValue(`${product.name}`);
-    };
 
-    const handleChildChange = (child: Child) => {
-        setChild(child);
-        setChildInputValue(`${child.SKU} - ${selectedProduct?.name} ${child.name}`)
+        // Optional: Auto-select the first child if the product has children
+        if (product.children && product.children.length > 0) {
+            const defaultChild = product.children[0];
+            setChild(defaultChild);
+            setChildInputValue(`${defaultChild.SKU} - ${product.name} ${defaultChild.name}`);
+        }
     };
+console.log(childInputValue)
+const handleChildChange = (child: any) => {
+    setChild(child);
+    // Set the childInputValue to only the SKU
+    setChildInputValue(child);
+};
 
+  
     const handleQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStartingQty(Number(e.target.value));
     };
 
-    const handleLocationSelection = (location: InvLocation) => {
-        setLocation(location);
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedProduct || !child || !location) {
-            toast.error('Please fill in all fields');
+        if (!selectedProduct) {
+            toast.error('Please select a product');
+            return;
+        }
+        if (!childInputValue) {
+            toast.error('Please select a child SKU');
             return;
         }
         setLoading(true);
         try {
             const data = {
                 product: selectedProduct._id,
-                child: child.SKU,
-                location: location._id,
+                parentName : selectedProduct.parentName,
+                parent_id : selectedProduct.parent_id,
+                child: childInputValue,
                 quantity: startingQty,
             };
             const response = await inventoryApi.createInventory(data);
@@ -92,14 +102,6 @@ const AddStartingStock: React.FC = () => {
                     <AutocompleteChildInput productId={selectedProduct._id} value={childInputValue} setInputValue={setChildInputValue} onChange={handleChildChange} />
                 </div>
             )}
-
-            <div className="mb-4">
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Inventory Location:</label>
-                <AutocompleteLocation
-                    onSelect={handleLocationSelection}
-                    value={location}
-                />
-            </div>
 
             <div className="mb-4">
                 <label htmlFor="startingQty" className="block text-sm font-medium text-gray-700 mb-2">Starting Quantity:</label>

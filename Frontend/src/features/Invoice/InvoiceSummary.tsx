@@ -243,7 +243,7 @@ const ViewInvoice: React.FC = () => {
             {invoice.products.map((product, index) => (
               <Table.Row key={index}>
                 <Table.Cell>{product.childSKU}</Table.Cell>
-                <Table.Cell>{product.parentName} {product.childName}</Table.Cell>
+                <Table.Cell>{product.parentName} - {product.childName}</Table.Cell>
                 <Table.Cell>{product.description}</Table.Cell>
                 <Table.Cell>
                   {invoice.invoiceStatus === "unpaid" ? (

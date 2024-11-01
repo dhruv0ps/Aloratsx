@@ -136,6 +136,7 @@ const getAllProducts = async ({ search, page, limit, sortField, sortOrder, minPr
 
 // Get a product by ID
 const getProductById = async (id) => {
+    console.log(id)
     try {
         const product = await NewProduct.findById(id)
       
@@ -250,7 +251,40 @@ const updateProductStatus = async (parentProductId, childSKU, status) => {
         throw new Error(error.message || 'Failed to update child product status');
     }
 };
+const getProductByChildIdOrSKU = async (childIdentifier) => {
+    try {
+        console.log(childIdentifier)
+      const isSKU = typeof childIdentifier === 'string';
+  
+      const product = await NewProduct.findOne({
+        'children._id': childIdentifier ,
+        
+      })
+      console.log(product)
+  
+      if (!product) {
+        throw new Error('Product not found');
+      }
+  
+       const child = product.children.find(child => child._id.toString() === childIdentifier);
 
+        if (!child) {
+            return ({ message: 'Child not found in product' });
+        }
+
+        // Return the child SKU
+        return child;
+  
+      return {
+        product,
+        child,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error fetching product by child identifier: ' + error.message);
+    }
+  };
+  
 
 
 module.exports = {
@@ -260,5 +294,5 @@ module.exports = {
     updateProductById,
     deleteProductById,
   updateProductStatus,
-    generateChildSKU
+    generateChildSKU,getProductByChildIdOrSKU
 };

@@ -1,7 +1,7 @@
 import { Sidebar } from "flowbite-react";
 import { BiBuoy } from "react-icons/bi";
 import {  BsIncognito } from "react-icons/bs";
-import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaUserTie, FaBoxes } from "react-icons/fa";
+import { FaShoppingCart, FaFileInvoice, FaMoneyBillWave, FaUserTie, FaBoxes,FaWarehouse } from "react-icons/fa";
 import { HiChartPie, HiOutlineMinusSm, HiOutlinePlusSm, HiShoppingBag, } from "react-icons/hi";
 import { MdManageAccounts } from "react-icons/md";
 
@@ -144,7 +144,7 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
         return (
             <Sidebar.Collapse
                 icon={FaShoppingCart}
-                label="Orders"
+                label="Back Orders"
                 renderChevronIcon={(theme, open) => {
                     const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
                     return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />
@@ -217,25 +217,25 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
             </Sidebar.Collapse>
         );
     };
-    // const InventorySection = () => {
-    //     return (
-    //         <Sidebar.Collapse
-    //             icon={FaWarehouse}
-    //             label="Inventory"
-    //             renderChevronIcon={(theme, open) => {
-    //                 const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-    //                 return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
-    //             }}
-    //         >
-    //             <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link>
-    //             <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link>
-    //             <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
-    //             <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
-    //             <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
-    //             <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link>
-    //         </Sidebar.Collapse>
-    //     );
-    // }
+    const InventorySection = () => {
+        return (
+            <Sidebar.Collapse
+                icon={FaWarehouse}
+                label="Inventory"
+                renderChevronIcon={(theme, open) => {
+                    const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+                    return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+                }}
+            >
+                <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link>
+                {/* <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link> */}
+                <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
+                <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
+                {/* <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link> */}
+                {/* <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link> */}
+            </Sidebar.Collapse>
+        );
+    }
     const AgentSection = () => {
         return (
             <Sidebar.Collapse
@@ -296,7 +296,7 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                     <PackingSlip />
                     <Invoice />
                     <Transaction />
-                    {/* <InventorySection /> */}
+                    <InventorySection />
                     {/* <LogsSection /> */}
                     {role === 'admin' && (
                         <Sidebar.Collapse

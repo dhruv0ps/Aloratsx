@@ -27,6 +27,7 @@ interface ChildBase {
     description: string; // Product description
     tags: Tag[]; // Tags for the product
     rawMaterials: RawMaterial[]; 
+    childName? : string
 }
 
 export interface Child extends ChildBase {

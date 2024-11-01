@@ -109,7 +109,7 @@ const DealersList: React.FC = () => {
                 <Button color='gray' onClick={() => navigate(-1)}>
                     <span className='flex gap-2 items-center'><FaChevronLeft />Back</span>
                 </Button>
-                <h2 className="text-2xl font-semibold">Dealers List</h2>
+                <h2 className="text-2xl font-semibold">Customers List</h2>
                 <p></p>
             </div>
             {loading ? (
@@ -209,7 +209,7 @@ const DealersList: React.FC = () => {
             {selectedDealer && (
                 <Modal show={showModal} onClose={closeModal}>
                     <Modal.Header className="text-xl font-semibold text-gray-800">
-                        Dealer Details
+                        Customer Details
                     </Modal.Header>
                     <Modal.Body className="bg-gray-100 p-6 rounded-lg">
                         <div className="grid grid-cols-2 gap-4">

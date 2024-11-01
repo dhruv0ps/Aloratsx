@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaChevronLeft } from 'react-icons/fa';
 import { BaseAgent } from '../../config/models/agent';
 import { agentApis } from '../../config/apiRoutes/agentApi';
 
-export default function AddAgent() {
+export default function AddOrEditAgent() {
     const [formState, setFormState] = useState<BaseAgent>({
         name: '',
         number: '',
@@ -16,6 +16,29 @@ export default function AddAgent() {
 
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>(); // Get the agent ID from the route params
+    const isEditMode = Boolean(id); // Determine if we are in edit mode
+
+    useEffect(() => {
+        if (isEditMode && id) {
+            loadAgentData(id); // Pass the id as an argument
+        }
+    }, [id]);
+
+    const loadAgentData = async (id: string) => {
+        try {
+            setLoading(true);
+            const res = await agentApis.getAgentById(id);
+            if (res.data) {
+                setFormState(res.data); // Populate form state with the agent data
+            }
+        } catch (error) {
+            toast.error('Failed to load agent data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormState((prev) => ({
@@ -28,13 +51,22 @@ export default function AddAgent() {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await agentApis.createAgent(formState);
-            if (res.status) {
-                toast.success('New agent added successfully');
-                navigate('/yellowadmin/agents');
+            if (isEditMode && id) {
+                // Update existing agent
+                const res = await agentApis.updateAgent(id, formState);
+                if (res.status) {
+                    toast.success('Agent updated successfully');
+                }
+            } else {
+                // Create new agent
+                const res = await agentApis.createAgent(formState);
+                if (res.status) {
+                    toast.success('New agent added successfully');
+                }
             }
+            navigate('/yellowadmin/agents');
         } catch (error) {
-            toast.error('Failed to add agent');
+            toast.error('Failed to save agent');
         } finally {
             setLoading(false);
         }
@@ -52,13 +84,12 @@ export default function AddAgent() {
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Agent Management
+                        {isEditMode ? 'Edit Agent' : 'Agent Management'}
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Create and manage agents efficiently.
+                        {isEditMode ? 'Update agent details' : 'Create and manage agents efficiently.'}
                     </p>
                 </div>
-
 
                 <div className="bg-white rounded-lg shadow-xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,7 +153,6 @@ export default function AddAgent() {
                                     placeholder="Agent email"
                                 />
                             </div>
-                            
                         </div>
 
                         <button
@@ -130,7 +160,7 @@ export default function AddAgent() {
                             disabled={loading}
                             className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-lg"
                         >
-                            {loading ? 'Processing...' : 'Create Agent'}
+                            {loading ? 'Processing...' : isEditMode ? 'Update Agent' : 'Create Agent'}
                         </button>
                     </form>
                 </div>

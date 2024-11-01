@@ -58,6 +58,17 @@ const creditMemoController = {
       res.status(400).json({ error: error.message });
     }
   }
+  ,
+  deleteCreditMemo : async (req, res) => {
+    try {
+      const { creditMemoId } = req.params;
+      const result = await creditMemoService.deleteCreditMemo(creditMemoId);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 };
+
 
 module.exports = creditMemoController;

@@ -106,6 +106,7 @@ const OrderForm = () => {
                         parent_id: product.parent_id,
                         parentName: product.parentName,
                         product: product.parent_id,
+                        childName: product.name,
                         description: product.description,
                         childSKU: product.SKU,
                         quantity: 1,
@@ -227,7 +228,7 @@ const OrderForm = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className=" flex-grow col-span-2">
-                                <label htmlFor="dealer" className="block text-sm font-medium text-gray-700 mb-2"><span className='text-red-500'>*</span>Dealer:</label>
+                                <label htmlFor="dealer" className="block text-sm font-medium text-gray-700 mb-2"><span className='text-red-500'>*</span>Customer:</label>
                                 <AutoCompleteDealerInput value={formState.dealer} onChange={handleDealerChange} />
                             </div>
                             <div>
@@ -319,7 +320,7 @@ const OrderForm = () => {
                                 <tbody>
                                     {formState.products.map((product, index) => (
                                         <tr key={index} className="text-sm">
-                                            <td className="px-2 py-4 whitespace-nowrap">{product.parentName}</td>
+                                            <td className="px-2 py-4 whitespace-nowrap">{product.parentName} - {product.childName}</td>
                                             <td className="px-2 py-4 whitespace-nowrap">{product.childSKU}</td>
                                             <td className="px-2 py-4 whitespace-nowrap">
                                                 <input

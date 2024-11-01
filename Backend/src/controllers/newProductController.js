@@ -123,7 +123,24 @@ const deleteProductById = async (req, res) => {
 
         res.status(500).json({ status: false, message: error.message });
     }
-};
+};const getProductByChildIdOrSKU = async (req, res) => {
+    try {
+      const { childIdentifier } = req.params; // Assuming the identifier comes from URL params
+  
+      const data = await productService.getProductByChildIdOrSKU(childIdentifier);
+  
+      return res.status(200).json({
+        success: true,
+        message: 'Product and child details fetched successfully',
+        data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 const updateProductStatus = async(req,res) => {
     const { parentProductId, childSKU } = req.params;
     const { isActive } = req.body;
@@ -145,5 +162,6 @@ module.exports = {
     createProduct,
     updateProductById,
     deleteProductById,
-    updateProductStatus
+    updateProductStatus,
+    getProductByChildIdOrSKU
 };

@@ -7,6 +7,7 @@ import { TaxFormData, taxSlab } from '../../config/models/taxslab';
 import { commonApis } from '../../config/apiRoutes/commonRoutes';
 import { FaChevronLeft } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
+import { FaTrash,FaUndo } from 'react-icons/fa';
 
 const TaxSlabManage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -138,166 +139,186 @@ const TaxSlabManage: React.FC = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto p-5 rounded-lg">
-            {loading ? <Loading /> : <>
-                <div className="mx-auto my-8">
-                    <div className='mb-12 flex items-center justify-between'>
-                        <Button color='gray' onClick={() => navigate(-1)}>
-                            <span className='flex gap-2 items-center'><FaChevronLeft />Back</span>
-                        </Button>
-                        <h2 className="text-2xl font-semibold ">Manage Tax Slabs</h2>
-                        <p></p>
-                    </div>
-                    <form className="space-y-6 mb-8" onSubmit={handleSubmit}>
-                        <div>
-                            <FloatingLabel
-                                variant='outlined'
-                                label='Province'
-                                type="text"
-                                id="taxName"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value?.toUpperCase() })}
-                                maxLength={24}
-                                required
-                                className="flex-1"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <FloatingLabel
-                                    variant='outlined'
-                                    label='GST (%)'
-                                    type="number"
-                                    step="0.001"
-                                    id="gst"
-                                    name="gst"
-                                    value={formData.gst}
-                                    onChange={handleInputChange}
-                                    min={0}
-                                    max={50}
-                                />
-                            </div>
-
-                            <div>
-                                <FloatingLabel
-                                    variant='outlined'
-                                    label='HST (%)'
-                                    type="number"
-                                    step="0.001"
-                                    id="hst"
-                                    name="hst"
-                                    value={formData.hst}
-                                    onChange={handleInputChange}
-                                    min={0}
-                                    max={50}
-                                />
-                            </div>
-
-                            <div>
-                                <FloatingLabel
-                                    variant='outlined'
-                                    label='QST (%)'
-                                    type="number"
-                                    step="0.001"
-                                    id="qst"
-                                    name="qst"
-                                    value={formData.qst}
-                                    onChange={handleInputChange}
-                                    min={0}
-                                    max={50}
-                                />
-                            </div>
-
-                            <div>
-                                <FloatingLabel
-                                    variant='outlined'
-                                    label='PST (%)'
-                                    type="number"
-                                    step="0.001"
-                                    id="pst"
-                                    name="pst"
-                                    value={formData.pst}
-                                    onChange={handleInputChange}
-                                    min={0}
-                                    max={50}
-                                />
-                            </div>
-                        </div>
-
-                        <Button className='w-full' type="submit" color={'success'}>
-                            Submit
-                        </Button>
-                    </form>
-                </div>
-
-                <div className="max-w-6xl mx-auto mt-10 grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-y-0">
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4">Submitted Tax Slabs</h3>
-                        <Table className="">
-                            <Table.Head className="bg-gray-100 text-gray-700">
-                                <Table.HeadCell>Name</Table.HeadCell>
-                                <Table.HeadCell>GST (%)</Table.HeadCell>
-                                <Table.HeadCell>HST (%)</Table.HeadCell>
-                                <Table.HeadCell>QST (%)</Table.HeadCell>
-                                <Table.HeadCell>PST (%)</Table.HeadCell>
-                                <Table.HeadCell>Total Tax(%)</Table.HeadCell>
-                                <Table.HeadCell>Action</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body>
-                                {formData.submittedSlabs.length > 0 ? formData.submittedSlabs.map((slab, index) => (
-                                    <Table.Row key={"existing" + index} className="border-t border-gray-200">
-                                        <Table.Cell>{slab.name}</Table.Cell>
-                                        <Table.Cell>{slab.gst}</Table.Cell>
-                                        <Table.Cell>{slab.hst}</Table.Cell>
-                                        <Table.Cell>{slab.qst}</Table.Cell>
-                                        <Table.Cell>{slab.pst}</Table.Cell>
-                                        <Table.Cell>{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
-                                        <Table.Cell className="p-3">
-                                            <Button size="sm" color={'failure'} onClick={() => handleDelete(index)}>
-                                                Delete
-                                            </Button>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )) : <></>}
-                            </Table.Body>
-                        </Table>
-                    </div>
-
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4">Deleted Tax Slabs</h3>
-                        <Table className="">
-                            <Table.Head>
-                                <Table.HeadCell>Name</Table.HeadCell>
-                                <Table.HeadCell>GST (%)</Table.HeadCell>
-                                <Table.HeadCell>HST (%)</Table.HeadCell>
-                                <Table.HeadCell>QST (%)</Table.HeadCell>
-                                <Table.HeadCell>PST (%)</Table.HeadCell>
-                                <Table.HeadCell>Total Tax(%)</Table.HeadCell>
-                                <Table.HeadCell>Action</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body>
-                                {formData.deletedSlabs.length > 0 ? formData.deletedSlabs.map((slab, index) => (
-                                    <Table.Row key={"__deleted" + index} className="border-t border-gray-200">
-                                        <Table.Cell>{slab.name}</Table.Cell>
-                                        <Table.Cell>{slab.gst}</Table.Cell>
-                                        <Table.Cell>{slab.hst}</Table.Cell>
-                                        <Table.Cell>{slab.qst}</Table.Cell>
-                                        <Table.Cell>{slab.pst}</Table.Cell>
-                                        <Table.Cell>{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
-                                        <Table.Cell className="p-3">
-                                            <Button size="sm" color={'blue'} onClick={() => handleRestore(index)}>
-                                                Restore
-                                            </Button>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )) : <></>}
-                            </Table.Body>
-                        </Table>
-                    </div>
-                </div>
-            </>}
+        <div className="max-w-5xl mx-auto p-5 rounded-lg overflow-hidden">
+  {loading ? (
+    <Loading />
+  ) : (
+    <>
+      <div className="mx-auto my-8 overflow-hidden">
+        <div className="mb-12 flex items-center justify-between">
+          <Button color="gray" onClick={() => navigate(-1)}>
+            <span className="flex gap-2 items-center">
+              <FaChevronLeft /> Back
+            </span>
+          </Button>
+          <h2 className="text-2xl font-semibold">Manage Tax Slabs</h2>
+          <p></p>
         </div>
+        <form className="space-y-6 mb-8" onSubmit={handleSubmit}>
+          <div>
+            <FloatingLabel
+              variant="outlined"
+              label="Province"
+              type="text"
+              id="taxName"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value?.toUpperCase() })}
+              maxLength={24}
+              required
+              className="flex-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <FloatingLabel
+                variant="outlined"
+                label="GST (%)"
+                type="number"
+                step="0.001"
+                id="gst"
+                name="gst"
+                value={formData.gst}
+                onChange={handleInputChange}
+                min={0}
+                max={50}
+              />
+            </div>
+
+            <div>
+              <FloatingLabel
+                variant="outlined"
+                label="HST (%)"
+                type="number"
+                step="0.001"
+                id="hst"
+                name="hst"
+                value={formData.hst}
+                onChange={handleInputChange}
+                min={0}
+                max={50}
+              />
+            </div>
+
+            <div>
+              <FloatingLabel
+                variant="outlined"
+                label="QST (%)"
+                type="number"
+                step="0.001"
+                id="qst"
+                name="qst"
+                value={formData.qst}
+                onChange={handleInputChange}
+                min={0}
+                max={50}
+              />
+            </div>
+
+            <div>
+              <FloatingLabel
+                variant="outlined"
+                label="PST (%)"
+                type="number"
+                step="0.001"
+                id="pst"
+                name="pst"
+                value={formData.pst}
+                onChange={handleInputChange}
+                min={0}
+                max={50}
+              />
+            </div>
+          </div>
+
+          <Button className="w-full" type="submit" color="success">
+            Submit
+          </Button>
+        </form>
+      </div>
+
+      <div className="max-w-6xl mx-auto mt-10 overflow-x-auto px-0">
+  <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+    {/* Left side: "Submitted Tax Slabs" */}
+    <div className="xl:col-span-2">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Submitted Tax Slabs</h3>
+      <Table className="w-full">
+        <Table.Head className="bg-gray-100 text-gray-700">
+          <Table.HeadCell>Name</Table.HeadCell>
+          <Table.HeadCell>GST (%)</Table.HeadCell>
+          <Table.HeadCell>HST (%)</Table.HeadCell>
+          <Table.HeadCell>QST (%)</Table.HeadCell>
+          <Table.HeadCell>PST (%)</Table.HeadCell>
+          <Table.HeadCell>Total Tax (%)</Table.HeadCell>
+          <Table.HeadCell className="text-center">Action</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
+          {formData.submittedSlabs.length > 0 ? (
+            formData.submittedSlabs.map((slab, index) => (
+              <Table.Row key={"existing" + index} className="border-t border-gray-200">
+                <Table.Cell className="whitespace-nowrap">{slab.name}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.gst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.hst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.qst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.pst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
+                <Table.Cell className="p-3 text-center">
+                  <Button size="sm" color="failure" className="px-2 py-1 text-xs" onClick={() => handleDelete(index)}>
+                    <FaTrash className="text-xs" /> {/* Adjust icon size if needed */}
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))
+          ) : (
+            <></>
+          )}
+        </Table.Body>
+      </Table>
+    </div>
+
+    {/* Right side: "Deleted Tax Slabs" */}
+    <div className="xl:col-span-1">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Deleted Tax Slabs</h3>
+      <Table className="w-full">
+        <Table.Head className="bg-gray-100 text-gray-700">
+          <Table.HeadCell>Name</Table.HeadCell>
+          <Table.HeadCell>GST (%)</Table.HeadCell>
+          <Table.HeadCell>HST (%)</Table.HeadCell>
+          <Table.HeadCell>QST (%)</Table.HeadCell>
+          <Table.HeadCell>PST (%)</Table.HeadCell>
+          <Table.HeadCell>Total Tax (%)</Table.HeadCell>
+          <Table.HeadCell className="text-center">Action</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
+          {formData.deletedSlabs.length > 0 ? (
+            formData.deletedSlabs.map((slab, index) => (
+              <Table.Row key={"__deleted" + index} className="border-t border-gray-200">
+                <Table.Cell className="whitespace-nowrap">{slab.name}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.gst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.hst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.qst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.pst}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap">{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
+                <Table.Cell className="p-3 text-center">
+                  <Button size="sm" color="blue" className="px-2 py-1 text-xs flex items-center gap-1" onClick={() => handleRestore(index)}>
+                    <FaUndo className="text-xs mt-1" /> 
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))
+          ) : (
+            <></>
+          )}
+        </Table.Body>
+      </Table>
+    </div>
+  </div>
+</div>
+
+    </>
+  )}
+</div>
+
     );
 };
 

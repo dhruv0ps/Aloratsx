@@ -100,7 +100,7 @@ const DealerEditList: React.FC = () => {
                     }));
                 }
             } catch (err) {
-                console.error('Failed to fetch dealer details', err);
+                console.error('Failed to fetch Customer details', err);
             } finally {
                 setLoading(false);
             }
@@ -181,13 +181,14 @@ const DealerEditList: React.FC = () => {
             if (id) {
                 const res = await dealerApis.createApprovedDealer({ ...formData, tempid: id });
                 if (res.status) {
-                    toast.success("Successfully approved dealer application.");
+                    toast.success("Successfully approved Customer application.");
                     navigate('/dealer');
                 }
             } else if (aid) {
                 const res = await dealerApis.updateApprovedDealer(aid, formData);
                 if (res.status) {
-                    toast.success("Successfully updated dealer details.");
+                    toast.success("Successfully updated Customer ls.");
+                    navigate("/dealer")
                 }
             }
         } catch (error) {
@@ -203,7 +204,7 @@ const DealerEditList: React.FC = () => {
                 <Button color='gray' onClick={() => navigate(-1)}>
                     <span className='flex gap-2 items-center'><FaChevronLeft />Back</span>
                 </Button>
-                <h2 className="text-2xl font-semibold ">Edit Dealer Details</h2>
+                <h2 className="text-2xl font-semibold ">Edit Customer Details</h2>
                 <p></p>
             </div>
             {loading ? <Loading /> : <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-gray-300 mt-12">

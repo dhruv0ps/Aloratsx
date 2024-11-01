@@ -4,12 +4,14 @@ import { AgentWithData } from '../../config/models/agent';
 import Loading from '../../util/Loading';
 import { Table, Button } from 'flowbite-react';
 import { useNavigate } from 'react-router-dom';
-import { FaChevronLeft, FaTrash, FaEye, FaUndo } from 'react-icons/fa';
+import { FaChevronLeft, FaTrash, FaEye, FaUndo, FaEdit } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 export default function AgentList() {
     const [agents, setAgents] = useState<AgentWithData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [agentsPerPage] = useState(10); // Number of agents to display per page
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,18 +29,37 @@ export default function AgentList() {
         }
     };
 
-    // const handleEdit = (agentId: string) => {
-    //     navigate(`/agent/edit/${agentId}`);
-    // };
+    // Pagination logic
+    const indexOfLastAgent = currentPage * agentsPerPage;
+    const indexOfFirstAgent = indexOfLastAgent - agentsPerPage;
+    const currentAgents = agents.slice(indexOfFirstAgent, indexOfLastAgent);
+
+    const totalPages = Math.ceil(agents.length / agentsPerPage);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleEdit = (agentId: string) => {
+        navigate(`/yellowadmin/agents/edit/${agentId}`);
+    };
 
     const handleDelete = async (agentId: string, status: string) => {
         try {
             await agentApis.updateAgent(agentId, { status });
-            toast.success("Agent successfully deleted");
+            toast.success("Agent status updated successfully");
             fetchAgents();
         } catch (error) {
-            console.error("Error deleting agent:", error);
-            toast.error("Failed to delete agent");
+            console.error("Error updating agent status:", error);
+            toast.error("Failed to update agent status");
         }
     };
 
@@ -81,7 +102,7 @@ export default function AgentList() {
                                 <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
                             </Table.Head>
                             <Table.Body>
-                                {agents.map((agent, index) => (
+                                {currentAgents.map((agent, index) => (
                                     <Table.Row key={index} className="border-t border-gray-200">
                                         <Table.Cell>{agent.name}</Table.Cell>
                                         <Table.Cell>{agent.number}</Table.Cell>
@@ -103,22 +124,49 @@ export default function AgentList() {
                                                 <Button className='flex items-end' size="sm" color="purple" onClick={() => handleView(agent._id)}>
                                                     <FaEye className="mr-2 mt-0.5" /> <p>View</p>
                                                 </Button>
-                                                {/* <Button className='flex items-end' size="sm" color="warning" onClick={() => handleEdit(agent._id)}>
+                                                <Button className='flex items-end' size="sm" color="warning" onClick={() => handleEdit(agent._id)}>
                                                     <FaEdit className="mr-2 mt-0.5" /> <p>Edit</p>
-                                                </Button> */}
-                                                {agent.status === "ACTIVE" ? <Button className='flex items-end' size="sm" color="failure" onClick={() => handleDelete(agent._id, "DELETED")}>
-                                                    <FaTrash className="mr-2 mt-0.5" /> <p>Delete</p>
-                                                </Button> : <Button className='flex items-end' size="sm" color="success" onClick={() => handleDelete(agent._id, "ACTIVE")}>
-                                                    <FaUndo className="mr-2 mt-0.5" /> <p>restore</p>
-                                                </Button>}
+                                                </Button>
+                                                {agent.status === "ACTIVE" ? (
+                                                    <Button className='flex items-end' size="sm" color="failure" onClick={() => handleDelete(agent._id, "DELETED")}>
+                                                        <FaTrash className="mr-2 mt-0.5" /> <p>Delete</p>
+                                                    </Button>
+                                                ) : (
+                                                    <Button className='flex items-end' size="sm" color="success" onClick={() => handleDelete(agent._id, "ACTIVE")}>
+                                                        <FaUndo className="mr-2 mt-0.5" /> <p>Restore</p>
+                                                    </Button>
+                                                )}
                                             </div>
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>
                         </Table>
+
+                        {/* Pagination Controls */}
+                        <div className="flex justify-between items-center mt-4">
+                            <Button
+                                size="sm"
+                                color="light"
+                                onClick={handlePreviousPage}
+                                disabled={currentPage === 1}
+                            >
+                                Previous
+                            </Button>
+                            <p className="text-sm text-gray-600">
+                                Page {currentPage} of {totalPages}
+                            </p>
+                            <Button
+                                size="sm"
+                                color="light"
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
-                )} 
+                )}
             </div>
         </div>
     );

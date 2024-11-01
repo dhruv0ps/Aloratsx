@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useReactToPrint } from "react-to-print";
+import { Spinner } from 'flowbite-react';
 import { productApis } from "../../config/apiRoutes/productRoutes";
 import Barcode from "react-barcode";
 import { Button, Select, TextInput,Modal } from 'flowbite-react'; 
-import { MdEdit,MdDelete } from 'react-icons/md';
+import { MdEdit } from 'react-icons/md';
 // import {FaTimes , FaCheck} from 'react-icons/fa';
+import { FaInfoCircle, FaBarcode,  FaTrash,FaEdit } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import debounce from 'lodash/debounce';
 import showConfirmationModal from '../../util/confirmationUtil';
@@ -126,7 +128,7 @@ console.log(loading)
  
   const handleEditProduct = (productId: string) => {
    
-    navigate(`/products/manage/${productId}`);
+    navigate(`/products/manage/${productId}`,{ state: { fromNavigation: true } });
   };
   const handleDeleteChild = async (productId: string, childSKU: string) => {
     
@@ -191,25 +193,26 @@ const handlePageClick = (selectedItem: { selected: number }) => {
   const BarcodeContent: React.FC<{ product: any }> = React.memo(({ product }) => (
     <div key={product.SKU} style={{
       pageBreakInside: 'avoid',
-      marginBottom: '20px',
-      width: '100vw',
-      height: '100vh',
+     margin: '0 auto',
+     marginTop:"300px",
+      width: '340px',
+      height: '288px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       textAlign: 'center'
     }}>
-      <Barcode value={product.SKU} width={2.5} height={60} fontSize={12} />
-      <div style={{ fontSize: '12px', marginTop: '5px' }}>
+       <Barcode value={product.SKU} width={2} height={144} fontSize={16} />
+      <div style={{ fontSize: '12px', marginTop: '5x`px' }}>
         <div>{product.name}</div>
       </div>
     </div>
   ));
 
   return (
-    <div className="mx-auto p-4 lg:px-8">
-      <div className='mb-12 flex items-center justify-between'>
+    <div className="mx-auto p-4 lg:px-8 ">
+      <div className='mb-12 flex items-center justify-between  '>
         <Button color='gray' onClick={() => window.history.back()}>
           <span className='flex gap-2 items-center'><MdEdit />Back</span>
         </Button>
@@ -262,70 +265,65 @@ const handlePageClick = (selectedItem: { selected: number }) => {
       </div>
 
       {/* Table Section */}
-      <div className="overflow-x-auto">
+      <div  className="h-[calc(100vh-200px)] overflow-x-auto custom-scrollbar">
         {currentProducts.length > 0 ? (
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-             
-                <th className="py-3 px-6 text-left">SKU</th>
-                <th className="py-3 px-6 text-left">Parent Name</th>
-                <th className="py-3 px-6 text-left">Name</th>
-                <th className="py-3 px-6 text-left">Selling Price</th>
-                <th className="py-3 px-6 text-left">Stock</th>
-                <th className="py-3 px-6 text-left">Status</th>
-                <th className="py-3 px-6 text-left">Barcode</th>
+              <th className="py-3 px-6 text-center">Actions</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap">SKU</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap" >Parent Name</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap">Name</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap">Selling Price</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap">Stock</th>
+                <th className="py-3 px-6 text-left whitespace-nowrap">Status</th>
+                {/* <th className="py-3 px-6 text-left">Barcode</th> */}
                 {/* <th className="py-3 px-6 text-left">Stock</th> */}
-                <th className="py-3 px-6 text-center">Actions</th>
+              
               </tr>
             </thead>
             <tbody className="text-gray-900 text-sm font-light">
-              {currentProducts.map((child: any) => (
+            {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <Spinner size="lg" color="purple" /> {/* Loader while loading */}
+          </div>
+        ) : currentProducts.map((child: any) => (
                 <tr key={child.SKU} className="border-b border-gray-200 hover:bg-gray-100">
-                 
-                  <td className="py-3 px-6 text-left">{child.SKU}</td>
-                  <td className="py-3 px-6 text-left">{child.parentProductName}</td>
-                  <td className="py-3 px-6 text-left">{child.name}</td>
-                  <td className="py-3 px-6 text-left">${child.selling_price.toFixed(2)}</td>
-                  {/* <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td> */}
-                  <td className="py-3 px-6 text-left">{child.status}</td>
-                  <td className="py-3 px-6 text-left">{child.stock}</td>
-                  <td className="py-3 px-6 text-center">
-                    <Button size="sm" color="blue" onClick={() => handleGenerateBarcode(child)}>
-                      Barcode
-                    </Button>
-                  </td>
-                  <td className="py-3 px-6 text-center">
-                 
-
+                 <td className="py-3 px-6 text-center">
   <div className="flex justify-center space-x-2">
-  <Button size="sm" color="info" onClick={() => handleViewProduct(child)}>
-                        View
-                      </Button>
+   
+    <Button size="sm" color="info" onClick={() => handleViewProduct(child)}>
+      <FaInfoCircle className="mr-1 mt-1 " />
+    </Button>
     <Button size="sm" color="warning" onClick={() => handleEditProduct(child.parentProductId)}>
-      <MdEdit className="h-5 w-5" /> Edit
+    <FaEdit />
     </Button>
     <Button size="sm" color="failure" onClick={() => handleDeleteChild(child.parentProductId, child.SKU)}>
-      <MdDelete className="h-5 w-5" /> Delete
+      <FaTrash className="h-5 w-5" />
+    </Button> <Button size="sm" color="red" onClick={() => handleGenerateBarcode(child)}>
+      <FaBarcode className="mr-2 mt-1" /> Barcode
     </Button>
-    {/* <Button
-    size="sm"
-    color={child.isActive ? 'failure' : 'success'}
-    onClick={() => handleActivateDeactivateChild(child.parentProductId, child.SKU, child.isActive)}
->
-    {child.isActive ? <FaTimes className="h-5 w-5" /> : <FaCheck className="h-5 w-5" />}
-    {child.isActive ? 'Deactivate' : 'Activate'}
-</Button> */}
-
   </div>
 </td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">{child.SKU}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">{child.parentProductName}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">{child.name}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">${child.selling_price.toFixed(2)}</td>
+                  {/* <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td> */}
+                  <td className="py-3 px-6 text-left whitespace-nowrap">{child.status}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap ">{child.stock}</td>
+                
+                  
+
 
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className='text-center text-gray-500 my-16'>No Products Found</p>
+          <div className="flex justify-center items-center my-20">
+  <Spinner size="lg" color="purple" />
+</div>
         )}
       </div>
       <ReactPaginate

@@ -18,9 +18,14 @@ const getCreditMemoById = async (id: string) => {
     return await axios.post<any>(`${apiUrl.creditMemo}/id`, { id });
 };
 
+const deleteCreditMemo = async(id:string) => {
+    return await axios.delete<any>(`${apiUrl.creditMemo}/${id}`, );
+}
+
 export const creditMemoApis = {
     getAllCreditMemos,
     createCreditMemo,
     updateCreditMemo,
     getCreditMemoById,
+    deleteCreditMemo
 };

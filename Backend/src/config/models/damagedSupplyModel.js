@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const damagedProdSchema = new Schema({
-    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'NewProduct', required: true },
     child: { type: String, required: true, trim: true }, //sku
     quantity: { type: Number, required: true },
     comments: { type: String, required: true },

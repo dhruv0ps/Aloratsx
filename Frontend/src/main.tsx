@@ -234,6 +234,10 @@ const router = createBrowserRouter([
         path: "/yellowadmin/agents/add",
         element: <AddAgent />
       },
+    {
+      path:"/yellowadmin/agents/edit/:id",
+      element: <AddAgent/>
+    },
       {
         path:"/yellowadmin/customer/add",
         element :<Addcustomer/>

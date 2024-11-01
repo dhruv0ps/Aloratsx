@@ -195,7 +195,7 @@ const RawMaterialManager: React.FC = () => {
                                     </Table.Cell>
                                     <Table.Cell>{rawMaterial.measuringUnit}</Table.Cell>
                                     <Table.Cell className='flex gap-x-3 items-center justify-end'>
-                                        <Button size={'sm'} color="info" onClick={() => openModalForEdit(rawMaterial)}>
+                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(rawMaterial)}>
                                             Edit
                                         </Button>
                                         <Button size={'sm'} color="failure" onClick={() => handleDelete(rawMaterial)}>

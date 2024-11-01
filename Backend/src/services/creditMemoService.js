@@ -146,3 +146,33 @@ module.exports.getCreditMemoById = async (creditMemoId) => {
       session.endSession();
     }
   }
+
+
+  module.exports.deleteCreditMemo = async (creditMemoId) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+  
+    try {
+      // Find the credit memo by its ID
+      const creditMemo = await CreditMemo.findOne({ creditMemoId: creditMemoId }).session(session);
+      if (!creditMemo) {
+        throw new Error("Credit memo not found");
+      }
+  
+      // Delete the credit memo
+      await CreditMemo.deleteOne({ creditMemoId: creditMemoId }).session(session);
+  
+      // Commit the transaction
+      await session.commitTransaction();
+      return {
+        message: "Credit memo deleted successfully",
+        creditMemoId: creditMemoId
+      };
+    } catch (error) {
+      // Rollback the transaction in case of an error
+      await session.abortTransaction();
+      throw new Error("Failed to delete credit memo: " + error.message);
+    } finally {
+      session.endSession();
+    }
+  };

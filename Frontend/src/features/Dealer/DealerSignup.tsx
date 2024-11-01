@@ -103,7 +103,7 @@ export default function AddDealer() {
             Exceptional Service For Our Customers
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Join our network of trusted dealers and experience the highest standards of partnership and support.
+            Join our network of trusted customers and experience the highest standards of partnership and support.
           </p>
         </div>
 

@@ -136,7 +136,7 @@ const TagManager: React.FC = () => {
                                 <Table.Row key={tag._id}>
                                     <Table.Cell>{tag.name}</Table.Cell>
                                     <Table.Cell className='flex gap-x-3 items-center justify-end'>
-                                        <Button size={'sm'} color="info" onClick={() => openModalForEdit(tag)}>
+                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(tag)}>
                                             Edit
                                         </Button>
                                         <Button size={'sm'} color="failure" onClick={() => handleDelete(tag)}>

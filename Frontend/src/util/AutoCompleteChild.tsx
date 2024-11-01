@@ -21,16 +21,29 @@ const AutocompleteChildInput: React.FC<AutocompleteChildInputProps> = ({ product
 
     const fetchChildren = async () => {
         try {
-            const response = await productApis.getProductById(productId);
+            const response = await productApis.getProductByChildId(productId);
             const data = response.data;
-            const childrenData: Child[] = data.children.filter((child: Child) => child.status !== "OUT OF STOCK");
+            console.log(data); // Log the data to understand its structure
+    
+            // Check if data contains an array, otherwise adjust
+            const childrenData: Child[] = Array.isArray(data)
+                ? data.filter((child: Child) => child.status !== "OUT OF STOCK")
+                : Array.isArray(data.children)
+                ? data.children.filter((child: Child) => child.status !== "OUT OF STOCK")
+                : [];
+    
             setChildren(childrenData);
             setFilteredChildren(childrenData);
+    
+            // Set the input value if SKU is available
+            if (data.SKU) {
+                setInputValue(data.SKU);
+            }
         } catch (error: any) {
             console.log(error);
         }
     };
-
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {

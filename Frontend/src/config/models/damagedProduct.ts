@@ -6,7 +6,7 @@ export interface DamagedProductFormData {
     child: string;
     quantity: number;
     comments: string;
-    location: string;
+    location?: string;
 }
 
 export interface DamagedProduct {

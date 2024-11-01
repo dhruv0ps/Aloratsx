@@ -3,7 +3,7 @@ import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
 import { Button, Table, TextInput, Select, Checkbox, Dropdown } from 'flowbite-react';
 import Loading from '../../util/Loading';
 import { useNavigate } from 'react-router-dom';
-import { Inventory } from '../../config/models/inventory';
+// import { Inventory } from '../../config/models/inventory';
 import { Product } from '../../config/models/product';
 import { Child } from '../../config/models/Child';
 import AutocompleteProductInput from '../../util/AutoCompleteParentProduct';
@@ -11,7 +11,7 @@ import { productApis } from '../../config/apiRoutes/productRoutes';
 
 const InventoryTable: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [filteredInventories, setFilteredInventories] = useState<Inventory[]>([]);
+    const [filteredInventories, setFilteredInventories] = useState<any[]>([]);
     const [productInputValue, setProductInputValue] = useState<string>('');
     const [allCategories, setAllCategories] = useState<string[]>([]);
     const [categoryFilter, setCategoryFilter] = useState<string>('');
@@ -25,56 +25,58 @@ const InventoryTable: React.FC = () => {
 
     useEffect(() => {
         fetchCategories();
+        fetchInventories();
     }, []);
-
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
     };
+
     const fetchCategories = async () => {
         try {
             setLoading(true);
             const prods = await productApis.GetCategories();
-            setAllCategories(prods.data.map((ctgry: { name: string }) => ctgry.name))
+            setAllCategories(prods.data.map((ctgry: { name: string }) => ctgry.name));
         } catch (error: any) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const fetchInventories = async (filters = {}) => {
-        try {
-            setLoading(true);
-
-            const response = await inventoryApi.getAllInventory({ ...filters, page: 1, limit: 20 });
-            setTotalPages(response.data.totalPages);
-            setFilteredInventories(response.data.inventories);
-        } catch (error: any) {
-            console.log(error);
+            console.error(error);
         } finally {
             setLoading(false);
         }
     };
+
+    const fetchInventories = async (filters = {}) => {
+        try {
+            setLoading(true);
+            const response = await inventoryApi.getAllInventory({ ...filters, page: 1, limit: 20 });
+            setTotalPages(response.data.totalPages);
+            setFilteredInventories(response.data.inventories);
+        } catch (error: any) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleProductSelection = (product: Product) => {
-        setChildOptions(product.children)
+        setChildOptions(product.children);
         setSelectedProduct(product);
         setProductInputValue(`${product.name}`);
     };
 
     const handleApplyFilters = () => {
         const filters = {
-            product: selectedProduct?.name || "",
+            product: selectedProduct?.name || '',
             selectedChildren,
             category: categoryFilter,
             location: locationFilter,
         };
         fetchInventories(filters);
     };
+
     const toggleChildSelection = (childSKU: string) => {
-        setSelectedChildren((prevSelected) => {
+        setSelectedChildren(prevSelected => {
             if (prevSelected.includes(childSKU)) {
-                return prevSelected.filter((sku) => sku !== childSKU);
+                return prevSelected.filter(sku => sku !== childSKU);
             } else {
                 return [...prevSelected, childSKU];
             }
@@ -88,73 +90,67 @@ const InventoryTable: React.FC = () => {
                     Back
                 </Button>
                 <h2 className="text-2xl font-semibold">Inventory</h2>
-                <p></p>
             </div>
             <div className="flex gap-4">
-                {/* <label htmlFor="product" className="block text-sm font-medium text-gray-700 mb-2">*Product:</label> */}
                 <AutocompleteProductInput value={productInputValue} setInputValue={setProductInputValue} onChange={handleProductSelection} />
-
                 {childOptions?.length > 0 && (
                     <Dropdown label="Children" dismissOnClick={false}>
-                        {childOptions?.map((child) => (
+                        {childOptions.map(child => (
                             <Dropdown.Item key={child.SKU} className="dropdown-item">
                                 <Checkbox
                                     id={child.SKU}
                                     checked={selectedChildren.includes(child.SKU)}
                                     onChange={() => toggleChildSelection(child.SKU)}
                                 />
-                                <label className='ml-2'>{`${child.name} (${child.SKU})`}</label>
+                                <label className="ml-2">{`${child.name} (${child.SKU})`}</label>
                             </Dropdown.Item>
                         ))}
                     </Dropdown>
-
                 )}
-
-                <Select
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="flex-grow"
-                >
+                <Select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="flex-grow">
                     <option value="">All Categories</option>
-                    {allCategories?.map((category: string) => <option key={"KEY__" + category} value={category}>{category}</option>)}
+                    {allCategories.map((category: string) => (
+                        <option key={`KEY__${category}`} value={category}>
+                            {category}
+                        </option>
+                    ))}
                 </Select>
-
                 <TextInput
-                    placeholder='Search location name'
+                    placeholder="Search location name"
                     value={locationFilter}
-                    onChange={(e) => setLocationFilter(e.target.value)}
+                    onChange={e => setLocationFilter(e.target.value)}
                     className="flex-grow"
                 />
-
-                <Button color={'purple'} onClick={handleApplyFilters}>Apply</Button>
+                <Button color="purple" onClick={handleApplyFilters}>
+                    Apply
+                </Button>
             </div>
-
-            {loading ? <Loading /> : (
+            {loading ? (
+                <Loading />
+            ) : (
                 <div className="overflow-x-auto mt-5">
                     <Table striped>
                         <Table.Head>
-                            <Table.HeadCell>Product</Table.HeadCell>
-                            <Table.HeadCell>Child</Table.HeadCell>
-                            <Table.HeadCell>Location</Table.HeadCell>
+                            <Table.HeadCell>Parent Name</Table.HeadCell>
+                            <Table.HeadCell>Child Name (SKU)</Table.HeadCell>
                             <Table.HeadCell>Quantity</Table.HeadCell>
                             <Table.HeadCell>Booked</Table.HeadCell>
                             <Table.HeadCell>Damaged</Table.HeadCell>
                             <Table.HeadCell>Last Updated</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                            {filteredInventories.map((inventory) => (
+                            {filteredInventories.map(inventory => (
                                 <Table.Row key={inventory._id}>
-                                    <Table.Cell>{inventory.product.name}</Table.Cell>
-                                    {/* <Table.Cell>
-                                        {inventory.childInfo?.name} ({inventory.childInfo?.SKU})
-                                    </Table.Cell> */}
-                                    <Table.Cell title={inventory.location.name}>
-                                        {inventory.location.name}
+                                    <Table.Cell>{inventory.parentName}</Table.Cell>
+                                    <Table.Cell>
+                                        {inventory.childName} ({inventory.child})
                                     </Table.Cell>
                                     <Table.Cell>{inventory.quantity}</Table.Cell>
                                     <Table.Cell>{inventory.booked}</Table.Cell>
                                     <Table.Cell>{inventory.damaged}</Table.Cell>
-                                    <Table.Cell>{new Date(inventory.updatedAt).toISOString().split("T")[0]}</Table.Cell>
+                                    <Table.Cell>
+                                        {new Date(inventory.updatedAt).toISOString().split('T')[0]}
+                                    </Table.Cell>
                                 </Table.Row>
                             ))}
                         </Table.Body>

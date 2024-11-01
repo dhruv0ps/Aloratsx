@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { FaChevronLeft, FaPlus, FaEdit } from 'react-icons/fa';
+import { FaChevronLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa'; // Import the trash icon
 import { creditMemoApis } from '../../config/apiRoutes/creditMemoRoutes';
 import AutoCompleteDealerInput from '../../util/AutoCompleteDealer';
 import { ApprovedDealer } from '../../config/models/dealer';
@@ -23,9 +23,9 @@ export default function CreditMemoManagement() {
   const [selectedDealer, setSelectedDealer] = useState<ApprovedDealer | null>(null);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [editMode, setEditMode] = useState(false); // Track whether we are in edit mode
+  const [editMode, setEditMode] = useState(false);
   const [creditMemos, setCreditMemos] = useState<CreditMemoForm[]>([]);
-  const [selectedCreditMemo, setSelectedCreditMemo] = useState<CreditMemoForm | null>(null); // Store selected credit memo for editing
+  const [selectedCreditMemo, setSelectedCreditMemo] = useState<CreditMemoForm | null>(null);
   const [filters, setFilters] = useState({
     dealer: '',
     status: '',
@@ -79,14 +79,11 @@ export default function CreditMemoManagement() {
       };
 
       if (editMode && selectedCreditMemo) {
-        // Update existing credit memo
-    
         const res = await creditMemoApis.updateCreditMemo(selectedCreditMemo.creditMemoId, creditMemoData);
         if (res.data) {
           toast.success('Credit memo updated successfully');
         }
       } else {
-        // Create a new credit memo
         const res = await creditMemoApis.createCreditMemo(creditMemoData);
         if (res.data) {
           toast.success('New credit memo added successfully');
@@ -110,6 +107,36 @@ export default function CreditMemoManagement() {
     }));
   };
 
+  const handleDelete = async (creditMemoId: string) => {
+    try {
+      setLoading(true);
+      await creditMemoApis.deleteCreditMemo(creditMemoId); // API call to delete the credit memo
+      toast.success('Credit memo deleted successfully');
+      loadCreditMemos(); // Reload the credit memos after deletion
+    } catch (error) {
+      console.error('Error deleting credit memo:', error);
+      toast.error('Failed to delete credit memo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (memo: CreditMemoForm) => {
+    setEditMode(true);
+    if (typeof memo.dealer === 'object' && 'companyName' in memo.dealer) {
+      setSelectedDealer(memo.dealer as ApprovedDealer);
+    } else {
+      setSelectedDealer(null);
+    }
+    setSelectedCreditMemo(memo);
+    setFormState({
+      amount: memo.amount,
+      reason: memo.reason,
+      status: memo.status,
+    });
+    setShowForm(true);
+  };
+
   const filteredCreditMemos = creditMemos.filter(memo => {
     return (
       (filters.dealer === '' || memo.dealer.toLowerCase().includes(filters.dealer.toLowerCase())) &&
@@ -117,31 +144,6 @@ export default function CreditMemoManagement() {
       (filters.creditMemoId === '' || memo.creditMemoId.toLowerCase().includes(filters.creditMemoId.toLowerCase()))
     );
   });
-
-  // Handle click on Edit button
-  const handleEdit = (memo: CreditMemoForm) => {
-    setEditMode(true);
-  
-    // Check if dealer and customercategory are objects and handle them accordingly
-    if (typeof memo.dealer === 'object' && 'companyName' in memo.dealer) {
-      setSelectedDealer(memo.dealer as ApprovedDealer);  // Cast as ApprovedDealer
-    } else {
-      setSelectedDealer(null);
-    }
-  
-    setSelectedCreditMemo(memo);
-  
-    setFormState({
-      amount: memo.amount,
-      reason: memo.reason,
-      status: memo.status,
-      // Safely access category name if it's populated
-    });
-  
-    setShowForm(true);
-  };
-  
-  
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 -mt-5">
@@ -159,7 +161,6 @@ export default function CreditMemoManagement() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">Create and manage credit memos efficiently.</p>
         </div>
 
-        {/* New Credit Memo Form */}
         <div className="mb-6 flex justify-center sm:justify-start text-black">
           <Button color={'dark'} className='flex items-center' onClick={() => setShowForm(!showForm)}>
             <FaPlus className="mr-2 h-4 w-4 mt-0.5" /> {showForm ? 'Hide Form' : editMode ? 'Edit Credit Memo' : 'New Credit Memo'}
@@ -230,7 +231,6 @@ export default function CreditMemoManagement() {
           </div>
         )}
 
-        {/* Filter Section */}
         <div className="mb-8 bg-white shadow-sm rounded-lg p-6">
           <h2 className="text-xl font-bold mb-4">Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -264,7 +264,6 @@ export default function CreditMemoManagement() {
           </div>
         </div>
 
-        {/* Credit Memo Table */}
         <div className="bg-white rounded-lg shadow-md overflow-x-auto">
           {loading ? (
             <div className="flex justify-center py-8">
@@ -279,7 +278,7 @@ export default function CreditMemoManagement() {
                 <Table.HeadCell>Reason</Table.HeadCell>
                 <Table.HeadCell>Date</Table.HeadCell>
                 <Table.HeadCell>Status</Table.HeadCell>
-                <Table.HeadCell>Actions</Table.HeadCell> {/* Add an Actions column */}
+                <Table.HeadCell>Actions</Table.HeadCell>
               </Table.Head>
               <Table.Body className="divide-y">
                 {filteredCreditMemos.map((memo) => (
@@ -294,10 +293,17 @@ export default function CreditMemoManagement() {
                       <Button
                         color="warning"
                         size="xs"
-                        onClick={() => handleEdit(memo)} // Add Edit button functionality
+                        onClick={() => handleEdit(memo)}
                         className="mr-2"
                       >
                         <FaEdit className="mr-1" /> Edit
+                      </Button>
+                      <Button
+                        color="failure"
+                        size="xs"
+                        onClick={() => handleDelete(memo.creditMemoId)}
+                      >
+                        <FaTrash className="mr-1" /> Delete
                       </Button>
                     </Table.Cell>
                   </Table.Row>

@@ -58,6 +58,8 @@ router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProductById);
 router.delete('/products/:parentId/child/:childSKU', productController.deleteProductById);
 router.put('/products/:parentProductId/children/:childSKU',productController.updateProductStatus)
+router.get('/products/child-id/:childIdentifier', productController.getProductByChildIdOrSKU);
+
 // Color Routes
 router.post('/colors', configController.addColor);
 router.get('/colors', configController.getAllColors);
@@ -130,6 +132,7 @@ router.post("/creditMemo/create", creditMemoController.createCreditMemo);
 router.get("/creditMemo/all", creditMemoController.getAllCreditMemos);
 router.post("/creditMemo/id", creditMemoController.getCreditMemoById);
 router.put("/creditMemo/update/:creditMemoId", creditMemoController.updateCreditMemo);
+router.delete('/creditMemo/:creditMemoId', creditMemoController.deleteCreditMemo);
 
 // #region location
 router.post('/locations', locationController.addLocation);

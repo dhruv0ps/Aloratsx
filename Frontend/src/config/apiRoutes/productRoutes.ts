@@ -21,7 +21,9 @@ const createProduct = async (body: any) => {
 const updateChildProductStatus = async (id: string, childSKU: string, body: any) => {
     return await axiosRequest.put<any>(`${apiUrl.product}/${id}/children/${childSKU}`, body);
 };
-
+const getProductByChildId = async (childId: string) => {
+    return await axiosRequest.get<any>(`${apiUrl.product}/child-id/${childId}`);
+};
 
 const AddColor = async (body: any) => {
     return await axiosRequest.post<any>(apiUrl.color, body)
@@ -90,6 +92,7 @@ export const productApis = {
     AddColor,
     GetColors,
     UpdateColors,
+    getProductByChildId,
     GetCategories,
     AddCategory,
     UpdateCategories,

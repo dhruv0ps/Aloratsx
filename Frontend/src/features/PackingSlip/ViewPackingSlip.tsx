@@ -259,7 +259,7 @@ const ViewPackingSlip: React.FC = () => {
             {packingSlip.orderDetails.products.map((product, index: number) => (
               <Table.Row key={index}>
                 <Table.Cell>{product.childSKU}</Table.Cell>
-                <Table.Cell>{product.parentName} {product.childName}</Table.Cell>
+                <Table.Cell>{product.parentName} - {product.childName}</Table.Cell>
                 <Table.Cell>{product.description}</Table.Cell>
                 <Table.Cell>{product.quantity}</Table.Cell>
                 <Table.Cell className='text-center'>

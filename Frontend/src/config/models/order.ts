@@ -35,6 +35,8 @@ export interface OrderFormState extends OrderBase {
         childSKU: string;
         quantity: number;
         price: number;
+        childName? : string;
+        name? :string
     }>;
 }
 
