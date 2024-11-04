@@ -22,6 +22,7 @@ const EditInboundPage: React.FC = () => {
   const [referenceNumber, setReferenceNumber] = useState<string>('');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  console.log(receiptFile)
   const navigate = useNavigate();
 console.log(quantity);
   useEffect(() => {
