@@ -110,9 +110,10 @@ export default function ViewPayments() {
                             <option value="">Payment Mode</option>
                             <option value="Online">Online</option>
                             <option value="Interac">Interac</option>
-                            <option value="Finance">Finance</option>
+                            {/* <option value="Finance">Finance</option> */}
                             <option value="Cash">Cash</option>
                             <option value="Card">Card</option>
+                            <option value="Cheque">Cheque</option>
                         </select>
                         {/* Add more filter inputs as needed */}
                     </div>

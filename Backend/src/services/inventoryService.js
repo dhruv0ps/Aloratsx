@@ -1,14 +1,36 @@
 const { default: mongoose } = require('mongoose');
 const Inventory = require('../config/models/inventoryModel');
 const logService = require("./logService")
-const { Product } = require("../config/models/ProductModel");
+const  NewProduct  = require("../config/models/newProductgen");
+const generateInboundNumber = async () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
 
+    const baseIdentifier = `INB-${year}${month}${day}-`;
+
+   
+    const todayStart = new Date(year, date.getMonth(), date.getDate());
+    const todayEnd = new Date(year, date.getMonth(), date.getDate() + 1);
+
+    const count = await Inventory.countDocuments({
+        createdAt: { $gte: todayStart, $lt: todayEnd }
+    });
+
+ 
+    const letter = String.fromCharCode(65 + count); 
+    return baseIdentifier + letter;
+};
 const inventoryService = {
+
+
     addStartingStock: async (data) => {
         const session = await mongoose.startSession();
         session.startTransaction();
 
         try {
+            const inboundNumber = await generateInboundNumber();
             let inventory = await Inventory.findOne({
                 product: data.product,
                 child: data.child,
@@ -23,14 +45,17 @@ const inventoryService = {
                         child: data.child,
                         location: data.location
                     },
-                    { $inc: { quantity: data.quantity } },
+                    { $inc: { quantity: data.quantity } ,
+                    $set: { referenceNumber: data.referenceNumber, receipt: data.receipt } 
+                },
                     { new: true, session }
                 );
             } else {
                 // If inventory doesn't exist, create a new one
+                data.inboundNumber = inboundNumber; 
                 inventory = await Inventory.create([data], { session });
             }
-            await Product.updateOne(
+            await NewProduct.updateOne(
                 { _id: data.product, "children.SKU": data.child },
                 { $inc: { "children.$.stock": data.quantity } },
                 { session }
@@ -42,6 +67,8 @@ const inventoryService = {
                     product: data.product,
                     child: data.child,
                     quantityChange: data.quantity,
+                    referenceNumber: data.referenceNumber, // Log referenceNumber
+                    receipt: data.receipt
                 },
                 message: `${data.quantity} of ${data.child} added as starting stock.`,
             }, session);
@@ -51,6 +78,7 @@ const inventoryService = {
 
             return inventory;
         } catch (error) {
+            console.log(error)
             await session.abortTransaction();
             session.endSession();
             throw error;
@@ -157,7 +185,27 @@ const inventoryService = {
             throw error;
         }
     },
-    
+    markAsCompleted: async (id,data) => {
+        try {
+            // Find the inventory item and update its status to COMPLETED
+            console.log(data)
+            
+            
+            const inventory = await Inventory.findById(id);
+            if (!inventory) {
+                throw new Error('Inventory item not found');
+            }
+
+            inventory.enteryStatus = 'COMPLETED';
+            await inventory.save();
+
+            return inventory;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    },
+
     
     updateInventory: async (data, isAdding, session) => {
         try {

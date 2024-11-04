@@ -44,9 +44,14 @@ const moveInventory = async (body: any) => {
     return await axiosRequest.post<any>(`${apiUrl.invMove}`, body);
 }
 
+const markAsComplete = async (id : any , body: any) => {
+    return await axiosRequest.put<any>(`${apiUrl.inventory}/mark-completed/${id}`, body)
+} 
+
 export const inventoryApi = {
     getAllInventory,
     getInventoryById,
+    markAsComplete,
     createInventory,
     updateInventory,
     getAllInvLocations,

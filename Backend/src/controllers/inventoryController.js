@@ -4,12 +4,28 @@ const damagedProductService = require('../services/damagedProductService');
 class InventoryController {
     addStartingStock = async (req, res) => {
         try {
-            const newInventory = await inventoryServices.addStartingStock(req.body,);
+            // Access form data from `req.body`
+            const { product, child, location, quantity, referenceNumber, parentName, parent_id } = req.body;
+
+            // Access the uploaded file from `req.file`
+            const receiptFile = req.file ? req.file.path : null;
+
+            // Pass the data to your service
+            const newInventory = await inventoryServices.addStartingStock({
+                product,
+                child,
+                parent_id,
+                quantity: parseInt(quantity, 10),
+                referenceNumber,
+                parentName,
+                receipt: receiptFile // Pass the file path or URL
+            });
+
             return res.status(201).json({ status: true, data: newInventory, err: {} });
         } catch (error) {
             return res.status(400).json({ status: false, data: {}, err: error.message });
         }
-    }
+    };
 
     getInventoryById = async (req, res) => {
         try {
@@ -26,6 +42,15 @@ class InventoryController {
             return res.json({ status: true, data: inventories, err: {} });
         } catch (error) {
             return res.json({ status: false, data: {}, err: error.message });
+        }
+    }
+    markAsCompleted = async (req, res) => {
+        try {
+            
+            const completedInventory = await inventoryServices.markAsCompleted(req.params.id,req.body);
+            return res.json({ status: true, data: completedInventory, err: {} });
+        } catch (error) {
+            return res.status(400).json({ status: false, data: {}, err: error.message });
         }
     }
 

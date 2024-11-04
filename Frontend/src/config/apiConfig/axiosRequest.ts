@@ -11,6 +11,7 @@ export const axiosRequest = {
     del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
     patch: <T>(url: string, body: {}) => 
         axios.patch<T>(url, body).then(responseBody),
+    
 };
 
 axios.interceptors.request.use(config => {

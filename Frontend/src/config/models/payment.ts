@@ -13,6 +13,11 @@ export interface PaymentBase {
     denominations?: { value: number, count: number }[];
     useCreditMemo: boolean;
     dealer: ApprovedDealer | null;
+    checkNumber? : string;
+    chequeDate ? : string;
+    cardHolderName?: string,
+    expiryDate?: string,
+    cardNumber?: string,
 }
 export interface PaymentForm extends PaymentBase {
     creditMemoCode: string;

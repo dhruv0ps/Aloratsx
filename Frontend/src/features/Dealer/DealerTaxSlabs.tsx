@@ -244,18 +244,22 @@ const TaxSlabManage: React.FC = () => {
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Submitted Tax Slabs</h3>
       <Table className="w-full">
         <Table.Head className="bg-gray-100 text-gray-700">
+        <Table.HeadCell className="text-center">Action</Table.HeadCell>
           <Table.HeadCell>Name</Table.HeadCell>
           <Table.HeadCell>GST (%)</Table.HeadCell>
           <Table.HeadCell>HST (%)</Table.HeadCell>
           <Table.HeadCell>QST (%)</Table.HeadCell>
           <Table.HeadCell>PST (%)</Table.HeadCell>
           <Table.HeadCell>Total Tax (%)</Table.HeadCell>
-          <Table.HeadCell className="text-center">Action</Table.HeadCell>
+          
         </Table.Head>
         <Table.Body>
           {formData.submittedSlabs.length > 0 ? (
             formData.submittedSlabs.map((slab, index) => (
               <Table.Row key={"existing" + index} className="border-t border-gray-200">
+                <Button size="sm" color="failure" className="text-xs" onClick={() => handleDelete(index)} style={{marginLeft : "20px" ,marginTop:"10px"}}>
+                    <FaTrash className="text-xs" /> {/* Adjust icon size if needed */}
+                  </Button>
                 <Table.Cell className="whitespace-nowrap">{slab.name}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.gst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.hst}</Table.Cell>
@@ -263,9 +267,7 @@ const TaxSlabManage: React.FC = () => {
                 <Table.Cell className="whitespace-nowrap">{slab.pst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
                 <Table.Cell className="p-3 text-center">
-                  <Button size="sm" color="failure" className="px-2 py-1 text-xs" onClick={() => handleDelete(index)}>
-                    <FaTrash className="text-xs" /> {/* Adjust icon size if needed */}
-                  </Button>
+                  
                 </Table.Cell>
               </Table.Row>
             ))
@@ -281,29 +283,31 @@ const TaxSlabManage: React.FC = () => {
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Deleted Tax Slabs</h3>
       <Table className="w-full">
         <Table.Head className="bg-gray-100 text-gray-700">
+        <Table.HeadCell className="text-center">Action</Table.HeadCell>
           <Table.HeadCell>Name</Table.HeadCell>
           <Table.HeadCell>GST (%)</Table.HeadCell>
           <Table.HeadCell>HST (%)</Table.HeadCell>
           <Table.HeadCell>QST (%)</Table.HeadCell>
           <Table.HeadCell>PST (%)</Table.HeadCell>
           <Table.HeadCell>Total Tax (%)</Table.HeadCell>
-          <Table.HeadCell className="text-center">Action</Table.HeadCell>
+
         </Table.Head>
         <Table.Body>
           {formData.deletedSlabs.length > 0 ? (
             formData.deletedSlabs.map((slab, index) => (
               <Table.Row key={"__deleted" + index} className="border-t border-gray-200">
+                <Table.Cell className="p-3 text-center">
+                  <Button size="sm" color="blue" className="px-2 py-1 text-xs flex items-center gap-1" onClick={() => handleRestore(index)}>
+                    <FaUndo className="text-xs mt-1" /> 
+                  </Button>
+                </Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.name}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.gst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.hst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.qst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.pst}</Table.Cell>
                 <Table.Cell className="whitespace-nowrap">{slab.pst + slab.gst + slab.qst + slab.hst}</Table.Cell>
-                <Table.Cell className="p-3 text-center">
-                  <Button size="sm" color="blue" className="px-2 py-1 text-xs flex items-center gap-1" onClick={() => handleRestore(index)}>
-                    <FaUndo className="text-xs mt-1" /> 
-                  </Button>
-                </Table.Cell>
+                
               </Table.Row>
             ))
           ) : (

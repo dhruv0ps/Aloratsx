@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput, Table } from 'flowbite-react';
+import { Button, TextInput, FileInput } from 'flowbite-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import AutocompleteProductInput from '../../util/AutoCompleteProductInput';
@@ -17,6 +17,8 @@ const InboundPage: React.FC = () => {
   const [inboundList, setInboundList] = useState<InboundItem[]>([]);
   const [productInputValue, setProductInputValue] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(0);
+  const [referenceNumber, setReferenceNumber] = useState<string>(''); // New state for Reference Number
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -107,13 +109,18 @@ const InboundPage: React.FC = () => {
     setLoading(true);
     try {
       for (const item of inboundList) {
-        const data = {
-          product: item.parent_id,
-          child: item.SKU,
-          location:item.parent_id,
-          quantity: item.quantity,
-        };
-        const response = await inventoryApi.createInventory(data);
+        const formData = new FormData();
+        formData.append('product', item.parent_id);
+        formData.append('child', item.SKU);
+        formData.append('parent_id', item.parent_id);
+        formData.append('quantity', item.quantity.toString());
+        formData.append('referenceNumber', referenceNumber);
+        formData.append('parentName', item.parentName); // Include parent name
+        if (receiptFile) {
+          formData.append('receiptFile', receiptFile); // Add receipt file
+        }
+
+        const response = await inventoryApi.createInventory(formData);
         if (!response.status) {
           throw new Error(response.err || 'Failed to add item to inventory');
         }
@@ -124,6 +131,7 @@ const InboundPage: React.FC = () => {
       localStorage.removeItem('inboundList');
       navigate('/inventory/view');
     } catch (error: any) {
+      
       console.error(error.response?.data?.err || 'Something went wrong');
       toast.error('Failed to transfer some items to inventory. Please try again.');
     } finally {
@@ -132,7 +140,7 @@ const InboundPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-4">Inbound Management</h1>
 
       <div className="mb-4">
@@ -140,60 +148,74 @@ const InboundPage: React.FC = () => {
         <AutocompleteProductInput value={productInputValue} setInputValue={setProductInputValue} onChange={handleProductSelection} />
       </div>
 
+      <div className="mb-4">
+        <label htmlFor="referenceNumber" className="block text-sm font-medium text-gray-700 mb-2">
+          Reference Number:
+        </label>
+        <TextInput
+          id="referenceNumber"
+          value={referenceNumber}
+          onChange={(e) => setReferenceNumber(e.target.value)}
+          placeholder="Enter reference number"
+        />
+      </div>
+
+      {/* Upload Receipt */}
+      <div className="mb-4">
+        <label htmlFor="receiptFile" className="block text-sm font-medium text-gray-700 mb-2">
+          Upload Receipt:
+        </label>
+        <FileInput
+          id="receiptFile"
+          onChange={(e) => setReceiptFile(e.target.files ? e.target.files[0] : null)}
+        />
+      </div>
+
       {currentDraft && (
-        <div className="mb-4 grid grid-cols-2 gap-4">
+        <div className="bg-gray-50 p-4 rounded-lg shadow mb-4 flex justify-between items-center">
           <div>
-            <p><strong>Name:</strong> {currentDraft.parentName} - {currentDraft.name}</p>
-            {/* <p><strong>Color:</strong> {currentDraft.color.name}</p> */}
+            <p className="font-semibold">{currentDraft.parentName} | {currentDraft.name}</p>
+            <p className="text-sm text-gray-500">SKU: {currentDraft.SKU}</p>
           </div>
-          <div>
-            <p><strong>Current Stock:</strong> {currentDraft.stock}</p>
+          <div className="flex items-center space-x-4">
             <TextInput
               type="number"
-              placeholder="Quantity"
+              className="w-16"
               value={quantity}
-              onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 0)}
+              min={1}
+              onChange={(e) => handleQuantityChange(parseInt(e.target.value, 10) || 1)}
             />
+            <Button color="failure" size="sm" onClick={handleDiscardDraft}>Remove</Button>
           </div>
         </div>
       )}
 
       <div className="mb-4 flex space-x-2">
-        <Button onClick={handleAddItem} disabled={!currentDraft || currentDraft.quantity <= 0}>Add to Inbound List</Button>
+        <Button onClick={handleAddItem} color="dark" disabled={!currentDraft || currentDraft.quantity <= 0}>Add to Inbound List</Button>
         <Button color="failure" onClick={handleDiscardDraft} disabled={!currentDraft}>Discard Draft</Button>
       </div>
 
       {inboundList.length > 0 && (
-        <>
-          <Table>
-            <Table.Head>
-              <Table.HeadCell>SKU</Table.HeadCell>
-              <Table.HeadCell>Name</Table.HeadCell>
-              <Table.HeadCell>Color</Table.HeadCell>
-              <Table.HeadCell>Quantity</Table.HeadCell>
-              <Table.HeadCell>Actions</Table.HeadCell>
-            </Table.Head>
-            <Table.Body>
-              {inboundList.map((item, index) => (
-                <Table.Row key={item.SKU}>
-                  <Table.Cell>{item.SKU}</Table.Cell>
-                  <Table.Cell>{item.parentName} - {item.name}</Table.Cell>
-                  {/* <Table.Cell>{item.color.name}</Table.Cell> */}
-                  <Table.Cell>{item.quantity}</Table.Cell>
-                  <Table.Cell>
-                    <Button color="failure" onClick={() => handleRemoveItem(index)}>Remove</Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-
-          <div className="mt-4 flex justify-end">
-            <Button color="success" onClick={handleTransferToInventory} disabled={loading}>
-              {loading ? 'Transferring...' : 'Transfer to Inventory'}
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">Added Products</h2>
+          {inboundList.map((item, index) => (
+            <div key={item.SKU} className="flex justify-between items-center mb-2 bg-gray-50 p-3 rounded-lg">
+              <div>
+                <p className="font-semibold">{item.parentName} | {item.name}</p>
+                <p className="text-sm text-gray-500">SKU: {item.SKU}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-lg">{item.quantity}</span>
+                <Button color="failure" size="sm" onClick={() => handleRemoveItem(index)}>Remove</Button>
+              </div>
+            </div>
+          ))}
+          <div className="mt-4 flex justify-center">
+            <Button color="dark" onClick={handleTransferToInventory} disabled={loading}>
+              {loading ? 'Transferring...' : 'Create Draft'}
             </Button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

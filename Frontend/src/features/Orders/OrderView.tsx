@@ -145,35 +145,19 @@ const Orders: React.FC = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Company Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                   
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {sortedOrders.map((order) => (
                                     <tr key={order._id} className="hover:bg-gray-100 cursor-pointer">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.purchaseOrderNumber}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.dealer?.contactPersonName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.dealer?.companyName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <span
-                                                className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'REJECTED'
-                                                    ? 'bg-yellow-100 text-yellow-600'
-                                                    : order.status === 'APPROVED'
-                                                        ? 'bg-green-100 text-green-600'
-                                                        : 'bg-red-100 text-red-600'
-                                                    }`}
-                                            >
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.invoiceStatus ?? "Pending"}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.date).toLocaleDateString()}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center flex items-center gap-x-2">
                                             <Button
                                                 color={'dark'}
@@ -192,6 +176,24 @@ const Orders: React.FC = () => {
                                                 Delete
                                             </Button>}
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.purchaseOrderNumber}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.dealer?.contactPersonName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.dealer?.companyName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'REJECTED'
+                                                    ? 'bg-yellow-100 text-yellow-600'
+                                                    : order.status === 'APPROVED'
+                                                        ? 'bg-green-100 text-green-600'
+                                                        : 'bg-red-100 text-red-600'
+                                                    }`}
+                                            >
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.invoiceStatus ?? "Pending"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.date).toLocaleDateString()}</td>
+                                        
                                     </tr>
                                 ))}
                             </tbody>

@@ -56,7 +56,9 @@ import RawMaterialManager from './features/Products/RawmaterialManage.tsx';
 import TagManager from './features/Products/TagManegar.tsx';
 import ListProduct from './features/Products/ListProduct.tsx';
 import CategoryView from './features/Customer/CategoryView.tsx';
+import InboundListPage from './features/InventoryManagement/InboundList.tsx';
 import CustomerView from './features/Customer/CustomerView.tsx';
+import EditInboundPage from './features/InventoryManagement/EditInboud.tsx';
 // import { newProductManger } from './features/Products/newProductManger.tsx';
 const stores = { authStore };
 const router = createBrowserRouter([
@@ -188,6 +190,14 @@ const router = createBrowserRouter([
       {
         path: "/inventory/location/add",
         element: <InvLocationForm />
+      },
+      {
+        path:"/inventory/inbound/view",
+        element: <InboundListPage/>
+      },
+      {
+        path:"/inventory/inbound/edit/:id",
+        element:<EditInboundPage/>
       },
       {
         path: "/inventory/location/:id/edit",

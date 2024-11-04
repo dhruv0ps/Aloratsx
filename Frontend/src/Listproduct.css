@@ -57,4 +57,31 @@
   .pagination__link--next:hover {
     background-color: #d1d5db; /* Slightly darker on hover */
   }
-  
+
+  /* styles.css or App.css */
+
+/* Force scrollbar on the entire page */
+/* Ensure the scroll wrapper takes the full width and height */
+.scroll-wrapper {
+   width: 100vw; /* Full viewport width */
+  height: calc(100vh - 60px); /* Reduce height to make space for pagination */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  position: relative; /* Keep positioning relative */
+  padding-bottom: 20px;
+}
+
+/* Remove default body margins */
+body {
+  margin: 0;
+}
+
+
+
+
+.table-scroll-container {
+  max-height: 400px; /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scrolling for the table */
+  overflow-x: hidden; /* Hide horizontal scrollbar inside the table */
+  border: 1px solid #ddd; /* Optional: Add a border around the table */
+}

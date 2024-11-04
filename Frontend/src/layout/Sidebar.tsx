@@ -231,7 +231,7 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                 {/* <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link> */}
                 <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
                 <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
-                {/* <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link> */}
+                <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
                 {/* <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link> */}
             </Sidebar.Collapse>
         );

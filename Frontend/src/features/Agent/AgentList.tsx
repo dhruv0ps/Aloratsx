@@ -94,35 +94,21 @@ export default function AgentList() {
                     <div className="bg-white rounded-lg shadow-lg p-8 overflow-x-auto">
                         <Table className="w-full" striped>
                             <Table.Head>
+                            <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
                                 <Table.HeadCell>Name</Table.HeadCell>
                                 <Table.HeadCell>Number</Table.HeadCell>
                                 <Table.HeadCell>Commission (%)</Table.HeadCell>
                                 <Table.HeadCell>Email</Table.HeadCell>
                                 <Table.HeadCell>Status</Table.HeadCell>
-                                <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
+                                
                             </Table.Head>
                             <Table.Body>
                                 {currentAgents.map((agent, index) => (
                                     <Table.Row key={index} className="border-t border-gray-200">
-                                        <Table.Cell>{agent.name}</Table.Cell>
-                                        <Table.Cell>{agent.number}</Table.Cell>
-                                        <Table.Cell>{agent.commission}</Table.Cell>
-                                        <Table.Cell>{agent.email}</Table.Cell>
-                                        <Table.Cell>
-                                            {agent.status === 'ACTIVE' ? (
-                                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                                                    Active
-                                                </span>
-                                            ) : (
-                                                <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                                                    Deleted
-                                                </span>
-                                            )}
-                                        </Table.Cell>
-                                        <Table.Cell>
+                                         <Table.Cell>
                                             <div className="flex space-x-2 items-end justify-center">
-                                                <Button className='flex items-end' size="sm" color="purple" onClick={() => handleView(agent._id)}>
-                                                    <FaEye className="mr-2 mt-0.5" /> <p>View</p>
+                                                <Button className='flex items-end' size="sm" color="dark" onClick={() => handleView(agent._id)}>
+                                                    <FaEye className="mr-2 mt-1" /> <p>View</p>
                                                 </Button>
                                                 <Button className='flex items-end' size="sm" color="warning" onClick={() => handleEdit(agent._id)}>
                                                     <FaEdit className="mr-2 mt-0.5" /> <p>Edit</p>
@@ -138,6 +124,22 @@ export default function AgentList() {
                                                 )}
                                             </div>
                                         </Table.Cell>
+                                        <Table.Cell>{agent.name}</Table.Cell>
+                                        <Table.Cell>{agent.number}</Table.Cell>
+                                        <Table.Cell>{agent.commission}</Table.Cell>
+                                        <Table.Cell>{agent.email}</Table.Cell>
+                                        <Table.Cell>
+                                            {agent.status === 'ACTIVE' ? (
+                                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                                    Active
+                                                </span>
+                                            ) : (
+                                                <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                                                    Deleted
+                                                </span>
+                                            )}
+                                        </Table.Cell>
+                                       
                                     </Table.Row>
                                 ))}
                             </Table.Body>

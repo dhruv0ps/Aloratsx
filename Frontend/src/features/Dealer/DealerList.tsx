@@ -119,23 +119,18 @@ const DealersList: React.FC = () => {
                     <div className="overflow-x-auto">
                         <Table className="" striped>
                             <Table.Head>
+                            <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
                                 <Table.HeadCell>Contact Person Name</Table.HeadCell>
                                 <Table.HeadCell>Contact Person Cell</Table.HeadCell>
                                 <Table.HeadCell>Contact Person Email ID</Table.HeadCell>
                                 <Table.HeadCell>Company Name</Table.HeadCell>
                                 <Table.HeadCell>Total balance</Table.HeadCell>
                                 <Table.HeadCell>Total Open Balance</Table.HeadCell>
-                                <Table.HeadCell className='text-center'>Actions</Table.HeadCell>
+                                
                             </Table.Head>
                             <Table.Body>
                                 {currentDealers.map(dealer => (
                                     <Table.Row key={dealer._id} className="hover:bg-gray-50">
-                                        <Table.Cell>{dealer.contactPersonName}</Table.Cell>
-                                        <Table.Cell>{dealer.contactPersonCell}</Table.Cell>
-                                        <Table.Cell>{dealer.contactPersonEmail}</Table.Cell>
-                                        <Table.Cell>{dealer.companyName}</Table.Cell>
-                                        <Table.Cell>{dealer.totalBalance}</Table.Cell>
-                                        <Table.Cell>{dealer.totalOpenBalance}</Table.Cell>
                                         <Table.Cell>
                                             <div className="flex space-x-2 justify-center">
                                                 <Button color="info" onClick={() => handleEdit(dealer._id)}>
@@ -152,6 +147,13 @@ const DealersList: React.FC = () => {
                                                 </Button>
                                             </div>
                                         </Table.Cell>
+                                        <Table.Cell>{dealer.contactPersonName}</Table.Cell>
+                                        <Table.Cell>{dealer.contactPersonCell}</Table.Cell>
+                                        <Table.Cell>{dealer.contactPersonEmail}</Table.Cell>
+                                        <Table.Cell>{dealer.companyName}</Table.Cell>
+                                        <Table.Cell>{dealer.totalBalance}</Table.Cell>
+                                        <Table.Cell>{dealer.totalOpenBalance}</Table.Cell>
+                                        
                                     </Table.Row>
                                 ))}
                             </Table.Body>

@@ -272,24 +272,19 @@ export default function CreditMemoManagement() {
           ) : (
             <Table>
               <Table.Head>
+              <Table.HeadCell>Actions</Table.HeadCell>
                 <Table.HeadCell>ID</Table.HeadCell>
                 <Table.HeadCell>Dealer Name</Table.HeadCell>
                 <Table.HeadCell>Amount</Table.HeadCell>
                 <Table.HeadCell>Reason</Table.HeadCell>
                 <Table.HeadCell>Date</Table.HeadCell>
                 <Table.HeadCell>Status</Table.HeadCell>
-                <Table.HeadCell>Actions</Table.HeadCell>
+                
               </Table.Head>
               <Table.Body className="divide-y">
                 {filteredCreditMemos.map((memo) => (
                   <Table.Row key={memo.creditMemoId} className="bg-white">
-                    <Table.Cell className="font-medium text-gray-900">{memo.creditMemoId}</Table.Cell>
-                    <Table.Cell>{memo.dealer}</Table.Cell>
-                    <Table.Cell>${memo.amount.toFixed(2)}</Table.Cell>
-                    <Table.Cell>{memo.reason}</Table.Cell>
-                    <Table.Cell>{new Date(memo.date).toLocaleDateString()}</Table.Cell>
-                    <Table.Cell>{memo.status}</Table.Cell>
-                    <Table.Cell>
+                      <Table.Cell className='flex'>
                       <Button
                         color="warning"
                         size="xs"
@@ -306,6 +301,13 @@ export default function CreditMemoManagement() {
                         <FaTrash className="mr-1" /> Delete
                       </Button>
                     </Table.Cell>
+                    <Table.Cell className="font-medium text-gray-900">{memo.creditMemoId}</Table.Cell>
+                    <Table.Cell>{memo.dealer}</Table.Cell>
+                    <Table.Cell>${memo.amount.toFixed(2)}</Table.Cell>
+                    <Table.Cell>{memo.reason}</Table.Cell>
+                    <Table.Cell>{new Date(memo.date).toLocaleDateString()}</Table.Cell>
+                    <Table.Cell>{memo.status}</Table.Cell>
+                  
                   </Table.Row>
                 ))}
               </Table.Body>

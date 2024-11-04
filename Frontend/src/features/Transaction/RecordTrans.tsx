@@ -9,18 +9,18 @@ import { CreditMemoData, PaymentForm } from '../../config/models/payment';
 import { ApprovedDealer } from '../../config/models/dealer';
 import Loading from '../../util/Loading';
 
-const canadianDenominations = [
-  { value: 100, label: '$100 bill' },
-  { value: 50, label: '$50 bill' },
-  { value: 20, label: '$20 bill' },
-  { value: 10, label: '$10 bill' },
-  { value: 5, label: '$5 bill' },
-  { value: 2, label: '$2 coin (Toonie)' },
-  { value: 1, label: '$1 coin (Loonie)' },
-  { value: 0.25, label: '25¢ (Quarter)' },
-  { value: 0.10, label: '10¢ (Dime)' },
-  { value: 0.05, label: '5¢ (Nickel)' },
-];
+// const canadianDenominations = [
+//   { value: 100, label: '$100 bill' },
+//   { value: 50, label: '$50 bill' },
+//   { value: 20, label: '$20 bill' },
+//   { value: 10, label: '$10 bill' },
+//   { value: 5, label: '$5 bill' },
+//   { value: 2, label: '$2 coin (Toonie)' },
+//   { value: 1, label: '$1 coin (Loonie)' },
+//   { value: 0.25, label: '25¢ (Quarter)' },
+//   { value: 0.10, label: '10¢ (Dime)' },
+//   { value: 0.05, label: '5¢ (Nickel)' },
+// ];
 interface BackendPaymentPayload {
   dealer: string;
   totalAmount: number;
@@ -33,8 +33,13 @@ interface BackendPaymentPayload {
   sender_email?: string;
   institution_name?: string;
   finance_id?: string;
+  checkNumber?: string,
+  chequeDate?: string,
   denominations?: { value: number; count: number }[];
   paymentDetails: { invoice: string; amount: number }[];
+  cardHolderName?: string,
+  expiryDate?: string,
+  cardNumber?: string,
 }
 
 export default function RecordPayment(): JSX.Element {
@@ -51,7 +56,12 @@ export default function RecordPayment(): JSX.Element {
     institution_name: '',
     finance_id: '',
     selectedInvoices: [],
-    denominations: canadianDenominations.map(d => ({ value: d.value, count: 0 }))
+    checkNumber: "",
+    chequeDate: "",
+    cardHolderName: '',
+    expiryDate: '',
+    cardNumber: '',
+    // denominations: canadianDenominations.map(d => ({ value: d.value, count: 0 }))
   });
   const [creditMemo, setCreditMemo] = useState<CreditMemoData>()
   const [loading, setLoading] = useState<boolean>(false);
@@ -71,14 +81,14 @@ export default function RecordPayment(): JSX.Element {
     }
   }, [formState.denominations, formState.paymentMode]);
 
-  const handleDenominationChange = (value: number, count: number): void => {
-    setFormState(prev => ({
-      ...prev,
-      denominations: prev.denominations?.map(d =>
-        d.value === value ? { ...d, count } : d
-      ),
-    }));
-  };
+  // const handleDenominationChange = (value: number, count: number): void => {
+  //   setFormState(prev => ({
+  //     ...prev,
+  //     denominations: prev.denominations?.map(d =>
+  //       d.value === value ? { ...d, count } : d
+  //     ),
+  //   }));
+  // };
 
   const calculateTotalFromDenominations = () => {
     return formState.denominations?.reduce((total, d) => total + d.value * d.count, 0);
@@ -119,6 +129,8 @@ export default function RecordPayment(): JSX.Element {
       sender_email: '',
       institution_name: '',
       finance_id: '',
+      checkNumber: '',
+      chequeDate: '',
     }));
   };
 
@@ -155,6 +167,11 @@ export default function RecordPayment(): JSX.Element {
       institution_name: formState.institution_name || undefined,
       finance_id: formState.finance_id || undefined,
       denominations: formState.paymentMode === 'Cash' ? formState.denominations : undefined,
+      checkNumber: formState.paymentMode === 'Cheque' ? formState.checkNumber : undefined, 
+    chequeDate: formState.paymentMode === 'Cheque' ? formState.chequeDate : undefined, 
+    cardNumber: (formState.paymentMode === 'CreditCard' || formState.paymentMode === 'DebitCard') ? formState.cardNumber : undefined, // Added for Credit/Debit Card
+    cardHolderName: (formState.paymentMode === 'CreditCard' || formState.paymentMode === 'DebitCard') ? formState.cardHolderName : undefined, // Added for Credit/Debit Card
+    expiryDate: (formState.paymentMode === 'CreditCard' || formState.paymentMode === 'DebitCard') ? formState.expiryDate : undefined, // Added for Credit/Debit Card
       paymentDetails: formState.selectedInvoices.map(inv => ({
         invoice: inv.id,
         amount: inv.amount
@@ -276,9 +293,12 @@ export default function RecordPayment(): JSX.Element {
                   <option value="">Select payment mode</option>
                   <option value="Online">Online</option>
                   <option value="Interac">Interac</option>
-                  <option value="Finance">Finance</option>
+                  {/* <option value="Finance">Finance</option> */}
+                  <option value="Cheque">Cheque</option>
                   <option value="Cash">Cash</option>
                   <option value="Card">Card</option>
+                  <option value="CreditCard">Credit Card</option> {/* Added Credit Card Option */}
+                  <option value="DebitCard">Debit Card</option>
                 </select>
               </div>}
 
@@ -364,7 +384,52 @@ export default function RecordPayment(): JSX.Element {
                   </div>
                 </>
               )}
-
+{(formState.paymentMode === 'CreditCard' || formState.paymentMode === 'DebitCard') && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Card Number
+                    </label>
+                    <input
+                      type="text"
+                      name="cardNumber"
+                      value={formState.cardNumber}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                      placeholder="Enter card number"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Card Holder Name
+                    </label>
+                    <input
+                      type="text"
+                      name="cardHolderName"
+                      value={formState.cardHolderName}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                      placeholder="Enter cardholder name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Expiry Date
+                    </label>
+                    <input
+                      type="text"
+                      name="expiryDate"
+                      value={formState.expiryDate}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                      placeholder="MM/YY"
+                    />
+                  </div>
+                </>
+              )}  
               {formState.paymentMode === 'Finance' && (
                 <>
                   <div>
@@ -398,7 +463,7 @@ export default function RecordPayment(): JSX.Element {
                 </>
               )}
 
-              {formState.paymentMode === 'Cash' && (
+              {/* {formState.paymentMode === 'Cash' && (
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Denominations
@@ -421,7 +486,41 @@ export default function RecordPayment(): JSX.Element {
                     Total from denominations: ${calculateTotalFromDenominations()?.toFixed(2)}
                   </p>
                 </div>
-              )}
+              )} */}
+
+              {
+                formState.paymentMode === "Cheque" && (
+                  <>
+                  <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cheque Number
+                    </label>
+                    <input
+                      type="text"
+                      name="checkNumber"
+                      value={formState.checkNumber}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                      placeholder="Enter check number"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cheque Date
+                    </label>
+                    <input
+                      type="date"
+                      name="chequeDate"
+                      value={formState.chequeDate}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                    />
+                  </div>
+                  </>
+                )
+              }
             </div>
 
             {

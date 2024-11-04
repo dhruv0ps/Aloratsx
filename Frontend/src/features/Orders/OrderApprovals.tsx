@@ -69,12 +69,13 @@ const OrderApprovalList = () => {
             <h2 className="text-2xl font-semibold mb-6">Pending Order Approvals</h2>
             <Table hoverable>
                 <Table.Head>
+                {role === "admin" && <Table.HeadCell className='text-center'>Actions</Table.HeadCell>}
                     <Table.HeadCell>Dealer Name</Table.HeadCell>
                     <Table.HeadCell>Company Name</Table.HeadCell>
                     <Table.HeadCell>PO Number</Table.HeadCell>
                     <Table.HeadCell>Date</Table.HeadCell>
                     <Table.HeadCell>Grand Total</Table.HeadCell>
-                    {role === "admin" && <Table.HeadCell className='text-center'>Actions</Table.HeadCell>}
+                    
                 </Table.Head>
                 <Table.Body className="divide-y">
                     {orders.map((order) => (
@@ -83,11 +84,6 @@ const OrderApprovalList = () => {
                             className="bg-white dark:border-gray-700 dark:bg-gray-800 cursor-pointer hover:bg-gray-50"
                             onClick={() => openModal(order)}
                         >
-                            <Table.Cell>{order.dealer?.contactPersonName}</Table.Cell>
-                            <Table.Cell>{order.dealer?.companyName}</Table.Cell>
-                            <Table.Cell>{order.purchaseOrderNumber}</Table.Cell>
-                            <Table.Cell>{new Date(order.date).toLocaleDateString()}</Table.Cell>
-                            <Table.Cell>${order.grandTotal.toFixed(2)}</Table.Cell>
                             {role === "admin" && <Table.Cell>
                                 <div className="flex space-x-2 justify-center">
                                     <Button color="success" size="sm" onClick={(e: { stopPropagation: () => void; }) => { e.stopPropagation(); handleApprove(order._id, 'approved'); }}>
@@ -98,6 +94,12 @@ const OrderApprovalList = () => {
                                     </Button>
                                 </div>
                             </Table.Cell>}
+                            <Table.Cell>{order.dealer?.contactPersonName}</Table.Cell>
+                            <Table.Cell>{order.dealer?.companyName}</Table.Cell>
+                            <Table.Cell>{order.purchaseOrderNumber}</Table.Cell>
+                            <Table.Cell>{new Date(order.date).toLocaleDateString()}</Table.Cell>
+                            <Table.Cell>${order.grandTotal.toFixed(2)}</Table.Cell>
+                            
                         </Table.Row>
                     ))}
                 </Table.Body>

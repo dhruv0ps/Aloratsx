@@ -11,6 +11,14 @@ const inventorySchema = new Schema({
     parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NewProduct', required: true }, // Added parent_id field
     booked: { type: Number, default: 0 },
     damaged: { type: Number, default: 0 },
+    enteryStatus :{
+        type: String,
+        enum: ['DRAFTED', 'COMPLETED'], // Enum for DRAFTED and COMPLETED states
+        default: 'DRAFTED',
+    },
+    inboundNumber : {
+        type: String,
+    },
     status: {
         type: String,
         enum: [
@@ -22,6 +30,8 @@ const inventorySchema = new Schema({
         ],
         default: "IN STOCK",
     },
+    referenceNumber: { type: String, trim: true}, // Added referenceNumber field
+    receiptFile: { type: String, trim: true }, 
 }, {
     timestamps: true
 });

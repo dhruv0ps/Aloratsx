@@ -65,6 +65,9 @@ const PackingSlipList: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-200">
                 <tr>
+                <th className="px-3 py-3 text-left ml-20 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Packing Slip ID
                   </th>
@@ -77,14 +80,25 @@ const PackingSlipList: React.FC = () => {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Customer Name
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+              
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {packingSlips.map((slip) => (
                   <tr key={slip._id} className="hover:bg-gray-50">
+                     <td className="px-3 py-4 whitespace-nowrap ml-20 text-sm font-medium">
+
+<button
+  className=" bg-gray-900 text-white py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
+  onClick={() => handleView(slip._id)}>View</button>
+{/* <Button onClick={() => handleView(slip._id)}>Download</Button> */}
+
+{/* <button
+  className="text-green-600 hover:text-green-900"
+>
+  <FaDownload className="w-5 h-5" />
+</button> */}
+</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {slip.packingID}
                     </td>
@@ -97,19 +111,7 @@ const PackingSlipList: React.FC = () => {
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {slip.orderDetails?.dealerName}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
-
-                      <button
-                        className=" bg-gray-900 text-white py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
-                        onClick={() => handleView(slip._id)}>View</button>
-                      {/* <Button onClick={() => handleView(slip._id)}>Download</Button> */}
-
-                      {/* <button
-                        className="text-green-600 hover:text-green-900"
-                      >
-                        <FaDownload className="w-5 h-5" />
-                      </button> */}
-                    </td>
+                   
                   </tr>
                 ))}
               </tbody>

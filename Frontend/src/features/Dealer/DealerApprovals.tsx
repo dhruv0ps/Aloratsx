@@ -67,23 +67,18 @@ const DealersApprovalList: React.FC = () => {
             <div className="overflow-x-auto">
                 <Table striped hoverable>
                     <Table.Head>
+                    <Table.HeadCell className="text-center">Actions</Table.HeadCell>
                         <Table.HeadCell>Username</Table.HeadCell>
                         <Table.HeadCell>Email</Table.HeadCell>
                         <Table.HeadCell>Mobile</Table.HeadCell>
                         <Table.HeadCell>Designation</Table.HeadCell>
                         <Table.HeadCell>Company</Table.HeadCell>
                         <Table.HeadCell>Address</Table.HeadCell>
-                        <Table.HeadCell className="text-center">Actions</Table.HeadCell>
+                        
                     </Table.Head>
                     <Table.Body className="divide-y">
                         {dealersData.map((dealer) => (
                             <Table.Row key={dealer._id} className="hover:bg-gray-50">
-                                <Table.Cell>{dealer.username}</Table.Cell>
-                                <Table.Cell>{dealer.email}</Table.Cell>
-                                <Table.Cell>{dealer.mobile}</Table.Cell>
-                                <Table.Cell>{dealer.designation}</Table.Cell>
-                                <Table.Cell>{dealer.company}</Table.Cell>
-                                <Table.Cell>{`${dealer.address.buzz ?? ""} ${dealer.address.unit ?? ""}, ${dealer.address.address}`}</Table.Cell>
                                 <Table.Cell className=" flex gap-x-3">
                                     <Button size={'xs'}
                                         onClick={() => handleApprove(dealer._id)}
@@ -99,6 +94,13 @@ const DealersApprovalList: React.FC = () => {
                                         Reject
                                     </Button>
                                 </Table.Cell>
+                                <Table.Cell>{dealer.username}</Table.Cell>
+                                <Table.Cell>{dealer.email}</Table.Cell>
+                                <Table.Cell>{dealer.mobile}</Table.Cell>
+                                <Table.Cell>{dealer.designation}</Table.Cell>
+                                <Table.Cell>{dealer.company}</Table.Cell>
+                                <Table.Cell>{`${dealer.address.buzz ?? ""} ${dealer.address.unit ?? ""}, ${dealer.address.address}`}</Table.Cell>
+                                
                             </Table.Row>
                         ))}
                     </Table.Body>

@@ -211,7 +211,8 @@ const handlePageClick = (selectedItem: { selected: number }) => {
   ));
 
   return (
-    <div className="mx-auto p-4 lg:px-8 ">
+    <div className="scroll-wrapper">   
+     <div className="mx-auto p-4 lg:px-8 ">
       <div className='mb-12 flex items-center justify-between  '>
         <Button color='gray' onClick={() => window.history.back()}>
           <span className='flex gap-2 items-center'><MdEdit />Back</span>
@@ -265,7 +266,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
       </div>
 
       {/* Table Section */}
-      <div  className="h-[calc(100vh-200px)] overflow-x-auto custom-scrollbar">
+      <div  className="table-scroll-container">
         {currentProducts.length > 0 ? (
           <table className="min-w-full bg-white">
             <thead>
@@ -278,8 +279,8 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                 <th className="py-3 px-6 text-left whitespace-nowrap">Stock</th>
                 <th className="py-3 px-6 text-left whitespace-nowrap">Status</th>
                 {/* <th className="py-3 px-6 text-left">Barcode</th> */}
-                {/* <th className="py-3 px-6 text-left">Stock</th> */}
-              
+                {/* <th className="py-3 px-6 text-left">Stock</th>
+               */}
               </tr>
             </thead>
             <tbody className="text-gray-900 text-sm font-light">
@@ -387,6 +388,8 @@ const handlePageClick = (selectedItem: { selected: number }) => {
         </Modal.Footer>
       </Modal>
     </div>
+    </div>
+
   );
 };
 

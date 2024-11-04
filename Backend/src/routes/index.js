@@ -141,8 +141,9 @@ router.put('/locations/:id', locationController.updateLocation);
 router.get('/locations/:id', locationController.getLocationById);
 
 // #region Inventory
-router.post('/inventory', inventoryController.addStartingStock);
+router.post('/inventory', imageUpload.single('receiptFile'),inventoryController.addStartingStock);
 router.get('/inventory/:id', inventoryController.getInventoryById);
+router.put('/inventory/mark-completed/:id', inventoryController.markAsCompleted);   
 router.get('/inventoryByLocation/:id', inventoryController.getInventoryByLocation);
 router.post('/getInventory', inventoryController.getAllInventories);
 router.put('/inventory/:id', inventoryController.updateInventory);

@@ -60,6 +60,9 @@ const InvoiceList: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-200">
                 <tr>
+                <th className="px-3 py-3 text-left ml-20 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Invoice Number
                   </th>
@@ -78,14 +81,20 @@ const InvoiceList: React.FC = () => {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Due Date
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {invoices.map((invoice) => (
                   <tr key={invoice._id} className="hover:bg-gray-50">
+                     <td className="px-3 py-4 ml-20 whitespace-nowrap text-sm font-medium">
+                      <button
+                        className="bg-gray-900 text-white py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
+                        onClick={() => handleView(invoice._id)}
+                      >
+                        View
+                      </button>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {invoice.invoiceNumber}
                     </td>
@@ -104,14 +113,7 @@ const InvoiceList: React.FC = () => {
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(invoice.dueDate).toLocaleDateString()}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        className="bg-gray-900 text-white py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
-                        onClick={() => handleView(invoice._id)}
-                      >
-                        View
-                      </button>
-                    </td>
+                   
                   </tr>
                 ))}
               </tbody>

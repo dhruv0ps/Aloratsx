@@ -84,25 +84,16 @@ export default function CategoryView() {
         <div className="bg-white rounded-lg shadow-lg p-8 overflow-x-auto">
           <Table className="w-full">
             <Table.Head>
+            <Table.HeadCell className="text-center">Actions</Table.HeadCell>
               <Table.HeadCell>Category Id</Table.HeadCell>
               <Table.HeadCell>Category Name</Table.HeadCell>
               <Table.HeadCell>Description</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
-              <Table.HeadCell className="text-center">Actions</Table.HeadCell>
+        
             </Table.Head>
             <Table.Body className="text-gray-700">
               {categories.map((category: any) => (
                 <Table.Row key={category._id} className="border-t border-gray-200">
-                  <Table.Cell>{category.customercategoryId}</Table.Cell>
-                  <Table.Cell>{category.customercategoryName}</Table.Cell>
-                  <Table.Cell>{category.customercategoryDescription}</Table.Cell>
-                  <Table.Cell>
-                    {category.isActive ? (
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Active</span>
-                    ) : (
-                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">Inactive</span>
-                    )}
-                  </Table.Cell>
                   <Table.Cell>
                     <div className="flex space-x-2 items-center justify-center">
                       <Button
@@ -125,6 +116,38 @@ export default function CategoryView() {
                       </Button>
                     </div>
                   </Table.Cell>
+                  <Table.Cell>{category.customercategoryId}</Table.Cell>
+                  <Table.Cell>{category.customercategoryName}</Table.Cell>
+                  <Table.Cell>{category.customercategoryDescription}</Table.Cell>
+                  <Table.Cell>
+                    {category.isActive ? (
+                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Active</span>
+                    ) : (
+                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">Inactive</span>
+                    )}
+                  </Table.Cell>
+                  {/* <Table.Cell>
+                    <div className="flex space-x-2 items-center justify-center">
+                      <Button
+                        size="sm"
+                        color="warning"
+                        onClick={() => {
+                          setEditCategory(category);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <MdEdit className="h-5 w-5" /> Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        color={category.isActive ? 'red' : 'green'}
+                        onClick={() => handleActivateDeactivate(category._id, category.isActive)}
+                      >
+                        {category.isActive ? <FaTimes className="h-5 w-5" /> : <FaCheck className="h-5 w-5" />}
+                        {category.isActive ? 'Deactivate' : 'Activate'}
+                      </Button>
+                    </div>
+                  </Table.Cell> */}
                 </Table.Row>
               ))}
             </Table.Body>
