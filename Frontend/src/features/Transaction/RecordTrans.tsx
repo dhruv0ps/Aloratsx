@@ -307,7 +307,7 @@ export default function RecordPayment(): JSX.Element {
                   Amount
                 </label>
                 <input
-                  disabled={formState.useCreditMemo }
+                  // disabled={formState.useCreditMemo }
                   type="number"
                   name="amount"
                   value={formState.amount}

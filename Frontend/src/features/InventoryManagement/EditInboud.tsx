@@ -151,6 +151,7 @@ const InboundCreation = () => {
 
   return (
     <div className="min-h-screen border-l border-gray-200 bg-gray-50 -mt-5 py-12 px-4 sm:px-6 lg:px-8">
+     
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={() => navigate(-1)}
