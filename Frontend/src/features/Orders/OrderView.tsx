@@ -18,8 +18,11 @@ const Orders: React.FC = () => {
     const [sortOption, setSortOption] = useState<'recent' | 'az' | 'za'>('recent');
     const [selectedOrder, setSelectedOrder] = useState<OrderWithData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [editedPrice, setEditedPrices]= useState<Object>({price:Number, id:String})
     const navigate = useNavigate();
+
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         fetchOrders();
@@ -64,11 +67,6 @@ const Orders: React.FC = () => {
     };
 
     const handleDelete = async (order: any) => {
-        // if (order.status !== 'PENDING') {
-        //     toast.error('Only pending orders can be deleted');
-        //     return;
-        // }
-
         const confirmDelete = await showConfirmationModal('Are you sure you want to delete this order?');
         if (confirmDelete) {
             try {
@@ -92,14 +90,18 @@ const Orders: React.FC = () => {
     };
 
     const openModal = (order: OrderWithData) => {
-        // setEditedPrices({id:order.products.map((ele)=>ele.parent_id),price:order.products.map((ele)=>ele.price)})
         setSelectedOrder(order);
         setIsModalOpen(true);
     };
-    // const handleSave=(selectedOrder:OrderWithData, editedPrice:any)=>{
-    //     setIsModalOpen(false);
-    //     console.log(selectedOrder, editedPrice)
-    // }
+
+    // Pagination logic
+    const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
+    const currentOrders = sortedOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
     if (loading) return <Loading />;
 
     return (
@@ -113,15 +115,13 @@ const Orders: React.FC = () => {
             </button>
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Order Management
-                    </h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">Order Management</h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                         View and manage all your orders in one place.
                     </p>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-xl p-8">
+                <div className="bg-white rounded-lg shadow-md p-8">
                     <div className="flex gap-6 justify-between items-center mb-6">
                         <input
                             type="text"
@@ -145,36 +145,31 @@ const Orders: React.FC = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Company Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                                   
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Action</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Order ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Customer Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Customer Company Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Order Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Invoice Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-black bg-gray-300 uppercase tracking-wider">Created At</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {sortedOrders.map((order) => (
+                                {currentOrders.map((order) => (
                                     <tr key={order._id} className="hover:bg-gray-100 cursor-pointer">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center flex items-center gap-x-2">
-                                            <Button
-                                                color={'dark'}
-                                                size={'sm'}
-                                                onClick={() => openModal(order)}
-                                            >
-                                                View
-                                            </Button>
-                                            {order.status !== "DELETED" && <Button
-                                                color={'failure'}
-                                                size={'sm'}
-                                                outline
-                                                onClick={() => handleDelete(order)}
-                                                disabled={order.invoiceStatus === 'Invoiced'}
-                                            >
-                                                Delete
-                                            </Button>}
+                                            <Button color="dark" size="sm" onClick={() => openModal(order)}>View</Button>
+                                            {order.status !== "DELETED" && (
+                                                <Button
+                                                    color="failure"
+                                                    size="sm"
+                                                    outline
+                                                    onClick={() => handleDelete(order)}
+                                                    disabled={order.invoiceStatus === 'Invoiced'}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.purchaseOrderNumber}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.dealer?.contactPersonName}</td>
@@ -193,15 +188,36 @@ const Orders: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.invoiceStatus ?? "Pending"}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.date).toLocaleDateString()}</td>
-                                        
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    <div className="flex justify-center mt-4">
+                        <Button
+                            color="gray"
+                            disabled={currentPage === 1}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            className="mr-2"
+                        >
+                            Previous 
+                        </Button>
+                        <span className="text-sm text-gray-600 mt-2 ml-2 mr-2 ">Page {currentPage} of {totalPages}</span>
+                        <Button
+                            color="gray"
+                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            className="ml-2"
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
 
+            {/* Order Details Modal */}
             <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="3xl">
                 <Modal.Header className="border-b border-gray-200 !p-6 !m-0">
                     <h3 className="text-xl font-semibold text-gray-700">Order Details</h3>
@@ -209,96 +225,91 @@ const Orders: React.FC = () => {
                 <Modal.Body className="!p-6">
                     {selectedOrder && (
                         <div className="space-y-6 text-gray-500">
+                            {/* Order Details */}
                             <div className="flex justify-between items-center">
-                                <div className="col-span-1">
+                                <div>
                                     <h4 className="text-lg font-semibold flex items-center mb-4">
                                         <FaFileInvoice className="mr-2" /> Order Status
                                     </h4>
                                     <p><span className="font-semibold">Order ID:</span> {selectedOrder.purchaseOrderNumber}</p>
-                                    <p><span className="font-semibold">Order Status:</span> {(selectedOrder.status)}</p>
-                                    <p><span className="font-semibold">Invoice Status:</span> {(selectedOrder.invoiceStatus || 'Pending')}</p>
+                                    <p><span className="font-semibold">Order Status:</span> {selectedOrder.status}</p>
+                                    <p><span className="font-semibold">Invoice Status:</span> {selectedOrder.invoiceStatus || 'Pending'}</p>
                                 </div>
-
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Order Date</p>
                                     <p className="text-lg">{new Date(selectedOrder.date).toLocaleDateString()}</p>
                                 </div>
                             </div>
 
+                            {/* Customer Information */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="col-span-1">
+                                <div>
                                     <h4 className="text-lg font-semibold flex items-center mb-4">
                                         <FaUser className="mr-2" /> Customer Information
                                     </h4>
                                     <p><span className="font-semibold">Name:</span> {selectedOrder.dealer.contactPersonName}</p>
                                     <p><span className="font-semibold">Company:</span> {selectedOrder.dealer.companyName}</p>
                                 </div>
-                                <div className='col-span-1 text-right'>
-                                    <h4 className="text-lg font-semibold flex items-center justify-end mb-2">
+                                <div className="text-right">
+                                    <h4 className="text-lg font-semibold flex items-center justify-end mb-4">
                                         <FaMapMarkerAlt className="mr-2" /> Billing Address
                                     </h4>
                                     <p>{selectedOrder.billTo.companyName}</p>
                                     <p>{selectedOrder.billTo.address.address}</p>
                                 </div>
-                                {/* <div className="col-span-1 text-right">
-                                    <h4 className="text-lg font-semibold flex justify-end items-center mb-4">
-                                        <FaFileInvoice className="mr-2" /> Order Status
-                                    </h4>
-                                    <p><span className="font-semibold">Order Status:</span> {(selectedOrder.status)}</p>
-                                    <p><span className="font-semibold">Invoice Status:</span> {(selectedOrder.invoiceStatus || 'Pending')}</p>
-                                </div> */}
                             </div>
 
-                            <div className='overflow-x-auto'>
-                                <h4 className="text-lg font-semibold flex items-center mb-4">
-                                    <FaBox className="mr-2" /> Products
-                                </h4>
-                                <Table>
-                                    <Table.Head>
-                                        <Table.HeadCell>Product Name</Table.HeadCell>
-                                        <Table.HeadCell>Quantity</Table.HeadCell>
-                                        <Table.HeadCell>Price</Table.HeadCell>
-                                        <Table.HeadCell>Total</Table.HeadCell>
-                                    </Table.Head>
-                                    <Table.Body>
-                                        {selectedOrder.products.map((product, index) => (
-                                            <Table.Row key={index} className="bg-white">
-                                                <Table.Cell>{product.product.name}</Table.Cell>
-                                                <Table.Cell>{product.quantity}</Table.Cell>
-                                                <Table.Cell>
-                                                    {/* <input
-                                                    type='number'
-                                                    value={product.price.toFixed(2)}
-                                                    onChange={(e)=>setEditedPrices({price:e.target.value, id:product.parent_id})}
-                                                    >
-                                                    </input> */}
-                                                    ${product.price.toFixed(2)}</Table.Cell>
-                                                <Table.Cell>${(product.quantity * product.price).toFixed(2)}</Table.Cell>
-                                            </Table.Row>
-                                        ))}
-                                    </Table.Body>
-                                </Table>
-                                <div className="flex justify-end mt-4">
+                            {/* Product Details */}
+                           {/* Product Details */}
+<div className="overflow-x-auto">
+    <h4 className="text-lg font-semibold flex items-center mb-4">
+        <FaBox className="mr-2" /> Products
+    </h4>
+    <Table>
+        <Table.Head>
+            <Table.HeadCell>Product Name</Table.HeadCell>
+            {/* <Table.HeadCell>Product SKU</Table.HeadCell> */}
+            <Table.HeadCell>Child SKU</Table.HeadCell>
+            <Table.HeadCell>Child Name</Table.HeadCell>
+            <Table.HeadCell>Quantity</Table.HeadCell>
+            <Table.HeadCell>Price</Table.HeadCell>
+            <Table.HeadCell>Total</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
+            {selectedOrder.products.map((product, index) => {
+                // Find the child in `children` that matches the `childSKU`
+                const matchingChild = product.product.children.find(child => child.SKU === product.childSKU);
 
-
-                                    <div>
-                                        {/* <p className="">Dealer Discount: {selectedOrder.dealer?.priceDiscount} %</p> */}
-                                        <p>GST: ${selectedOrder.gst}</p>
-                                        <p>HST: ${selectedOrder.hst}</p>
-                                        <p>QST: ${selectedOrder.qst}</p>
-                                        <p>PST: ${selectedOrder.pst}</p>
-                                        <p className="text-lg font-semibold">Grand Total: ${selectedOrder.grandTotal.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                            </div>
-
+                return (
+                    <Table.Row key={index}>
+                        <Table.Cell>{product.product.name}-{matchingChild ? matchingChild.name : 'N/A'}</Table.Cell>
+                        
+                        <Table.Cell>{product.childSKU}</Table.Cell>
+                        <Table.Cell>{matchingChild ? matchingChild.name : 'N/A'}</Table.Cell>
+                        <Table.Cell>{product.quantity}</Table.Cell>
+                        <Table.Cell>${product.price.toFixed(2)}</Table.Cell>
+                        <Table.Cell>${(product.quantity * product.price).toFixed(2)}</Table.Cell>
+                    </Table.Row>
+                );
+            })}
+        </Table.Body>
+    </Table>
+    <div className="flex justify-end mt-4">
+        <div>
+            <p>GST: ${selectedOrder.gst}</p>
+            <p>HST: ${selectedOrder.hst}</p>
+            <p>QST: ${selectedOrder.qst}</p>
+            <p>PST: ${selectedOrder.pst}</p>
+            <p className="text-lg font-semibold">Grand Total: ${selectedOrder.grandTotal.toFixed(2)}</p>
+        </div>
+    </div>
+</div>
 
                         </div>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button color="gray" onClick={() => setIsModalOpen(false)}>Close</Button>
-                    {/* <Button color="success" onClick={() => handleSave(selectedOrder, editedPrice)}>Save</Button> */}
                 </Modal.Footer>
             </Modal>
         </div>

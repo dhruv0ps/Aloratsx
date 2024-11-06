@@ -169,15 +169,24 @@ const RawMaterialManager: React.FC = () => {
                 <div className="overflow-x-auto">
                     <Table>
                         <Table.Head>
+                        <Table.HeadCell >Actions</Table.HeadCell>
                             <Table.HeadCell>Image</Table.HeadCell>
                             <Table.HeadCell>Material</Table.HeadCell>
                             <Table.HeadCell>Description</Table.HeadCell>
                             <Table.HeadCell>Measuring Unit</Table.HeadCell>
-                            <Table.HeadCell className='justify-end flex'>Actions</Table.HeadCell>
+                            
                         </Table.Head>
                         <Table.Body>
                             {currentMaterials.map((rawMaterial) => (
                                 <Table.Row key={rawMaterial._id}>
+                                     <Table.Cell className='flex gap-x-3 items-center '>
+                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(rawMaterial)}>
+                                            Edit
+                                        </Button>
+                                        <Button size={'sm'} color="failure" onClick={() => handleDelete(rawMaterial)}>
+                                            Delete
+                                        </Button>
+                                    </Table.Cell>
                                     <Table.Cell>
                                         {rawMaterial.image && (
                                             <img
@@ -194,14 +203,7 @@ const RawMaterialManager: React.FC = () => {
                                             : rawMaterial.description}
                                     </Table.Cell>
                                     <Table.Cell>{rawMaterial.measuringUnit}</Table.Cell>
-                                    <Table.Cell className='flex gap-x-3 items-center justify-end'>
-                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(rawMaterial)}>
-                                            Edit
-                                        </Button>
-                                        <Button size={'sm'} color="failure" onClick={() => handleDelete(rawMaterial)}>
-                                            Delete
-                                        </Button>
-                                    </Table.Cell>
+                                   
                                 </Table.Row>
                             ))}
                         </Table.Body>

@@ -82,15 +82,21 @@ class InventoryController {
     };
 
     //#region damaged prods
-
-    addDamagedProduct = async (req, res) => {
+      addDamagedProduct = async (req, res) => {
         try {
-            const damagedProduct = await damagedProductService.addDamagedProduct(req.body);
+            // Extract image paths from the uploaded files
+            
+            const imagePaths = req.files ? req.files.map(file => file.path) : [];
+    
+            // Pass the image paths along with the other data to the service
+            const damagedProduct = await damagedProductService.addDamagedProduct(req.body, imagePaths);
+    
             res.status(201).json({ status: true, data: damagedProduct, err: {} });
         } catch (error) {
             res.status(400).json({ status: false, data: {}, err: error.message });
         }
     };
+    
 
     updateDamagedProduct = async (req, res) => {
         try {

@@ -11,6 +11,8 @@ const InvoiceList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -32,6 +34,12 @@ const InvoiceList: React.FC = () => {
   const handleView = (id: string) => {
     navigate(`/yellowadmin/Invoice/${id}`);
   };
+
+  const filteredInvoices = invoices.filter(invoice =>
+    (invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invoice.dealer.dealerName.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    (statusFilter === 'all' || invoice.invoiceStatus.toLowerCase() === statusFilter)
+  );
 
   if (loading) return <Loading />;
 
@@ -55,12 +63,31 @@ const InvoiceList: React.FC = () => {
           </p>
         </div>
 
+        <div className="mb-6 flex space-x-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Invoice Number or Customer Name"
+            className="w-full p-3 border rounded-lg shadow-sm"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="p-3 border rounded-lg shadow-sm"
+          >
+            <option value="all">All</option>
+            <option value="fully paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-200">
                 <tr>
-                <th className="px-3 py-3 text-left ml-20 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left ml-20 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -73,7 +100,7 @@ const InvoiceList: React.FC = () => {
                     Purchase Order Number
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Dealer Name
+                    Customer Name
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total Amount
@@ -81,13 +108,12 @@ const InvoiceList: React.FC = () => {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Due Date
                   </th>
-                 
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {invoices.map((invoice) => (
+                {filteredInvoices.map((invoice) => (
                   <tr key={invoice._id} className="hover:bg-gray-50">
-                     <td className="px-3 py-4 ml-20 whitespace-nowrap text-sm font-medium">
+                    <td className="px-3 py-4 ml-20 whitespace-nowrap text-sm font-medium">
                       <button
                         className="bg-gray-900 text-white py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
                         onClick={() => handleView(invoice._id)}
@@ -99,7 +125,9 @@ const InvoiceList: React.FC = () => {
                       {invoice.invoiceNumber}
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {invoice.invoiceStatus}
+                      <span className={`px-2 py-1 rounded-full text-xs ${invoice.invoiceStatus === 'fully paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {invoice.invoiceStatus}
+                      </span>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {invoice.purchaseOrderNumber}
@@ -113,7 +141,6 @@ const InvoiceList: React.FC = () => {
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(invoice.dueDate).toLocaleDateString()}
                     </td>
-                   
                   </tr>
                 ))}
               </tbody>
@@ -134,6 +161,7 @@ const InvoiceList: React.FC = () => {
               Page {currentPage} of {totalPages}
             </span>
             <button
+            
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
               className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"

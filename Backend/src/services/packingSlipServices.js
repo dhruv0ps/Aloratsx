@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Order = require('../config/models/orderModel');
 const Invoice = require('../config/models/invoiceModel');
 const PackingSlip = mongoose.model("PackingSlip")
-
+const Inventory = require('../config/models/inventoryModel');
 const getPackingSlipById = async (id) => {
   return await PackingSlip.findById(id).populate('order');
 };
@@ -128,6 +128,29 @@ const updatePackingSlip = async (id, packingSlipData) => {
       order.invoiceStatus = "Invoiced";
       order.assignedInvoice = savedInvoice._id;
       await order.save({ session });
+
+      for(const product of order.products){
+        const inventoryRecord = await Inventory.findOne({
+          product: product.product._id,
+          child: product.childSKU,
+        }).session(session);
+
+        if (!inventoryRecord) {
+          throw new Error(`Inventory record not found for SKU ${product.childSKU}`);
+        }
+
+        // Check if there's enough inventory to deduct
+        if (inventoryRecord.quantity < product.quantity) {
+          throw new Error(
+            `Insufficient inventory for SKU ${product.childSKU}: Available ${inventoryRecord.quantity}, Requested ${product.quantity}`
+          );
+        }
+
+        // Deduct the quantity from inventory
+        inventoryRecord.quantity -= product.quantity;
+        inventoryRecord.booked += product.quantity;
+        await inventoryRecord.save({ session });
+      }
     }
 
     await session.commitTransaction();

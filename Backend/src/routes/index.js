@@ -23,6 +23,7 @@ const customercategoryController = require("../controllers/customercategoryContr
 const rawMaterialController =require("../controllers/rawMaterialController");
 const tagController = require('../controllers/tagContreller');
 const customerController = require ("../controllers/customerController");
+const InboundController = require('../controllers/inboundController');
 
 var jsonParser = bodyParser.json()
 router.use(jsonParser)
@@ -140,7 +141,15 @@ router.get('/locations', locationController.getAllLocations);
 router.put('/locations/:id', locationController.updateLocation);
 router.get('/locations/:id', locationController.getLocationById);
 
-// #region Inventory
+// #region Inventory and Inbound
+router.post('/inbound/drafts', authenticateTokenAdmin, InboundController.createDraft);
+router.post('/inbound/list', authenticateTokenAdmin, InboundController.getAllInbound);
+router.get('/inbound/drafts/:id', authenticateTokenAdmin, InboundController.getDraftById);
+router.put('/inbound/drafts/:id', authenticateTokenAdmin, InboundController.updateDraft);
+router.post('/inbound/drafts/:id/complete', authenticateTokenAdmin, InboundController.completeDraft);
+router.post('/inbound/drafts/:id/cancel', authenticateTokenAdmin, InboundController.cancelDraft);
+
+
 router.post('/inventory', imageUpload.single('receiptFile'),inventoryController.addStartingStock);
 router.get('/inventory/:id', inventoryController.getInventoryById);
 router.put('/inventory/mark-completed/:id', inventoryController.markAsCompleted);   
@@ -149,7 +158,7 @@ router.post('/getInventory', inventoryController.getAllInventories);
 router.put('/inventory/:id', inventoryController.updateInventory);
 router.post('/invMove', inventoryController.moveInventory);
 router.get('/damaged', inventoryController.getAllDamagedProducts);
-router.post('/damaged', inventoryController.addDamagedProduct);
+router.post('/damaged',imageUpload.array('images',5), inventoryController.addDamagedProduct);
 router.put('/damaged/:id', inventoryController.updateDamagedProduct)
 
 //#region agent

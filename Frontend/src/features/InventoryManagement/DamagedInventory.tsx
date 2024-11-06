@@ -8,18 +8,20 @@ import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
 import Loading from '../../util/Loading';
 import { Child } from '../../config/models/Child';
 import { Product } from '../../config/models/product';
+import { useDropzone } from 'react-dropzone';
 
 const DamagedProducts: React.FC = () => {
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [child, setChild] = useState<Child | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+    const [child, setChild] = useState<any | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [comments, setComments] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [productInputValue, setProductInputValue] = useState<string>('');
     const [childInputValue, setChildInputValue] = useState<string>('');
     const [damagedProducts, setDamagedProducts] = useState<any[]>([]);
+    const [photos, setPhotos] = useState<File[]>([]);
     const navigate = useNavigate();
-
+ console.log(child)
     useEffect(() => {
         fetchDamagedProducts();
     }, []);
@@ -51,6 +53,10 @@ const DamagedProducts: React.FC = () => {
         setComments(e.target.value);
     };
 
+    const onDrop = (acceptedFiles: File[]) => {
+        setPhotos((prevPhotos) => [...prevPhotos, ...acceptedFiles]);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProduct) {
@@ -62,14 +68,19 @@ const DamagedProducts: React.FC = () => {
             return;
         }
         setLoading(true);
+
+        const formData = new FormData();
+        formData.append('product', selectedProduct.product_id);
+        formData.append('child', childInputValue);
+        formData.append('quantity', quantity.toString());
+        formData.append('comments', comments);
+
+        photos.forEach((photo) => {
+            formData.append('images', photo);
+        });
+
         try {
-            const data = {
-                product: selectedProduct._id, // Using _id of the selected product
-                child: child?.SKU,
-                quantity,
-                comments,
-            };
-            await inventoryApi.addDamagedProduct(data);
+            await inventoryApi.addDamagedProduct(formData);
             toast.success('Damaged product added successfully');
             setSelectedProduct(null);
             setChild(null);
@@ -77,6 +88,7 @@ const DamagedProducts: React.FC = () => {
             setComments('');
             setProductInputValue('');
             setChildInputValue('');
+            setPhotos([]);
             fetchDamagedProducts();
         } catch (error: any) {
             console.error(error.response?.data?.message || 'An error occurred');
@@ -85,6 +97,8 @@ const DamagedProducts: React.FC = () => {
             setLoading(false);
         }
     };
+
+    const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
     if (loading) return <Loading />;
 
@@ -126,6 +140,73 @@ const DamagedProducts: React.FC = () => {
                         required
                     />
                 </div>
+                <div style={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif' }}>
+    <label
+        htmlFor="photos"
+        style={{
+            display: 'block',
+            fontSize: '14px',
+            fontWeight: '500',
+            color: '#4a5568',
+            marginBottom: '8px',
+        }}
+    >
+        Upload Photos:
+    </label>
+    <div
+        {...getRootProps()}
+        style={{
+            border: '2px dashed #cbd5e0',
+            borderRadius: '8px',
+            padding: '20px',
+            textAlign: 'center',
+            color: '#4a5568',
+            backgroundColor: '#f7fafc',
+            transition: 'border-color 0.3s, background-color 0.3s',
+            cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#63b3ed';
+            e.currentTarget.style.backgroundColor = '#ebf8ff';
+        }}
+        onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = '#cbd5e0';
+            e.currentTarget.style.backgroundColor = '#f7fafc';
+        }}
+        onMouseDown={(e) => {
+            e.currentTarget.style.borderColor = '#3182ce';
+            e.currentTarget.style.backgroundColor = '#e6fffa';
+        }}
+        onMouseUp={(e) => {
+            e.currentTarget.style.borderColor = '#63b3ed';
+            e.currentTarget.style.backgroundColor = '#ebf8ff';
+        }}
+    >
+        <input {...getInputProps()} />
+        <p style={{ fontSize: '14px', color: '#718096', margin: '0' }}>
+            Drag 'n' drop some files here, or click to select files
+        </p>
+    </div>
+    <div style={{ marginTop: '10px' }}>
+        {photos.map((photo, index) => (
+            <div
+                key={index}
+                style={{
+                    fontSize: '12px',
+                    color: '#718096',
+                    backgroundColor: '#edf2f7',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    marginBottom: '5px',
+                    wordWrap: 'break-word',
+                }}
+            >
+                {photo.name}
+            </div>
+        ))}
+    </div>
+</div>
+
                 <button
                     type="submit"
                     disabled={loading}

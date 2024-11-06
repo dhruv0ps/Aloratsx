@@ -206,7 +206,7 @@ const OrderForm = () => {
     if (loading) return <Loading />;
 
     return (
-        <div className="min-h-screen border-l border-gray-200 bg-gray-50 -mt-5 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen border-l border-gray-200 bg-gray-50 -mt-5 py-12 px-4 sm:px-6 lg:px-8 ">
             <button
                 onClick={() => navigate(-1)}
                 className="sm:flex items-center text-gray-600 hover:text-gray-900 hidden mb-5"
@@ -214,9 +214,9 @@ const OrderForm = () => {
                 <FaChevronLeft className="w-5 h-5 mr-2" />
                 Back
             </button>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-3xl mt-2 font-bold text-gray-900 mb-4 ">
                         {id ? 'Edit Order' : 'Create New Order'}
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">

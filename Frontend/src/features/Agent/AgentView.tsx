@@ -64,7 +64,7 @@ export default function AgentView() {
                     Back
                 </Button>
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
                         Agent Details
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -73,7 +73,7 @@ export default function AgentView() {
                 </div>
 
                 {agentData ? <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 ">
                         <InfoItem label="Name" value={agentData?.name} />
                         <InfoItem label="Email" value={agentData?.email} />
                         <InfoItem label="Mobile" value={agentData?.number} />
@@ -87,7 +87,7 @@ export default function AgentView() {
                             Orders
                         </h5>
                         {agentData.linkedOrders.length > 0 ? (
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto ">
                                 <Table hoverable>
                                     <Table.Head>
                                         <Table.HeadCell>Order ID</Table.HeadCell>

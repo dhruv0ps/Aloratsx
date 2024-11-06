@@ -2,26 +2,7 @@ const { default: mongoose } = require('mongoose');
 const Inventory = require('../config/models/inventoryModel');
 const logService = require("./logService")
 const  NewProduct  = require("../config/models/newProductgen");
-const generateInboundNumber = async () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
 
-    const baseIdentifier = `INB-${year}${month}${day}-`;
-
-   
-    const todayStart = new Date(year, date.getMonth(), date.getDate());
-    const todayEnd = new Date(year, date.getMonth(), date.getDate() + 1);
-
-    const count = await Inventory.countDocuments({
-        createdAt: { $gte: todayStart, $lt: todayEnd }
-    });
-
- 
-    const letter = String.fromCharCode(65 + count); 
-    return baseIdentifier + letter;
-};
 const inventoryService = {
 
 
@@ -52,8 +33,7 @@ const inventoryService = {
                 );
             } else {
                 // If inventory doesn't exist, create a new one
-                data.inboundNumber = inboundNumber; 
-                inventory = await Inventory.create([data], { session });
+              inventory = await Inventory.create([data], { session });
             }
             await NewProduct.updateOne(
                 { _id: data.product, "children.SKU": data.child },
@@ -88,7 +68,7 @@ const inventoryService = {
         try {
             const inventory = await Inventory.findById(id)
                 .populate('product')
-                .populate('location');
+                // .populate('location');
             return inventory;
         } catch (error) {
             
@@ -114,7 +94,7 @@ const inventoryService = {
             // Step 1: Fetch inventories and populate the `NewProduct` model
             const inventories = await Inventory.find(query)
                 .populate({
-                    path: 'parent_id', // Field in Inventory that references the NewProduct model
+                    path: 'product', // Field in Inventory that references the NewProduct model
                     model: 'NewProduct', // Name of the referenced model
                     select: 'children name category', // Fields to select from NewProduct
                 })
@@ -125,9 +105,9 @@ const inventoryService = {
             // Step 2: Enrich inventories with child name and apply filters
             const enrichedInventories = inventories.map(inventory => {
                 // Check if `parent_id` and `parent_id.children` are defined
-                if (inventory.parent_id && inventory.parent_id.children) {
+                if (inventory.product && inventory.product.children) {
                     // Find the child with the matching SKU
-                    const matchingChild = inventory.parent_id.children.find(child => child.SKU === inventory.child);
+                    const matchingChild = inventory.product.children.find(child => child.SKU === inventory.child);
     
                     // Add childName to the inventory object
                     const childName = matchingChild ? matchingChild.name : 'Child not found';
@@ -136,8 +116,8 @@ const inventoryService = {
                     return {
                         ...inventory._doc, // `_doc` to extract the plain object
                         childName,
-                        productName: inventory.parent_id.name,
-                        category: inventory.parent_id.category,
+                        productName: inventory.product.name,
+                        category: inventory.product.category,
                     };
                 } else {
                     // Handle the case where `parent_id` or `children` is not defined
@@ -274,7 +254,7 @@ const inventoryService = {
                     { damaged: { $ne: 0 } }
                 ]
             }).populate('product')
-                .populate('location');
+                // .populate('location');
 
             if (!inventory)
                 throw new Error("No active products in inventory were found")

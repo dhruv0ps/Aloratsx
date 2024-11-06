@@ -69,7 +69,7 @@ export default function ViewPayments() {
                     </p>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-xl p-8">
+                <div className="bg-white shadow-md sm:rounded-lg p-8">
                     <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-2xl font-semibold text-gray-800">Payments</h2>
                         <button
@@ -112,36 +112,38 @@ export default function ViewPayments() {
                             <option value="Interac">Interac</option>
                             {/* <option value="Finance">Finance</option> */}
                             <option value="Cash">Cash</option>
-                            <option value="Card">Card</option>
+                            <option value="CreditCard">CreditCard</option>
+                            {/* <option value="Card">Card</option> */}
+                            <option value="DebitCard">DebitCard</option>
                             <option value="Cheque">Cheque</option>
                         </select>
                         {/* Add more filter inputs as needed */}
                     </div>
 
                     {loading ? <Loading /> : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto ">
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-200">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Dealer
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                        Customer
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Amount
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Invoices
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Type
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Mode
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Ref
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Date
                                         </th>
                                     </tr>

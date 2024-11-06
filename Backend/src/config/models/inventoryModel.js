@@ -7,15 +7,15 @@ const inventorySchema = new Schema({
     child: { type: String, required: true, trim: true },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'Locations' },
     quantity: { type: Number, required: true },
-    parentName: { type: String, required: true, trim: true }, // Added parentName field
-    parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NewProduct', required: true }, // Added parent_id field
+    parentName: { type: String,  trim: true }, // Added parentName field
+    parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NewProduct', }, // Added parent_id field
     booked: { type: Number, default: 0 },
     damaged: { type: Number, default: 0 },
-    enteryStatus :{
-        type: String,
-        enum: ['DRAFTED', 'COMPLETED'], // Enum for DRAFTED and COMPLETED states
-        default: 'DRAFTED',
-    },
+    // enteryStatus :{
+    //     type: String,
+    //     enum: ['DRAFTED', 'COMPLETED'], // Enum for DRAFTED and COMPLETED states
+    //     default: 'DRAFTED',
+    // },
     inboundNumber : {
         type: String,
     },

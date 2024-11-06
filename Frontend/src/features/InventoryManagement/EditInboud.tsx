@@ -1,187 +1,282 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput, FileInput } from 'flowbite-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useNavigate, useParams } from 'react-router-dom';
-import AutocompleteProductInput from '../../util/AutoCompleteProductInput';
+import { FaChevronLeft } from 'react-icons/fa';
 import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
+import AutocompleteProductInput from '../../util/AutoCompleteProductInput';
+import { Button } from 'flowbite-react';
+import Loading from '../../util/Loading';
+import showConfirmationModal from '../../util/confirmationUtil';
 
-// type ExtendedChild = {
-//   parentName: string;
-//   parent_id: string;
-//   name: string;
-//   SKU: string;
-//   quantity: number;
-// };
+interface ChildItem {
+  sku: string;
+  name: string;
+}
 
-const EditInboundPage: React.FC = () => {
-  const { id } = useParams<{ id: any }>(); // Retrieve the inbound ID from the URL
-  const [currentDraft, setCurrentDraft] = useState<any| null>(null);
-  const [inboundList, setInboundList] = useState<any[]>([]);
-  const [productInputValue, setProductInputValue] = useState<string>('');
-  const [quantity, setQuantity] = useState<number>(0);
-  const [referenceNumber, setReferenceNumber] = useState<string>('');
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  console.log(receiptFile)
+// Define a type for the product item in the inbound list
+interface InboundItem {
+  product: string;
+  parentName: string;
+  child: ChildItem;
+  quantity: number;
+ 
+}
+
+// Define a type for the inbound state
+interface Inbound {
+  items: InboundItem[];
+  name? : string
+  status: string;
+  referenceNumber: string;
+  image?: File | null;
+}
+
+const InboundCreation = () => {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-console.log(quantity);
+  const [inbound, setInbound] = useState<Inbound>({
+    items: [],
+    status: 'DRAFT',
+    referenceNumber: '',
+    image: null,
+  });
+  const [inputValue, setInputValue] = useState('');
+//   const [imageFile, setImageFile] = useState<File | null>(null);
+// console.log(imageFile);
   useEffect(() => {
-    // Fetch the existing inbound data by ID
-    const fetchInboundData = async () => {
-      try {
-        const response = await inventoryApi.getInventoryById(id);
-        if (response.status) {
-          const data = response.data;
-          console.log(data)
-          setCurrentDraft(data);
-          setInboundList(data);
-        //   setReferenceNumber(data.referenceNumber);
+    if (id) {
+      const fetchInbound = async () => {
+        setLoading(true);
+        try {
+          const res = await inventoryApi.getDraftById(id);
+          setInbound(res.data as any);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-        toast.error('Failed to load inbound data');
-      }
-    };
-    fetchInboundData();
+      };
+      fetchInbound();
+    }
   }, [id]);
+  console.log(id)
+    
+  const handleProductChange = (product: any & { parentName: string; parent_id: string }) => {
+    console.log(inbound)
+    setInbound((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          
+          product: product.parent_id,
+          parentName: product.parentName,
+            parentId: product.parent_id, 
+          child: {
+            sku: product.SKU,
+            name: product.name,
+          },
+          quantity: 1,
+         
+        },
+      ],
+    }));
+    setInputValue('');
+  };
 
-  const handleMarkAsComplete = async () => {
-    setLoading(true);
+  const handleComplete = async () => {
+    if (!id) return;
     try {
-      // Construct an object with only the ID
-      const requestBody = id
-      // Send the data using the `inventoryApi.markAsComplete` method
-      const response = await inventoryApi.markAsComplete(requestBody,id);
-      if (response.status) {
-        toast.success('Inbound marked as complete');
-        navigate('inventory/inbound/view');
-      }
+      let confirmed = await showConfirmationModal(
+        "Are you sure you would like to mark this inbound as completed? This action cannot be undone."
+      );
+      if (!confirmed) return;
+      setLoading(true);
+     let res = await inventoryApi.completeDraft(id);
+      if (res.status) navigate('/yellowadmin/inventory/inbound');
+      toast.success("Draft successfully completed.");
     } catch (error) {
       console.error(error);
-      toast.error('Failed to mark as complete');
     } finally {
       setLoading(false);
     }
   };
-  
-  
 
-  const handleProductSelection = (product: any) => {
-    const newDraft: any = { ...product, quantity: 0 };
-    setCurrentDraft(newDraft);
-    setProductInputValue(`${product.parentName} - ${product.name}`);
-    setQuantity(0);
+  const handleQuantityChange = (index: number, quantity: number) => {
+    setInbound((prev) => ({
+      ...prev,
+      items: prev.items.map((item, i) =>
+        i === index ? { ...item, quantity } : item
+      ),
+    }));
   };
 
-  const handleAddItem = () => {
-    if (!currentDraft || currentDraft.quantity <= 0) {
-      toast.error('Please select a product and enter a valid quantity');
-      return;
+  const handleRemoveItem = (index: number) => {
+    setInbound((prev) => ({
+      ...prev,
+      items: prev.items.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(inbound)
+    try {
+      setLoading(true);
+      let res;
+      if (id) {
+        res = await inventoryApi.updateDraft(id, inbound);
+      } else {
+        res = await inventoryApi.createDraft(inbound);
+      }
+      if (res.status) {
+        toast.success(`Inbound ${id ? 'updated' : 'created'} successfully`);
+        navigate('/yellowadmin/inventory/inbound');
+      }
+    } catch (error) {
+      console.error(`Failed to ${id ? 'update' : 'create'} inbound`);
+    } finally {
+      setLoading(false);
     }
-
-    const existingItemIndex = inboundList.findIndex(item => item.SKU === currentDraft.SKU);
-    if (existingItemIndex !== -1) {
-      const updatedList = [...inboundList];
-      updatedList[existingItemIndex].quantity += currentDraft.quantity;
-      setInboundList(updatedList);
-    } else {
-      setInboundList([...inboundList, currentDraft]);
-    }
-
-    setCurrentDraft(null);
-    setProductInputValue('');
-    setQuantity(0);
   };
 
-  const handleRemoveItem = (index: any) => {
-    const updatedList = inboundList.filter((_, i) => i !== index);
-    setInboundList(updatedList);
-  };
-  const getChildName = (product: any, childSKU: string) => {
-    if (!product || !product.children) return 'Unknown';
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files ? e.target.files[0] : null;
+  //   setImageFile(file);
+  //   setInbound((prev) => ({ ...prev, image: file }));
+  // };
 
-    const matchingChild = product.children.find((child: any) => child.SKU === childSKU);
-    return matchingChild ? matchingChild.name : 'Unknown';
-  };
+  if (loading) return <Loading />;
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Edit Inbound</h1>
-        <Button color="success" onClick={handleMarkAsComplete} disabled={loading}>
-          {loading ? 'Processing...' : 'Mark as Complete'}
-        </Button>
+    <div className="min-h-screen border-l border-gray-200 bg-gray-50 -mt-5 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between mb-5">
+        <button
+          onClick={() => navigate(-1)}
+          className="sm:flex items-center text-gray-600 hover:text-gray-900 hidden"
+        >
+          <FaChevronLeft className="w-5 h-5 mr-2" />
+          Back
+        </button>
+        {id && inbound.status === "DRAFT" && (
+          <Button onClick={handleComplete} color="dark">
+            Mark as Complete
+          </Button>
+        )}
       </div>
-
-      <div className="mb-4">
-        <label htmlFor="product" className="block text-sm font-medium text-gray-700 mb-2">Product:</label>
-        <AutocompleteProductInput value={productInputValue} setInputValue={setProductInputValue} onChange={handleProductSelection} />
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="referenceNumber" className="block text-sm font-medium text-gray-700 mb-2">
-          Reference Number:
-        </label>
-        <TextInput
-          id="referenceNumber"
-          value={referenceNumber}
-          onChange={(e) => setReferenceNumber(e.target.value)}
-          placeholder="Enter reference number"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="receiptFile" className="block text-sm font-medium text-gray-700 mb-2">
-          Upload Receipt:
-        </label>
-        <FileInput id="receiptFile" onChange={(e) => setReceiptFile(e.target.files ? e.target.files[0] : null)} />
-      </div>
-
-      {currentDraft && (
-        <div className="bg-gray-50 p-4 rounded-lg shadow mb-4 flex justify-between items-center">
-          <div>
-            <p className="font-semibold">{currentDraft.parentName} | {currentDraft.name}</p>
-            <p>
-              Child Name: {getChildName(currentDraft.product, currentDraft.child)} (SKU: {currentDraft.child})
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <TextInput
-              type="number"
-              className="w-16"
-              value={currentDraft.quantity}
-              min={1}
-              onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
-            />
-            <Button color="failure" size="sm" onClick={() => handleRemoveItem(null)}>Remove</Button>
-          </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {id ? `${inbound.name || 'Inbound Management'}` : "Inbound Management"}
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Create and manage inbound orders efficiently.
+          </p>
         </div>
-      )}
 
-      <div className="mb-4 flex space-x-2">
-        <Button onClick={handleAddItem} color="dark" disabled={!currentDraft || currentDraft.quantity <= 0}>Add to Inbound List</Button>
-      </div>
-
-      {inboundList.length > 0 && (
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Added Products</h2>
-          {inboundList.map((item, index) => (
-            <div key={item.SKU} className="flex justify-between items-center mb-2 bg-gray-50 p-3 rounded-lg">
-              <div>
-                <p className="font-semibold">{item.parentName} | {item.name}</p>
-                <p className="text-sm text-gray-500">SKU: {item.SKU}</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-lg">{item.
-quantity}</span>
-                <Button color="failure" size="sm" onClick={() => handleRemoveItem(index)}>Remove</Button>
-              </div>
+        <div className="bg-white rounded-lg shadow-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reference Number
+              </label>
+              <input
+                type="text"
+                value={inbound.referenceNumber}
+                onChange={(e) =>
+                  setInbound((prev) => ({
+                    ...prev,
+                    referenceNumber: e.target.value,
+                  }))
+                }
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+              />
             </div>
-          ))}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Add Products
+              </label>
+              <AutocompleteProductInput
+                value={inputValue}
+                onChange={handleProductChange}
+                setInputValue={setInputValue}
+              />
+            </div>
+
+            {/* <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload Image
+              </label>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div> */}
+
+            <div className="bg-gray-100 rounded-lg p-4">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">
+                Added Products
+              </h2>
+              <ul className="space-y-4">
+                {inbound.items.map((item: any, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between bg-white rounded-lg shadow-md p-4"
+                  >
+                    <div>
+                      <h3 className="text-gray-900 font-medium">
+                        {item.product.name
+                          ? item.product.name
+                          : `${item.parentName} | ${item.child.name}`}
+                      </h3>
+                      <p className="text-gray-600">SKU: {item.child.sku}</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(index, parseInt(e.target.value))
+                        }
+                        className="w-20 px-2 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                      />
+                      <Button
+                        color="failure"
+                        outline
+                        onClick={() => handleRemoveItem(index)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex items-center gap-x-5">
+              <Button
+                className="w-full"
+                disabled={inbound.status !== "DRAFT"}
+                type="submit"
+                color="dark"
+              >
+                {id ? 'Update Draft' : 'Create Draft'}
+              </Button>
+              {id && inbound.status === "DRAFT" && (
+                <Button className="w-full" color="failure">
+                  Cancel Draft
+                </Button>
+              )}
+            </div>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default EditInboundPage;
+export default InboundCreation;

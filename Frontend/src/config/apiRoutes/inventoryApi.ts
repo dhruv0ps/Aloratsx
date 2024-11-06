@@ -48,6 +48,30 @@ const markAsComplete = async (id : any , body: any) => {
     return await axiosRequest.put<any>(`${apiUrl.inventory}/mark-completed/${id}`, body)
 } 
 
+const createDraft = async (body: any) => {
+    return await axiosRequest.post<any>(`${apiUrl.inbound}/drafts`, body);
+}
+
+const getAllInbound = async (body: any) => {
+    return await axiosRequest.post<any>(`${apiUrl.inbound}/list`, body);
+}
+
+const getDraftById = async (id: string) => {
+    return await axiosRequest.get<any>(`${apiUrl.inbound}/drafts/${id}`);
+}
+
+const updateDraft = async (id: string, body: any) => {
+    return await axiosRequest.put<any>(`${apiUrl.inbound}/drafts/${id}`, body);
+}
+
+const completeDraft = async (id: string) => {
+    return await axiosRequest.post<any>(`${apiUrl.inbound}/drafts/${id}/complete`, {});
+}
+
+const cancelDraft = async (id: string) => {
+    return await axiosRequest.post<any>(`${apiUrl.inbound}/drafts/${id}/cancel`, {});
+}
+
 export const inventoryApi = {
     getAllInventory,
     getInventoryById,
@@ -63,5 +87,11 @@ export const inventoryApi = {
     getDamagedProducts,
     moveInventory,
     getInventoryByLocation,
-    getAllLogs
+    getAllLogs,
+    createDraft,
+    getAllInbound,
+    getDraftById,
+    updateDraft,
+    completeDraft,
+    cancelDraft
 }

@@ -6,82 +6,86 @@ const logService = require('./logService');
 const NewProduct = require('../config/models/newProductgen');
 
 module.exports = {
-    addDamagedProduct: async (damageData) => {
+    addDamagedProduct: async (damageData,imagePaths) => {
         const session = await mongoose.startSession();
         session.startTransaction();
-
+    
         try {
-            const { product, child, quantity, location, comments } = damageData;
-            console.log(damageData)
-
-            // Check if the product exists
-            const productDoc = await NewProduct.findById(product).session(session);
-            console.log(productDoc);
-            if (!productDoc) {
-                throw new Error("Product not found");
-            }
-
-            const childDoc = productDoc.children.find(childItem => childItem.SKU === child);
-
-            if (!childDoc) {
-                throw new Error("Child SKU not found in the product");
-            }
-
-            const inv = await Inventory.findOne({  child }).session(session);
-            const damagedProduct = new DamagedProductModel({
-                product,
+          const { product, child, quantity, location, comments } = damageData;
+         console.log(product)
+          // Check if the product exists
+          const productDoc = await NewProduct.findById(product).session(session);
+          if (!productDoc) {
+            throw new Error(`Product with ID ${product} not found`);
+          }
+    
+          // Check if the child SKU exists within the product
+          const childDoc = productDoc.children.find(childItem => childItem.SKU === child);
+          if (!childDoc) {
+            throw new Error(`Child SKU ${child} not found in the product ${productDoc.name}`);
+          }
+    
+          // Check if the inventory record exists
+          const inv = await Inventory.findOne({ child, location }).session(session);
+          if (!inv) {
+            throw new Error(`Inventory not found for child SKU ${child} at location ${location}`);
+          }
+    
+          // Check for sufficient inventory
+          if (quantity > inv.quantity) {
+            throw new Error(`Insufficient inventory for child SKU ${child}: Available ${inv.quantity}, Requested ${quantity}`);
+          }
+    
+          // Create a damaged product entry
+          const damagedProduct = new DamagedProductModel({
+            product,
+            child,
+            quantity,
+            comments,
+            images: imagePaths,
+          });
+          await damagedProduct.save({ session });
+    
+          // Update the inventory record
+          await Inventory.findOneAndUpdate(
+            { product, child, location },
+            { $inc: { damaged: quantity, quantity: -quantity } },
+            { session }
+          );
+    
+          // Update the product stock
+          const prodDetails = await NewProduct.findOneAndUpdate(
+            { _id: product, "children.SKU": child },
+            { $inc: { "children.$.stock": -quantity } },
+            { session, new: true }
+          );
+    
+          // Log the operation
+          await logService.addLog(
+            {
+              operation: 'Damaged',
+              details: {
+                product: prodDetails.name,
                 child,
                 quantity,
                 comments,
-                
-                // createdBy: user._id
-            });
-            await damagedProduct.save({ session });
-
-            if (inv) {
-                if (quantity > inv.quantity) {
-                    throw new Error("Insufficient inventory to mark as damaged");
-                }
-
-                await Inventory.findOneAndUpdate(
-                    { product, child, location: location },
-                    { $inc: { damaged: quantity, quantity: -quantity } },
-                    { session }
-                );
-            } else {
-                throw new Error("Inventory not found for the given product and child at specified location.");
-            }
-
-            // Update product stock
-            let prodDetails = await NewProduct.findOneAndUpdate(
-                { _id: product, "children.SKU": child },
-                { $inc: { "children.$.stock": -quantity } },
-                { session }
-            );
-
-            // add log
-            await logService.addLog({
-                operation: 'Damaged',
-                details: {
-                    product: prodDetails.name,
-                    child,
-                    quantity,
-                    comments,
-                },
-                message: `Quantity ${quantity} of ${prodDetails.name} ${child} were reported damaged.`,
-                // createdBy: user._id
-            }, session);
-
-            await session.commitTransaction();
-            return damagedProduct;
+              },
+              message: `Quantity ${quantity} of ${prodDetails.name} (SKU: ${child}) were reported damaged.`,
+            },
+            session
+          );
+    
+          // Commit the transaction
+          await session.commitTransaction();
+          return damagedProduct;
         } catch (error) {
-            console.log(error)
-            await session.abortTransaction();
-            throw error;
+          console.error("Error in addDamagedProduct:", error);
+          await session.abortTransaction();
+          throw error;
         } finally {
-            session.endSession();
+          session.endSession();
         }
-    },
+      },
     updateDamagedProduct: async (id, updateData) => {
         const session = await mongoose.startSession();
         session.startTransaction();

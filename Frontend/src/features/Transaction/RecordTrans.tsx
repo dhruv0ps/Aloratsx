@@ -296,7 +296,7 @@ export default function RecordPayment(): JSX.Element {
                   {/* <option value="Finance">Finance</option> */}
                   <option value="Cheque">Cheque</option>
                   <option value="Cash">Cash</option>
-                  <option value="Card">Card</option>
+                  {/* <option value="Card">Card</option> */}
                   <option value="CreditCard">Credit Card</option> {/* Added Credit Card Option */}
                   <option value="DebitCard">Debit Card</option>
                 </select>
@@ -307,7 +307,7 @@ export default function RecordPayment(): JSX.Element {
                   Amount
                 </label>
                 <input
-                  disabled={formState.useCreditMemo || formState.paymentMode === "Cash"}
+                  disabled={formState.useCreditMemo }
                   type="number"
                   name="amount"
                   value={formState.amount}

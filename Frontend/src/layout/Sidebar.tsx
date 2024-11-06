@@ -227,11 +227,13 @@ const NavSideBar = ({ isSidebarOpen }: any) => {
                     return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
                 }}
             >
-                <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link>
+                 <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
+                 <Link to={"/yellowadmin/inventory/inbound"}><Sidebar.Item>Inbound View</Sidebar.Item></Link>
+                {/* <Link to={"/inventory/add"}> <Sidebar.Item>Add Starting Stock</Sidebar.Item> </Link> */}
                 {/* <Link to={"/inventory/move"}> <Sidebar.Item>Inventory Move</Sidebar.Item> </Link> */}
                 <Link to={"/inventory/damaged"}> <Sidebar.Item>Inventory Damage</Sidebar.Item> </Link>
                 <Link to={"/inventory/view"}><Sidebar.Item>Inventory View</Sidebar.Item></Link>
-                <Link to={"/inventory/inbound"}><Sidebar.Item>Inbound</Sidebar.Item></Link>
+               
                 {/* <Link to={"/inventory/location/view"}> <Sidebar.Item>Inventory Locations</Sidebar.Item> </Link> */}
             </Sidebar.Collapse>
         );

@@ -385,316 +385,309 @@ console.log(tags)
   
     return (
         <div>
-  <form onSubmit={handleSubmit} className="max-w-5xl mx-auto bg-white p-8 shadow-md rounded-lg">
-    <div className="mb-6 flex items-center justify-between">
-      <Button color="gray" onClick={() => navigate(-1)}>
-        <span className="flex gap-2 items-center">
-          <FaChevronLeft /> Back
-        </span>
-      </Button>
-      <h2 className="text-2xl font-semibold">{id ? 'Edit Product' : 'Add Product'}</h2>
+  <form onSubmit={handleSubmit} className="max-w-5xl mx-auto bg-white p-10 shadow-lg rounded-xl">
+  <div className="mb-8 flex items-center justify-between">
+    <Button color="gray" onClick={() => navigate(-1)} className="flex items-center gap-2">
+      <FaChevronLeft /> Back
+    </Button>
+    <h2 className="text-3xl font-bold">{id ? 'Edit Product' : 'Add Product'}</h2>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+      <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-2">
+        <span className="text-red-500">*</span> Product Name:
+      </label>
+      <TextInput id="name" name="name" value={formState.name} onChange={handleInputChange} required />
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 bg-white  p-8 shadow-md rounded-lg">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-          <span className="text-red-500">*</span> Product Name:
-        </label>
-        <TextInput id="name" name="name" value={formState.name} onChange={handleInputChange} required />
-      </div>
+    <div>
+      <label htmlFor="ID" className="block text-sm font-semibold text-gray-800 mb-2">
+        <span className="text-red-500">*</span> Product ID:
+      </label>
+      <TextInput id="ID" name="ID" value={formState.ID} onChange={handleInputChange} required />
+    </div>
 
-      <div>
-        <label htmlFor="ID" className="block text-sm font-medium text-gray-700 mb-2">
-          <span className="text-red-500">*</span> Product ID:
-        </label>
-        <TextInput id="ID" name="ID" value={formState.ID} onChange={handleInputChange} required />
-      </div>
+    <div className="md:col-span-2">
+      <label htmlFor="Description" className="block text-sm font-semibold text-gray-800 mb-2">
+        <span className="text-red-500">*</span> Description:
+      </label>
+      <TextInput id="Description" name="Description" value={formState.Description} onChange={handleInputChange} required />
+    </div>
 
-      <div className="md:col-span-2">
-        <label htmlFor="Description" className="block text-sm font-medium text-gray-700 mb-2">
-          <span className="text-red-500">*</span> Description:
-        </label>
-        <TextInput id="Description" name="Description" value={formState.Description} onChange={handleInputChange} required />
-      </div>
-
-      <div className="md:col-span-2">
-        <label htmlFor="categories" className="block text-sm font-medium text-gray-700 mb-2">
-          Select Categories:
-        </label>
-        <Select id="categories" value="" onChange={handleCategoryChange} className="block w-full">
-          <option value="">Select a category</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
+    <div className="md:col-span-2">
+      <label htmlFor="categories" className="block text-sm font-semibold text-gray-800 mb-2">
+        Select Categories:
+      </label>
+      <Select id="categories" value="" onChange={handleCategoryChange} className="w-full border border-gray-300 rounded-md focus:ring focus:ring-gray-200">
+        <option value="">Select a category</option>
+        {categories.map((category) => (
+          <option key={category._id} value={category._id}>
+            {category.name}
+          </option>
+        ))}
+      </Select>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {formState.categories.length > 0 ? (
+          formState.categories.map((category, index) => (
+            <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
               {category.name}
+              <button
+                type="button"
+                onClick={() => handleRemoveCategory(category)}
+                className="ml-2 text-red-500 hover:text-red-700"
+              >
+                &times;
+              </button>
+            </span>
+          ))
+        ) : (
+          <p className="text-gray-500">No categories selected</p>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <hr className="my-8" />
+
+  {childState.map((child, index) => (
+    <div key={index} className="border border-gray-300 bg-gray-50 p-6 rounded-lg mb-6">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Child Item {index + 1}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor={`child_name_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+            Child Name:
+          </label>
+          <TextInput
+            id={`child_name_${index}`}
+            name="name"
+            value={child.name}
+            onChange={(e) => handleChildInputChange(index, e)}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`selling_price_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+            Selling Price:
+          </label>
+          <TextInput
+            id={`selling_price_${index}`}
+            name="selling_price"
+            type="number"
+            min={0}
+            value={child.selling_price}
+            onChange={(e) => handleChildInputChange(index, e)}
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label htmlFor={`weight_value_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+            Weight:
+          </label>
+          <div className="flex gap-4">
+            <TextInput
+              id={`weight_value_${index}`}
+              name="weight.value"
+              type="number"
+              min={0}
+              value={child.weight.value}
+              onChange={(e) => handleChildInputChange(index, e)}
+            />
+            <Select
+              name="weight.unit"
+              value={child.weight.unit}
+              onChange={(e) => handleChildInputChange(index, e)}
+              className="w-24 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+            >
+              <option value="lb">lb</option>
+              <option value="kg">kg</option>
+            </Select>
+          </div>
+        </div>
+
+        {id && (
+          <div>
+            <label htmlFor={`child_sku_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+              Child SKU:
+            </label>
+            <TextInput
+              id={`child_sku_${index}`}
+              name="SKU"
+              value={child.SKU}
+              onChange={(e) => handleChildInputChange(index, e)}
+              required
+              disabled
+              placeholder="SKU (Read-Only in Edit Mode)"
+            />
+          </div>
+        )}
+
+        <div>
+          <label htmlFor={`firmness_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+            Firmness:
+          </label>
+          <Select
+            id={`firmness_${index}`}
+            name="firmness"
+            value={child.firmness}
+            onChange={(e) => handleChildInputChange(index, e)}
+            className="w-full border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+          >
+            <option value="">Select firmness</option>
+            <option value="Ultra Plush">Ultra Plush</option>
+            <option value="Plush">Plush</option>
+            <option value="Medium">Medium</option>
+            <option value="Firm">Firm</option>
+            <option value="Extra Firm">Extra Firm</option>
+          </Select>
+        </div>
+
+        <div className="md:col-span-2">
+          <label htmlFor={`dimensions_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
+            Dimensions (L x W x H):
+          </label>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor={`product_size_L_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Length:
+              </label>
+              <TextInput
+                id={`product_size_L_${index}`}
+                name="product_size.L"
+                type="number"
+                placeholder="Length"
+                min={0}
+                value={child.product_size.L}
+                onChange={(e) => handleChildInputChange(index, e)}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor={`product_size_W_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Width:
+              </label>
+              <TextInput
+                id={`product_size_W_${index}`}
+                name="product_size.W"
+                type="number"
+                placeholder="Width"
+                min={0}
+                value={child.product_size.W}
+                onChange={(e) => handleChildInputChange(index, e)}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor={`product_size_H_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
+                Height:
+              </label>
+              <TextInput
+                id={`product_size_H_${index}`}
+                name="product_size.H"
+                type="number"
+                placeholder="Height"
+                min={0}
+                value={child.product_size.H}
+                onChange={(e) => handleChildInputChange(index, e)}
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+          Select Tags:
+        </label>
+        <Select id="tags" value="" onChange={(e) => handleTagChange(index, e)} className="w-full border border-gray-300 rounded-md">
+          <option value="">Select a tag</option>
+          {availableTags.map((tag) => (
+            <option key={tag._id} value={tag._id}>
+              {tag.name}
             </option>
           ))}
         </Select>
-        <div className="mt-2">
-          {formState.categories.length > 0 ? (
-            formState.categories.map((category, index) => (
-              <span key={index} className="inline-block bg-gray-200 rounded-full px-2 py-1 text-sm mr-2 mt-2">
-                {category.name}
+        <div className="mt-2 flex flex-wrap gap-2">
+          {child.tags.length > 0 ? (
+            child.tags.map((tag, tagIndex) => (
+              <span
+                key={tagIndex}
+                className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
+              >
+                {tag.name}
                 <button
                   type="button"
-                  onClick={() => handleRemoveCategory(category)}
-                  className="ml-1 text-red-500"
+                  onClick={() => handleRemoveTag(index, tagIndex)}
+                  className="ml-2 text-red-500 hover:text-red-700"
                 >
                   &times;
                 </button>
               </span>
             ))
           ) : (
-            <p>No categories selected</p>
+            <p className="text-gray-500">No tags selected</p>
           )}
         </div>
       </div>
-    </div>
 
-    <hr className="my-6" />
-
-    {childState.map((child, index) => (
-      <div key={index} className="border border-gray-300 p-4 my-4 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor={`child_name_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-              Child Name:
-            </label>
-            <TextInput
-              id={`child_name_${index}`}
-              name="name"
-              value={child.name}
-              onChange={(e) => handleChildInputChange(index, e)}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor={`selling_price_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-              Selling Price:
-            </label>
-            <TextInput
-              id={`selling_price_${index}`}
-              name="selling_price"
-              type="number"
-              min={0}
-              value={child.selling_price}
-              onChange={(e) => handleChildInputChange(index, e)}
-              required
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label htmlFor={`weight_value_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-              Weight:
-            </label>
-            <div className="flex gap-4">
-              <TextInput
-                id={`weight_value_${index}`}
-                name="weight.value"
-                type="number"
-                min={0}
-                value={child.weight.value}
-                onChange={(e) => handleChildInputChange(index, e)}
-              />
-              <Select
-                name="weight.unit"
-                value={child.weight.unit}
-                onChange={(e) => handleChildInputChange(index, e)}
-                className="w-24"
-              >
-                <option value="lb">lb</option>
-                <option value="kg">kg</option>
-              </Select>
-            </div>
-          </div>
-
-          {id && (
-            <div>
-              <label htmlFor={`child_sku_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-                Child SKU:
-              </label>
-              <TextInput
-                id={`child_sku_${index}`}
-                name="SKU"
-                value={child.SKU}
-                onChange={(e) => handleChildInputChange(index, e)}
-                required
-                disabled
-                placeholder="SKU (Read-Only in Edit Mode)"
-              />
-            </div>
-          )}
-
-          <div>
-            <label htmlFor={`firmness_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-              Firmness:
-            </label>
+      {/* Raw Materials Section */}
+      <div className="mt-4">
+        <h4 className="text-md font-semibold mb-2">Raw Materials:</h4>
+        {child.rawMaterials.map((material, materialIndex) => (
+          <div key={materialIndex} className="flex items-center gap-4 mb-2">
             <Select
-              id={`firmness_${index}`}
-              name="firmness"
-              value={child.firmness}
-              onChange={(e) => handleChildInputChange(index, e)}
-              className="block w-full"
+              value={material.materialId}
+              onChange={(e) => handleRawMaterialChange(index, materialIndex, 'materialId', e.target.value)}
+              className="flex-1 border border-gray-300 rounded-md"
             >
-              <option value="">Select firmness</option>
-              <option value="Ultra Plush">Ultra Plush</option>
-              <option value="Plush">Plush</option>
-              <option value="Medium">Medium</option>
-              <option value="Firm">Firm</option>
-              <option value="Extra Firm">Extra Firm</option>
+              <option value="">Select Material</option>
+              {rawMaterialsOptions.map((rm) => (
+                <option key={rm._id} value={rm._id}>
+                  {rm.material}
+                </option>
+              ))}
             </Select>
+            <TextInput
+              type="number"
+              value={material.quantity}
+              placeholder="Quantity"
+              onChange={(e) => handleRawMaterialChange(index, materialIndex, 'quantity', parseFloat(e.target.value))}
+              className="w-24 border border-gray-300 rounded-md"
+            />
+            <TextInput
+              value={material.unit}
+              placeholder="Unit"
+              onChange={(e) => handleRawMaterialChange(index, materialIndex, 'unit', e.target.value)}
+              className="w-24 border border-gray-300 rounded-md"
+            />
+            <Button color="failure" size="xs" onClick={() => handleRemoveRawMaterial(index, materialIndex)}>
+              Remove
+            </Button>
           </div>
-
-          <div className="md:col-span-2">
-            <label htmlFor={`dimensions_${index}`} className="block text-sm font-medium text-gray-700 mb-2">
-              Dimensions (L x W x H):
-            </label>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label htmlFor={`product_size_L_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
-                  Length:
-                </label>
-                <TextInput
-                  id={`product_size_L_${index}`}
-                  name="product_size.L"
-                  type="number"
-                  placeholder="Length"
-                  min={0}
-                  value={child.product_size.L}
-                  onChange={(e) => handleChildInputChange(index, e)}
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor={`product_size_W_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
-                  Width:
-                </label>
-                <TextInput
-                  id={`product_size_W_${index}`}
-                  name="product_size.W"
-                  type="number"
-                  placeholder="Width"
-                  min={0}
-                  value={child.product_size.W}
-                  onChange={(e) => handleChildInputChange(index, e)}
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor={`product_size_H_${index}`} className="block text-xs font-medium text-gray-600 mb-1">
-                  Height:
-                </label>
-                <TextInput
-                  id={`product_size_H_${index}`}
-                  name="product_size.H"
-                  type="number"
-                  placeholder="Height"
-                  min={0}
-                  value={child.product_size.H}
-                  onChange={(e) => handleChildInputChange(index, e)}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tags Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-        <div className="mb-4">
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-            Select Tags:
-          </label>
-          <Select id="tags" value="" onChange={(e) => handleTagChange(index, e)} className="block w-full">
-            <option value="">Select a tag</option>
-            {availableTags.map((tag) => (
-              <option key={tag._id} value={tag._id}>
-                {tag.name}
-              </option>
-            ))}
-          </Select>
-          <div className="mt-2">
-            {child.tags.length > 0 ? (
-              child.tags.map((tag, tagIndex) => (
-                <span
-                  key={tagIndex}
-                  className="inline-block bg-gray-200 rounded-full px-2 py-1 text-sm mr-2 mt-2"
-                >
-                  {tag.name}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(index, tagIndex)}
-                    className="ml-1 text-red-500"
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))
-            ) : (
-              <p>No tags selected</p>
-            )}
-          </div>
-        </div>
-
-        {/* Raw Materials Section */}
-        <div className="mb-4">
-          <h4 className="text-md font-semibold">Raw Materials:</h4>
-          {child.rawMaterials.map((material, materialIndex) => (
-            <div key={materialIndex} className="grid grid-cols-3 gap-4 mb-4">
-              <Select
-                value={material.materialId}
-                onChange={(e) => handleRawMaterialChange(index, materialIndex, 'materialId', e.target.value)}
-                className="block w-full"
-              >
-                <option value="">Select Material</option>
-                {rawMaterialsOptions.map((rm) => (
-                  <option key={rm._id} value={rm._id}>
-                    {rm.material}
-                  </option>
-                ))}
-              </Select>
-              <TextInput
-                type="number"
-                value={material.quantity}
-                placeholder="Quantity"
-                onChange={(e) =>
-                  handleRawMaterialChange(index, materialIndex, 'quantity', parseFloat(e.target.value))
-                }
-              />
-              <TextInput
-                value={material.unit}
-                placeholder="Unit"
-                onChange={(e) => handleRawMaterialChange(index, materialIndex, 'unit', e.target.value)}
-              />
-              <Button color="failure" size="xs" onClick={() => handleRemoveRawMaterial(index, materialIndex)}>
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button color="success" size="xs" onClick={() => handleAddRawMaterial(index)}>
-            Add Raw Material
-          </Button>
-        </div>
-
-        
+        ))}
+        <Button color="success" size="xs" onClick={() => handleAddRawMaterial(index)}>
+          Add Raw Material
+        </Button>
       </div>
-      <div className="flex justify-end mt-4 ">
-          <Button color="failure" onClick={() => handleRemoveChild(index)}>
-            <MdDelete className="h-5 w-5 " /> Remove Child
-          </Button>
+
         </div>
       </div>
-    ))}
 
-    <div className="flex justify-end mb-4">
-      <Button color="success" onClick={handleAddChild}>Add Another Child</Button>
+      <div className="mt-4 flex justify-end">
+        <Button color="failure" size="sm" onClick={() => handleRemoveChild(index)}>
+          <MdDelete className="h-5 w-5" /> Remove Child
+        </Button>
+      </div>
     </div>
+  ))}
 
-    <div className="flex justify-end">
-      <Button color="blue" type="submit">
-        {id ? 'Update Product' : 'Create Product'}
-      </Button>
-    </div>
-  </form>
+  <div className="flex justify-end mb-8">
+    <Button color="success" onClick={handleAddChild} className="mr-4">
+      Add Another Child
+    </Button>
+    <Button color="blue" type="submit">
+      {id ? 'Update Product' : 'Create Product'}
+    </Button>
+  </div>
+</form>
 </div>
-
     );
 };
 

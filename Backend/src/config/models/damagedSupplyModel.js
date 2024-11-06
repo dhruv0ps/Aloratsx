@@ -9,6 +9,7 @@ const damagedProdSchema = new Schema({
     orderid: { type: String },
     // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, },
     invLocation: { type: mongoose.Schema.Types.ObjectId, ref: 'Locations' },
+    images: [{ type: String }],
 }, {
     timestamps: true
 });

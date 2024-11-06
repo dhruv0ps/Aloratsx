@@ -154,7 +154,7 @@ const TaxSlabManage: React.FC = () => {
           <h2 className="text-2xl font-semibold">Manage Tax Slabs</h2>
           <p></p>
         </div>
-        <form className="space-y-6 mb-8" onSubmit={handleSubmit}>
+        <form className="space-y-6 p-4 bg-white border border-gray-200 shadow-lg rounded-lg mb-6 "  onSubmit={handleSubmit}>
           <div>
             <FloatingLabel
               variant="outlined"
@@ -242,7 +242,7 @@ const TaxSlabManage: React.FC = () => {
     {/* Left side: "Submitted Tax Slabs" */}
     <div className="xl:col-span-2">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Submitted Tax Slabs</h3>
-      <Table className="w-full">
+      <Table className="w-full p-4 bg-white border border-gray-300 shadow-lg rounded-lg mb-6">
         <Table.Head className="bg-gray-100 text-gray-700">
         <Table.HeadCell className="text-center">Action</Table.HeadCell>
           <Table.HeadCell>Name</Table.HeadCell>
@@ -281,7 +281,7 @@ const TaxSlabManage: React.FC = () => {
     {/* Right side: "Deleted Tax Slabs" */}
     <div className="xl:col-span-1">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Deleted Tax Slabs</h3>
-      <Table className="w-full">
+      <Table className="w-full p-4 bg-white border border-gray-300 shadow-lg rounded-lg mb-6">
         <Table.Head className="bg-gray-100 text-gray-700">
         <Table.HeadCell className="text-center">Action</Table.HeadCell>
           <Table.HeadCell>Name</Table.HeadCell>
@@ -297,7 +297,7 @@ const TaxSlabManage: React.FC = () => {
             formData.deletedSlabs.map((slab, index) => (
               <Table.Row key={"__deleted" + index} className="border-t border-gray-200">
                 <Table.Cell className="p-3 text-center">
-                  <Button size="sm" color="blue" className="px-2 py-1 text-xs flex items-center gap-1" onClick={() => handleRestore(index)}>
+                  <Button size="sm" color="blue" className="px-2 py-1  text-xs flex items-center gap-1" onClick={() => handleRestore(index)} style={{marginLeft : "20px" ,marginTop:"10px"}}>
                     <FaUndo className="text-xs mt-1" /> 
                   </Button>
                 </Table.Cell>

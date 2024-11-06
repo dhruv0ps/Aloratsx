@@ -128,14 +128,14 @@ const TagManager: React.FC = () => {
                 <div className="overflow-x-auto">
                     <Table>
                         <Table.Head>
-                            <Table.HeadCell>Name</Table.HeadCell>
-                            <Table.HeadCell className='justify-end flex'>Actions</Table.HeadCell>
+                        <Table.HeadCell >Actions</Table.HeadCell>
+                            <Table.HeadCell className="justify-end">Name</Table.HeadCell>
+                           
                         </Table.Head>
                         <Table.Body>
                             {currentTags.map((tag) => (
                                 <Table.Row key={tag._id}>
-                                    <Table.Cell>{tag.name}</Table.Cell>
-                                    <Table.Cell className='flex gap-x-3 items-center justify-end'>
+                                    <Table.Cell className='flex gap-x-3 items-center'>
                                         <Button size={'sm'} color="warning" onClick={() => openModalForEdit(tag)}>
                                             Edit
                                         </Button>
@@ -143,6 +143,8 @@ const TagManager: React.FC = () => {
                                             Delete
                                         </Button>
                                     </Table.Cell>
+                                    <Table.Cell className='justify-end'>{tag.name}</Table.Cell>
+                                    
                                 </Table.Row>
                             ))}
                         </Table.Body>

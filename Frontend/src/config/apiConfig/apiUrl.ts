@@ -36,6 +36,7 @@ export const apiUrl = {
     getinventory: `${base}/getinventory`,
     inventory: `${base}/inventory`,
     invMove: `${base}/invMove`,
+    inbound: `${base}/inbound`,
     invByLoc: `${base}/inventoryByLocation`,
     invLocations: `${base}/locations`,
     damagedInventory: `${base}/damaged`,

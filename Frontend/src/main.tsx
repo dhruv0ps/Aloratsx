@@ -44,7 +44,7 @@ import UserList from './features/UserManagement/UserList.tsx';
 import AddUserForm from './features/UserManagement/AddUserForm.tsx';
 import TransactionSummary from './features/Transaction/TransactionSummary.tsx';
 import CreditMemoPage from './features/Transaction/CreditMemo.tsx';
-import InboundPage from './features/InventoryManagement/Inbound.tsx';
+// import InboundPage from './features/InventoryManagement/Inbound.tsx';
 import AgentList from './features/Agent/AgentList.tsx';
 import AddAgent from './features/Agent/AgentSignup.tsx';
 import AgentView from './features/Agent/AgentView.tsx';
@@ -60,6 +60,7 @@ import InboundListPage from './features/InventoryManagement/InboundList.tsx';
 import CustomerView from './features/Customer/CustomerView.tsx';
 import EditInboundPage from './features/InventoryManagement/EditInboud.tsx';
 // import { newProductManger } from './features/Products/newProductManger.tsx';
+import InboundView from './features/InventoryManagement/InboundView.tsx';
 const stores = { authStore };
 const router = createBrowserRouter([
   {
@@ -200,6 +201,15 @@ const router = createBrowserRouter([
         element:<EditInboundPage/>
       },
       {
+        path:"/inventory/inbound/add",
+        element:<EditInboundPage/>
+      },
+
+      {
+        path:"/yellowadmin/inventory/inbound",
+        element:<InboundView/>
+      },
+      {
         path: "/inventory/location/:id/edit",
         element: <InvLocationForm />
       },
@@ -213,7 +223,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/inventory/inbound",
-        element: <InboundPage />
+        element: <EditInboundPage />
       },
       {
         path: "/logs",

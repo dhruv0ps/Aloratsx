@@ -7,7 +7,7 @@ import AutoCompleteDealerInput from '../../util/AutoCompleteDealer';
 import { ApprovedDealer } from '../../config/models/dealer';
 import { Button, Table, Spinner, TextInput, Select } from 'flowbite-react';
 import { CreditMemoForm } from '../../config/models/payment';
-
+import showConfirmationModal from '../../util/confirmationUtil';
 interface NewCreditMemo {
   amount: number;
   reason: string;
@@ -109,6 +109,9 @@ export default function CreditMemoManagement() {
 
   const handleDelete = async (creditMemoId: string) => {
     try {
+      const confirmed = await showConfirmationModal("The credit memo cannot come once deleted. Are you sure you would like to continue?")
+      if (!confirmed)
+          return;
       setLoading(true);
       await creditMemoApis.deleteCreditMemo(creditMemoId); // API call to delete the credit memo
       toast.success('Credit memo deleted successfully');
@@ -168,7 +171,7 @@ export default function CreditMemoManagement() {
         </div>
 
         {showForm && (
-          <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
+          <div className="bg-white shadow-md rounded-md p-6 mb-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

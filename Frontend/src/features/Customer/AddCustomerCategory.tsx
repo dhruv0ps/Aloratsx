@@ -51,7 +51,7 @@ export default function AddCustomerCategory() {
                 </p>
             </div>
     
-            <div className="bg-white shadow-lg rounded-lg p-8 transition duration-300 ease-in-out transform hover:scale-105">
+            <div className="bg-white shadow-md rounded-lg p-8 transition duration-300 ease-in-out transform hover:scale-105">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

@@ -70,65 +70,57 @@ const createProduct = async (productData) => {
 
 
 
-
 const getAllProducts = async ({ search, page, limit, sortField, sortOrder, minPrice, maxPrice }) => {
-  try {
-    const query = {};
-
-    
-    if (search) {
+    try {
+      const query = {};
+  
+      // Search logic
+      if (search) {
         query.$or = [
-          { name: { $regex: search, $options: 'i' } },              // Search in parent product's name
-          { SKU: { $regex: search, $options: 'i' } },               // Search in parent product's SKU
-          { "children.SKU": { $regex: search, $options: 'i' } },    // Search in children's SKU
-          { "children.name": { $regex: search, $options: 'i' } },   // Search in children's name
+          { name: { $regex: search, $options: 'i' } },
+          { SKU: { $regex: search, $options: 'i' } },
+          { "children.SKU": { $regex: search, $options: 'i' } },
+          { "children.name": { $regex: search, $options: 'i' } },
         ];
       }
-
   
-    const skip = (page - 1) * limit;
-
-   
-    const sortOptions = {};
-    if (sortField) {
-      const sortBy = sortField === "price" ? "children.selling_price" : "name";
-      sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
-    }
-
-    
-    let products = await NewProduct.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .populate('category');
-
-   
-    products = products.map(product => {
-      product.children = product.children.filter(child => {
-       
-        const meetsMinPrice = minPrice ? child.selling_price >= minPrice : true;
-        const meetsMaxPrice = maxPrice ? child.selling_price <= maxPrice : true;
-        return meetsMinPrice && meetsMaxPrice;
+      // Sorting logic
+      const sortOptions = {};
+      if (sortField) {
+        const sortBy = sortField === "price" ? "children.selling_price" : "name";
+        sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
+      }
+  
+      // Fetch products without limiting results
+      let products = await NewProduct.find(query)
+        .sort(sortOptions)
+        .populate('category');
+  
+      // Filter products based on price range
+      products = products.map(product => {
+        product.children = product.children.filter(child => {
+          const meetsMinPrice = minPrice ? child.selling_price >= minPrice : true;
+          const meetsMaxPrice = maxPrice ? child.selling_price <= maxPrice : true;
+          return meetsMinPrice && meetsMaxPrice;
+        });
+        return product;
       });
-      return product;
-    });
-
-   
-    products = products.filter(product => product.children.length > 0);
-
-   
-    const totalProducts = products.length;
-
-    return {
-      products,
-      totalProducts,
-      totalPages: Math.ceil(totalProducts / limit)
-    };
-  } catch (error) {
-    throw new Error('Error fetching products: ' + error.message);
-  }
-};
-
+  
+      // Filter out products with no matching children
+      products = products.filter(product => product.children.length > 0);
+  
+      const totalProducts = products.length;
+  
+      return {
+        products,
+        totalProducts,
+        totalPages: Math.ceil(totalProducts / limit)
+      };
+    } catch (error) {
+      throw new Error('Error fetching products: ' + error.message);
+    }
+  };
+  
   
   // Create a new product
 

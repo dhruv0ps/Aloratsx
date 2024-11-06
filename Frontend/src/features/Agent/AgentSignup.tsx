@@ -91,7 +91,7 @@ export default function AddOrEditAgent() {
                     </p>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-xl p-8">
+                <div className="bg-white rounded-lg shadow-lg p-8 ">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>

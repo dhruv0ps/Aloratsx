@@ -78,7 +78,7 @@ export default function AddDealer() {
     try {
       let res = await dealerApis.createTempDealer(formState);
       if (res.status) {
-        toast.success('New dealer added successfully');
+        toast.success('New customer added successfully');
         navigate('/dealer/approvals');
       }
     } catch (error) {
@@ -99,7 +99,7 @@ export default function AddDealer() {
       </button>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Exceptional Service For Our Customers
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -107,7 +107,7 @@ export default function AddDealer() {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <div className="bg-white rounded-lg shadow-md p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

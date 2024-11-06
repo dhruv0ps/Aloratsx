@@ -70,7 +70,7 @@ const OrderApprovalList = () => {
             <Table hoverable>
                 <Table.Head>
                 {role === "admin" && <Table.HeadCell className='text-center'>Actions</Table.HeadCell>}
-                    <Table.HeadCell>Dealer Name</Table.HeadCell>
+                    <Table.HeadCell>Customer Name</Table.HeadCell>
                     <Table.HeadCell>Company Name</Table.HeadCell>
                     <Table.HeadCell>PO Number</Table.HeadCell>
                     <Table.HeadCell>Date</Table.HeadCell>

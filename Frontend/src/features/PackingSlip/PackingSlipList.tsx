@@ -48,7 +48,7 @@ const PackingSlipList: React.FC = () => {
 
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Packing Slip Management
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -63,7 +63,7 @@ const PackingSlipList: React.FC = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-200">
+              <thead className="bg-gray-300">
                 <tr>
                 <th className="px-3 py-3 text-left ml-20 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -102,8 +102,10 @@ const PackingSlipList: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {slip.packingID}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-3 py-4 whitespace-nowrap text-sm ">
+                <span className={`px-2 py-1 rounded-full text-xs ${slip.phase === 'Completed' ? 'bg-green-100 text-green-800' : slip.phase === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                       {slip.phase}
+                                                </span>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {slip.orderDetails?.purchaseOrderNumber}

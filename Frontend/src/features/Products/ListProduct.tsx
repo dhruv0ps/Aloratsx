@@ -211,7 +211,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
   ));
 
   return (
-    <div className="scroll-wrapper">   
+    <div >   
      <div className="mx-auto p-4 lg:px-8 ">
       <div className='mb-12 flex items-center justify-between  '>
         <Button color='gray' onClick={() => window.history.back()}>
@@ -266,7 +266,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
       </div>
 
       {/* Table Section */}
-      <div  className="table-scroll-container">
+      <div  className="overflow-x-auto">
         {currentProducts.length > 0 ? (
           <table className="min-w-full bg-white">
             <thead>

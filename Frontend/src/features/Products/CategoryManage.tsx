@@ -302,14 +302,26 @@ const CategoryManager: React.FC = () => {
                 <div className="overflow-x-auto">
                     <Table>
                         <Table.Head>
+                        <Table.HeadCell >Action</Table.HeadCell>
                             <Table.HeadCell>Name</Table.HeadCell>
                             <Table.HeadCell>Description</Table.HeadCell>
                             <Table.HeadCell>Image</Table.HeadCell>
-                            <Table.HeadCell className='justify-end flex'>Action</Table.HeadCell>
+                         
                         </Table.Head>
                         <Table.Body>
                             {currentCategories.map((category) => (
                                 <Table.Row key={category._id}>
+                                     <Table.Cell className='flex gap-x-3 '>
+                                        {/* <Button size={'sm'} color="info" onClick={() => openSubcategoryModal(category)}>
+                                            Manage Subcategories
+                                        </Button> */}
+                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(category)}>
+                                            Edit
+                                        </Button>
+                                        <Button size={'sm'} color="failure" onClick={() => handleDelete(category)}>
+                                            Delete
+                                        </Button>
+                                    </Table.Cell>
                                     <Table.Cell>{toTitleCase(category.name)}</Table.Cell>
                                     <Table.Cell>
                                         {category.description.length > 50
@@ -324,17 +336,7 @@ const CategoryManager: React.FC = () => {
                                             onClick={() => openImageModal(`${import.meta.env.VITE_BASE_IMAGE_URL}/${category.image}`)}
                                         />
                                     </Table.Cell>
-                                    <Table.Cell className='flex gap-x-3 items-center justify-end'>
-                                        <Button size={'sm'} color="info" onClick={() => openSubcategoryModal(category)}>
-                                            Manage Subcategories
-                                        </Button>
-                                        <Button size={'sm'} color="warning" onClick={() => openModalForEdit(category)}>
-                                            Edit
-                                        </Button>
-                                        <Button size={'sm'} color="failure" onClick={() => handleDelete(category)}>
-                                            Delete
-                                        </Button>
-                                    </Table.Cell>
+                                   
                                 </Table.Row>
                             ))}
                         </Table.Body>
@@ -361,14 +363,20 @@ const CategoryManager: React.FC = () => {
                 <div className="overflow-x-auto">
                     <Table>
                         <Table.Head>
+                        <Table.HeadCell >Action</Table.HeadCell>
                             <Table.HeadCell>Name</Table.HeadCell>
                             <Table.HeadCell>Description</Table.HeadCell>
                             <Table.HeadCell>Image</Table.HeadCell>
-                            <Table.HeadCell className='justify-end flex'>Action</Table.HeadCell>
+                            
                         </Table.Head>
                         <Table.Body>
                             {deletedCategories.map((category) => (
                                 <Table.Row key={category._id}>
+                                                                        <Table.Cell>
+                                        <Button size={'xs'} color="success" onClick={() => handleRestore(category)}>
+                                            Restore
+                                        </Button>
+                                    </Table.Cell>
                                     <Table.Cell>{toTitleCase(category.name)}</Table.Cell>
                                     <Table.Cell>
                                         {category.description.length > 50
@@ -383,11 +391,7 @@ const CategoryManager: React.FC = () => {
                                             onClick={() => openImageModal(`${import.meta.env.VITE_BASE_IMAGE_URL}/${category.image}`)}
                                         />
                                     </Table.Cell>
-                                    <Table.Cell className='justify-end flex'>
-                                        <Button size={'xs'} color="success" onClick={() => handleRestore(category)}>
-                                            Restore
-                                        </Button>
-                                    </Table.Cell>
+
                                 </Table.Row>
                             ))}
                         </Table.Body>

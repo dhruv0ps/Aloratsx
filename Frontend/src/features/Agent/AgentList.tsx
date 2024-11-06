@@ -78,7 +78,7 @@ export default function AgentList() {
             </button>
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
                         Agents List
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -111,15 +111,15 @@ export default function AgentList() {
                                                     <FaEye className="mr-2 mt-1" /> <p>View</p>
                                                 </Button>
                                                 <Button className='flex items-end' size="sm" color="warning" onClick={() => handleEdit(agent._id)}>
-                                                    <FaEdit className="mr-2 mt-0.5" /> <p>Edit</p>
+                                                    <FaEdit className="mr-1 mt-1" /> <p>Edit</p>
                                                 </Button>
                                                 {agent.status === "ACTIVE" ? (
                                                     <Button className='flex items-end' size="sm" color="failure" onClick={() => handleDelete(agent._id, "DELETED")}>
-                                                        <FaTrash className="mr-2 mt-0.5" /> <p>Delete</p>
+                                                        <FaTrash className="mr-1 mt-1" /> <p>Delete</p>
                                                     </Button>
                                                 ) : (
                                                     <Button className='flex items-end' size="sm" color="success" onClick={() => handleDelete(agent._id, "ACTIVE")}>
-                                                        <FaUndo className="mr-2 mt-0.5" /> <p>Restore</p>
+                                                        <FaUndo className="mr-1 mt-1" /> <p>Restore</p>
                                                     </Button>
                                                 )}
                                             </div>
