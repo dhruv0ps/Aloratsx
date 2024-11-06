@@ -265,11 +265,11 @@ const CategoryManager: React.FC = () => {
         }
     };
 
-    const openSubcategoryModal = async (category: Category) => {
-        setCurrentCategoryForSubcategories(category);
-        await fetchSubcategories(category._id ?? '');
-        setShowSubcategoryModal(true);
-    };
+    // const openSubcategoryModal = async (category: Category) => {
+    //     setCurrentCategoryForSubcategories(category);
+    //     await fetchSubcategories(category._id ?? '');
+    //     setShowSubcategoryModal(true);
+    // };
 
     const closeSubcategoryModal = () => {
         setShowSubcategoryModal(false);
