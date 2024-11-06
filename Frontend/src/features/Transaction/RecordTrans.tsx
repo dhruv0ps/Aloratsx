@@ -229,7 +229,7 @@ export default function RecordPayment(): JSX.Element {
       </button>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Record Payment
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -237,12 +237,12 @@ export default function RecordPayment(): JSX.Element {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <div className="bg-white rounded-md shadow-md p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="col-span-2">
                 <label htmlFor="dealer" className="block text-sm font-medium text-gray-700 mb-2">
-                  <span className='text-red-500'>*</span>Dealer:
+                  <span className='text-red-500'>*</span>Customer:
                 </label>
                 <AutoCompleteDealerInput value={formState.dealer?.contactPersonName || ''} onChange={handleDealerChange} />
               </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button, Select } from 'flowbite-react';
 import Loading from '../../util/Loading';
 // import { Inbound } from '../../config/models/inventory';
-import AutocompleteLocation from '../../util/AutoCompleteInvLocation';
+// import AutocompleteLocation from '../../util/AutoCompleteInvLocation';
 import { Location } from '../../config/models/supplier';
 import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
 import { useNavigate } from 'react-router-dom';
@@ -54,9 +54,9 @@ export default function InboundList() {
         }
     };
 
-    const handleSourceLocationSelection = (location: Location) => {
-        setFilters(prev => ({ ...prev, location: location }));
-    };
+    // const handleSourceLocationSelection = (location: Location) => {
+    //     setFilters(prev => ({ ...prev, location: location }));
+    // };
 
     const handleFilterChange = (key: keyof InboundListProps, value: any) => {
         setFilters(prev => ({
@@ -75,7 +75,7 @@ export default function InboundList() {
           Back
         </Button>
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
                         Inbound List
                     </h1>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -84,7 +84,7 @@ export default function InboundList() {
                 </div>
 
                 {/* Filters Section */}
-                <div className="flex items-center flex-wrap gap-4 mb-6">
+                <div className="flex items-center flex-wrap gap-4 mb-6 justify-end">
                     <Select
                         value={filters.status}
                         onChange={(e) => handleFilterChange('status', e.target.value)}
@@ -95,10 +95,10 @@ export default function InboundList() {
                         <option value="CANCELLED">Cancelled</option>
                     </Select>
 
-                    <div className="flex-1 min-w-48">
+                    {/* <div className="flex-1 min-w-48">
                         <AutocompleteLocation onSelect={handleSourceLocationSelection}
                             value={filters.location} />
-                    </div>
+                    </div> */}
 
                     {/* <div className="flex gap-2">
                         <Datepicker

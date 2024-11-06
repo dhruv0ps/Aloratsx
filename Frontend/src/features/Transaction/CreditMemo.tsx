@@ -175,7 +175,7 @@ export default function CreditMemoManagement() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Dealer</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Customer</label>
                   <AutoCompleteDealerInput
                     value={selectedDealer?.companyName || ""}
                     onChange={handleDealerChange}
@@ -248,7 +248,7 @@ export default function CreditMemoManagement() {
             <TextInput
               id="dealer"
               name="dealer"
-              placeholder="Search by Dealer"
+              placeholder="Search by Customer"
               value={filters.dealer}
               onChange={handleFilterChange}
               className="mb-4 md:mb-0"
@@ -277,7 +277,7 @@ export default function CreditMemoManagement() {
               <Table.Head>
               <Table.HeadCell>Actions</Table.HeadCell>
                 <Table.HeadCell>ID</Table.HeadCell>
-                <Table.HeadCell>Dealer Name</Table.HeadCell>
+                <Table.HeadCell>Customer Name</Table.HeadCell>
                 <Table.HeadCell>Amount</Table.HeadCell>
                 <Table.HeadCell>Reason</Table.HeadCell>
                 <Table.HeadCell>Date</Table.HeadCell>

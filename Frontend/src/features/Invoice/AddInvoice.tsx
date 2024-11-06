@@ -108,7 +108,7 @@ const AddInvoice: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedDealer || selectedOrders.length === 0 || !taxSlab) {
-            toast.error("Please select a dealer, at least one order, and ensure a tax slab is selected.");
+            toast.error("Please select a customer, at least one order, and ensure a tax slab is selected.");
             return;
         }
 

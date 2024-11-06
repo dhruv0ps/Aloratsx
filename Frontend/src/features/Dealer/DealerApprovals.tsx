@@ -30,7 +30,7 @@ const DealersApprovalList: React.FC = () => {
         const confirm = await showConfirmationModal("Are you sure you would like to approve this account generation?")
         if (!confirm)
             return
-        toast.info(`Setting up account for dealer.`);
+        toast.info(`Setting up account for customer.`);
         navigate(`/dealer/edit/${id}`)
     };
 
@@ -64,7 +64,7 @@ const DealersApprovalList: React.FC = () => {
                 <h2 className="text-2xl font-semibold ">Pending Approvals</h2>
                 <p></p>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto shadow-md rounded-lg m-2">
                 <Table striped hoverable>
                     <Table.Head>
                     <Table.HeadCell className="text-center">Actions</Table.HeadCell>
