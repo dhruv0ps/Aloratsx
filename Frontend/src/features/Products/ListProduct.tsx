@@ -311,7 +311,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
                   <td className="py-3 px-6 text-left whitespace-nowrap">{child.name}</td>
                   <td className="py-3 px-6 text-left whitespace-nowrap">${child.selling_price.toFixed(2)}</td>
                   {/* <td className="py-3 px-6 text-left">${child.cost_price.toFixed(2)}</td> */}
-                  <td className="py-3 px-6 text-left whitespace-nowrap">{child.status}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap"><span className={`${child.status === "IN STOCK"  ? "text-green-800" :"text-red-800"}`}>{child.status}</span></td>
                   <td className="py-3 px-6 text-left whitespace-nowrap ">{child.stock}</td>
                 
                   
