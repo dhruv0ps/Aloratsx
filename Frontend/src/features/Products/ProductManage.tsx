@@ -6,7 +6,7 @@ import { MdDelete } from 'react-icons/md';
 import { FaChevronLeft } from 'react-icons/fa6';
 import Loading from '../../util/Loading';
 import { productApis } from '../../config/apiRoutes/productRoutes';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 
@@ -177,12 +177,12 @@ console.log(tags)
                     console.log("ID is present:", id); // Debug log
                     await fetchProductDetails(id);
                     // Use a delay to ensure everything is ready
-                    setTimeout(() => {
-                        toast.success("ID-based toast notification!");
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     toast.success("ID-based toast notification!");
+                    // }, 1000);
                 } else {
                     console.log("ID is not present or invalid:", id); // Debug log
-                    toast.info("No ID provided.");
+                    // toast.info("No ID provided.");
                 }
             } catch (error) {
                 console.error("Error during data loading:", error);
@@ -338,45 +338,33 @@ console.log(tags)
         };
     
         try {
-            let response;
-            if (id) {
-              
-                response = await productApis.updateProduct(id, productData);
-                console.log('Update Response:', response);  
-               
-            } else {
-              
-                response = await productApis.createProduct(productData);
-                console.log('Create Response:', response); 
-            }
-    
-                  console.log('Response status:', response?.status);
-            
-           if(response.status) {
-            toast.success("Product saved Sucessfully")
-           }
-            // if (response?.status === 201) {
-            //     console.log('Triggering success toast for product creation');
-            //     toast.success('Product created successfully!');
-            // } else if (response?.status === 200) {
-            //     console.log('Triggering success toast for product update');
-            //     toast.success('Product updated successfully!');
-            // } else {
-            //     console.log('Triggering error toast');
-            //     toast.error(response.message || 'Failed to submit product');
-            // }
-    
-            
+          let response;
+          if (id) {
+              response = await productApis.updateProduct(id, productData);
+              console.log('Update Response:', response);  
+          } else {
+              response = await productApis.createProduct(productData);
+              console.log('Create Response:', response); 
+          }
+  
+          console.log('Response status:', response?.status);
+          
+          if (response.status) {
             setTimeout(() => {
-                navigate('/yellowadmin/products/view');
-            }, 1000);  
-    
-        } catch (error) {
-            console.error('Error submitting product:', error);
-            toast.error('An error occurred while submitting the product.');
-        } finally {
-            setLoading(false);
+                toast.success("Product saved successfully");
+            }, 800); // Adding a short delay
         }
+  
+          setTimeout(() => {
+              navigate('/yellowadmin/products/view');
+          }, 500);  
+  
+      } catch (error) {
+          console.error('Error submitting product:', error);
+          toast.error('An error occurred while submitting the product.');
+      } finally {
+          setLoading(false);
+      }
     };
     
     
@@ -385,6 +373,7 @@ console.log(tags)
   
     return (
         <div>
+          <ToastContainer autoClose={5000}/>
   <form onSubmit={handleSubmit} className="max-w-5xl mx-auto bg-white p-10 shadow-lg rounded-xl">
   <div className="mb-8 flex items-center justify-between">
     <Button color="gray" onClick={() => navigate(-1)} className="flex items-center gap-2">
@@ -687,6 +676,7 @@ console.log(tags)
     </Button>
   </div>
 </form>
+
 </div>
     );
 };
