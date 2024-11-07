@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
-import { Button, Table, Select, Checkbox, Dropdown } from 'flowbite-react';
+import { Button, Table, Checkbox, Dropdown } from 'flowbite-react';
 import Loading from '../../util/Loading';
 import { useNavigate } from 'react-router-dom';
 // import { Product } from '../../config/models/product';
@@ -25,6 +25,8 @@ const InventoryTable: React.FC = () => {
   const navigate = useNavigate();
 console.log(setProductInputValue);
 console.log(setChildOptions);
+console.log(allCategories);
+console.log(setCategoryFilter);
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -133,7 +135,7 @@ console.log(setChildOptions);
             ))}
           </Dropdown>
         )}
-        <Select
+        {/* <Select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="flex-grow"
@@ -144,7 +146,7 @@ console.log(setChildOptions);
               {category}
             </option>
           ))}
-        </Select>
+        </Select> */}
         <input
           type="text"
           value={searchQuery}
