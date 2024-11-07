@@ -13,7 +13,7 @@ const InvoiceList: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-
+  const [dueFilter, setDueFilter] = useState('all');
   useEffect(() => {
     const fetchInvoices = async () => {
       setLoading(true);
@@ -31,6 +31,25 @@ const InvoiceList: React.FC = () => {
     fetchInvoices();
   }, [currentPage]);
 
+  const filterByDueDate = (invoice :Invoice) => {
+         const today = new Date();
+         const dueDate = new Date(invoice.dueDate);
+
+         if (dueFilter === 'pastDue') {
+          return dueDate < today;
+        } else if (dueFilter === 'pastDue15') {
+          const past15Days = new Date(today);
+          past15Days.setDate(today.getDate() - 15);
+          return dueDate < today && dueDate >= past15Days;
+        } else if (dueFilter === 'pastDue30') {
+          const past30Days = new Date(today);
+          past30Days.setDate(today.getDate() - 30);
+          return dueDate < today && dueDate >= past30Days;
+        }
+    
+        return true; 
+  }
+
   const handleView = (id: string) => {
     navigate(`/yellowadmin/Invoice/${id}`);
   };
@@ -39,6 +58,7 @@ const InvoiceList: React.FC = () => {
     (invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       invoice.dealer.dealerName.toLowerCase().includes(searchQuery.toLowerCase())) &&
     (statusFilter === 'all' || invoice.invoiceStatus.toLowerCase() === statusFilter)
+    
   );
 
   if (loading) return <Loading />;
@@ -79,6 +99,16 @@ const InvoiceList: React.FC = () => {
             <option value="all">All</option>
             <option value="fully paid">Paid</option>
             <option value="unpaid">Unpaid</option>
+          </select>
+          <select
+            value={dueFilter}
+            onChange={(e) => setDueFilter(e.target.value)}
+            className="p-3 border rounded-lg shadow-sm"
+          >
+            <option value="all">All Due</option>
+            <option value="pastDue">Past Due</option>
+            <option value="pastDue15">Past Due 15 Days</option>
+            <option value="pastDue30">Past Due 30 Days</option>
           </select>
         </div>
 

@@ -45,6 +45,11 @@ module.exports.createCreditMemo = async (creditMemoData) => {
 
     await creditMemo.save({ session });
 
+    dealer.creditDueAmount = parseFloat(dealer.creditDueAmount) + creditAmount;
+    await dealer.save({ session });
+
+
+
     await session.commitTransaction();
 
     // Return the credit memo with the dealer's company name
