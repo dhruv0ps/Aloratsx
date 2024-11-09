@@ -75,7 +75,7 @@ const updatePackingSlip = async (id, packingSlipData) => {
           select: 'name children',   // Ensure children field is selected
       })
         .session(session);
-        console.log(order)
+        // console.log(order)
       if (!order) {
         throw new Error('Associated order not found');
       }

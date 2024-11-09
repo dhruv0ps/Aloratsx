@@ -31,6 +31,8 @@ const ListProduct: React.FC = () => {
   const [barcodeReady, setBarcodeReady] = useState<boolean>(false);
   const [productsPerPage] = useState<number>(20); 
   const barcodeRef = useRef<HTMLDivElement>(null);
+  const [stockFilter, setStockFilter] = useState<string>(""); 
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,34 +72,42 @@ console.log(loading)
     }
   };
 
-  
   const handleFilter = useCallback(() => {
     const filtered = childrenProducts.filter((child: any) => {
       const matchesSearch =
         child.SKU.toLowerCase().includes(searchQuery.toLowerCase()) ||
         child.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         child.parentProductName.toLowerCase().includes(searchQuery.toLowerCase());
-
+  
       const matchesPrice =
         (minPrice === "" || child.selling_price >= minPrice) &&
         (maxPrice === "" || child.selling_price <= maxPrice);
-
-      return matchesSearch && matchesPrice;
+  
+      const matchesStock = 
+        stockFilter === "" ||
+        (stockFilter === "IN STOCK" && child.status === "IN STOCK") ||
+        (stockFilter === "LOW STOCK" && child.status === "LOW STOCK") ||
+        (stockFilter === "VERY LOW IN STOCK" && child.status === "VERY LOW IN STOCK");
+  
+      return matchesSearch && matchesPrice && matchesStock;
     });
-
+  
     // Sorting logic based on selected field
     const sorted = filtered.sort((a: any, b: any) => {
       if (sortField === "name") {
         return sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      } else if (sortField === "parentName") {
+        return sortOrder === "asc" ? a.parentProductName.localeCompare(b.parentProductName) : b.parentProductName.localeCompare(a.parentProductName);
       } else if (sortField === "price") {
         return sortOrder === "asc" ? a.selling_price - b.selling_price : b.selling_price - a.selling_price;
       }
       return 0; // Default: no sorting
     });
-
+  
     setFilteredProducts(sorted);
     setCurrentPage(0);
-  }, [searchQuery, minPrice, maxPrice, sortField, sortOrder, childrenProducts]);
+  }, [searchQuery, minPrice, maxPrice, sortField, sortOrder, stockFilter, childrenProducts]);
+  
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -205,7 +215,9 @@ const handlePageClick = (selectedItem: { selected: number }) => {
     }}>
        <Barcode value={product.SKU} width={2} height={144} fontSize={16} />
       <div style={{ fontSize: '12px', marginTop: '5x`px' }}>
+        <div>{product.parentProductName}</div>
         <div>{product.name}</div>
+        
       </div>
     </div>
   ));
@@ -226,7 +238,7 @@ const handlePageClick = (selectedItem: { selected: number }) => {
       {/* Filters Section */}
       <div className='flex flex-wrap gap-4 justify-between items-end mb-6'>
         <TextInput
-          className='flex-1 min-w-[200px]'
+          className='flex-1 min-w-[300px] '
           type="text"
           placeholder="Search by SKU or Name"
           value={searchQuery}
@@ -250,21 +262,34 @@ const handlePageClick = (selectedItem: { selected: number }) => {
         />
 
         <Select className='min-w-[200px]' value={sortField} onChange={(e) => setSortField(e.target.value)}>
-          <option value="">Sort By</option>
-          <option value="name">Name</option>
-          <option value="price">Price</option>
+        <option value="">Sort By</option>
+  {/* <option value="name">Child Name</option> */}
+  <option value="parentName"> Name</option>
+  <option value="price">Price</option>
         </Select>
 
         <Select className='min-w-[200px]' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
         </Select>
+       
 
-        <Button color="purple" onClick={handleFilter}>
-          Apply Filters
-        </Button>
       </div>
-
+      <div className="flex mb-6 gap-5">
+      <Select
+  className="min-w-[200px]"
+  value={stockFilter}
+  onChange={(e) => setStockFilter(e.target.value)}
+>
+  <option value="">Stock Status</option>
+  <option value="IN STOCK">In Stock</option>
+  <option value="LOW STOCK">Low Stock</option>
+  <option value="VERY LOW IN STOCK">Very Low Stock</option>
+</Select>
+  <Button color="purple" onClick={handleFilter}>
+    Apply Filters
+  </Button>
+</div>
       {/* Table Section */}
       <div  className="overflow-x-auto">
         {currentProducts.length > 0 ? (

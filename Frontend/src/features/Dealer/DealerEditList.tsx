@@ -78,6 +78,7 @@ const DealerEditList: React.FC = () => {
             try {
                 if (aid) {
                     const response = await dealerApis.getApprovedDealerbyId(aid);
+                    console.log(response)
                     setFormData({
                         ...response.data,
                         customercategory: response.data.customercategory?._id || "", // Ensure customercategory is populated
@@ -224,7 +225,7 @@ const DealerEditList: React.FC = () => {
                                 className={`w-full border ${errors.province ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
                                 required
                             >
-                                <option value="">Select a province</option>
+                                <option value=""></option>
                                 {taxSlabs.filter(t => t.status === "ACTIVE").map((slab) => (
                                     <option key={slab._id} value={slab._id}>
                                         {slab.name}

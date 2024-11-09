@@ -68,6 +68,29 @@ const getOrderByOrderNUmbr = async (req, res) => {
     }
 };
 
+const getAllOrder = async (req,res) => {
+        try{
+            const order = await orderService.getAllOrder();
+            return res.json({status : true ,data : order});
+        }
+        catch (error) {
+            console.log(error)
+            return res.json({ status: false, data: {}, err: error.message });
+        }
+}
+
+const getOrdersToday = async (req,res) => {
+    try{
+        const order = await orderService.getOrdersToday();
+        return res.json({status : true ,data : order});
+    }
+
+    catch (error) {
+        console.log(error)
+        return res.json({ status: false, data: {}, err: error.message });
+    }
+}
+
 module.exports = {
     createOrder,
     updateOrder,
@@ -76,4 +99,5 @@ module.exports = {
     getOrderById,
     getOrderByDealerId,
     getOrderByOrderNUmbr,
+    getAllOrder,getOrdersToday
 }

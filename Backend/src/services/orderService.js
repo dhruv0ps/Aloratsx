@@ -158,6 +158,41 @@ const orderService = {
             throw error;
         }
     }
+,
+    async getAllOrder () {
+        try {
+            const result = await Order.aggregate([
+              { $count: "totalOrders" } // Correct usage of $count
+            ]);
+        
+            // Extract the count from the aggregation result
+            const totalOrders = result[0]?.totalOrders || 0;
+           return totalOrders;
+          } 
+            catch (error) {
+            console.error('Error fetching counts:', error);
+            throw new Error("Failed to fetch order counts: " + error.message);
+          }
+    },
+
+    async getOrdersToday () {
+try{
+const startOfday = new Date();
+startOfday.setHours(0,0,0,0)
+const endOfday = new Date();
+endOfday.setHours(23,59,59,999)
+
+const ordersToday = await Order.countDocuments({
+    createdAt : {$gte:startOfday ,$lte:endOfday}
+})
+return ordersToday
+}
+
+catch (error) {
+    console.log("Failed to fetch orders today:", error.message);
+    throw new Error("Failed to fetch orders today: " + error.message);
+}
+    }
 };
 
 module.exports = orderService;

@@ -113,6 +113,9 @@ router.get('/getorders/pending', orderController.getPendingOrders);
 router.get('/getorders/approved', orderController.getApprovedOrders);
 router.post('/orders/dealer', orderController.getOrderByDealerId);
 router.post('/orders/po', orderController.getOrderByOrderNUmbr);
+router.get('/getorders/count', orderController.getAllOrder);
+router.get("/getorders/today",orderController.getOrdersToday);
+
 
 router.get('/packing/:id', packingController.getPackingSlipById);
 router.post('/packing/paged', packingController.getAllPackingSlips);

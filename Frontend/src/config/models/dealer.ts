@@ -48,6 +48,7 @@ export interface ApprovedDealerBase {
 
 export interface FormDataApprovedDealer extends ApprovedDealerBase {
     province: string;
+    
 }
 
 export interface ApprovedDealer extends ApprovedDealerBase {
