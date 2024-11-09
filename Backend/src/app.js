@@ -11,7 +11,18 @@ app.set('port', process.env.PORT || 3000)
 app.use(express.json()); // To parse JSON request body
 app.use(express.urlencoded({ extended: true })); 
 app.use('/uploads', express.static('uploads'));
-app.use(cors())
+const corsOptions = {
+  origin: (origin, callback) => {
+    callback(null, true); // Allows all origins (use with caution in production)
+  },
+  methods: '*', // Allows all HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Add any additional headers you need
+  credentials: true,
+};
+
+// Apply CORS middleware with options
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.get('/api/check', (req, res) => {
   res.status(200).send('Hello World!')
