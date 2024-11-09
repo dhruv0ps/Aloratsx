@@ -81,60 +81,70 @@ const path = require('path');
 
 // Initialize the S3 Client
 const s3 = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });
 
-// Multer S3 Configuration for Images
-const imageUpload = multer({
+// Utility function to create multer-S3 storage configuration
+const createMulterS3Config = (bucket, folder, fileFilter, fileSizeLimit) => {
+  return multer({
     storage: multerS3({
-        s3: s3,
-        bucket: process.env.S3_BUCKET_NAME,
-        metadata: (req, file, cb) => {
-            cb(null, { fieldName: file.fieldname });
-        },
-        key: (req, file, cb) => {
-            cb(null, 'images/' + Date.now().toString() + path.extname(file.originalname));
-        }
+      s3: s3,
+      bucket: bucket,
+      metadata: (req, file, cb) => {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: (req, file, cb) => {
+        cb(null, `${folder}/${Date.now().toString()}${path.extname(file.originalname)}`);
+      },
     }),
-    limits: { fileSize: 1 * 1024 * 1024 }, // 1MB limit for images
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Not an image! Please upload an image.'), false);
-        }
-    }
-});
+    limits: { fileSize: fileSizeLimit },
+    fileFilter: fileFilter,
+  });
+};
 
-// Multer S3 Configuration for Files
-const fileUpload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.S3_BUCKET_NAME,
-        metadata: (req, file, cb) => {
-            cb(null, { fieldName: file.fieldname });
-        },
-        key: (req, file, cb) => {
-            cb(null, 'files/' + Date.now().toString() + path.extname(file.originalname));
-        }
-    }),
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for files
-    fileFilter: (req, file, cb) => {
-        const filetypes = /csv|xlsx|vnd.openxmlformats-officedocument.spreadsheetml.sheet/;
-        const mimetype = filetypes.test(file.mimetype);
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        if (mimetype && extname) {
-            return cb(null, true);
-        }
-        cb(new Error('Unsupported file type! Please upload a CSV or Excel file.'));
-    }
-});
+// File filter for images
+const imageFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Not an image! Please upload an image.'), false);
+  }
+};
+
+// File filter for CSV and Excel files
+const csvExcelFileFilter = (req, file, cb) => {
+  const allowedTypes = /csv|xlsx|vnd.openxmlformats-officedocument.spreadsheetml.sheet/;
+  const mimetype = allowedTypes.test(file.mimetype);
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+
+  if (mimetype && extname) {
+    cb(null, true);
+  } else {
+    cb(new Error('Unsupported file type! Please upload a CSV or Excel file.'), false);
+  }
+};
+
+// Image upload configuration with 1MB size limit
+const imageUpload = createMulterS3Config(
+  process.env.S3_BUCKET_NAME,
+  'images',
+  imageFileFilter,
+  1 * 1024 * 1024
+);
+
+// File upload configuration with 5MB size limit
+const fileUpload = createMulterS3Config(
+  process.env.S3_BUCKET_NAME,
+  'files',
+  csvExcelFileFilter,
+  5 * 1024 * 1024
+);
 
 module.exports = {
-    imageUpload,
-    fileUpload
+  imageUpload,
+  fileUpload,
 };

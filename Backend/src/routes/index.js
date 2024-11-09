@@ -2,7 +2,7 @@ const express = require("express")
 var router = express.Router();
 var bodyParser = require("body-parser")
 
-const { imageUpload, fileUpload } = require("../config/multerConfig");
+const { imageUpload } = require("../config/multerConfig");
 const { authenticateTokenAdmin } = require("../config/auth");
 const userController = require("../controllers/userController")
 
