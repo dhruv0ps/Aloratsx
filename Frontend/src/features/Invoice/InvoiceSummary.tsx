@@ -43,7 +43,12 @@ const ViewInvoice: React.FC = () => {
     const fetchTaxSlabs = async () => {
       try {
         const response = await commonApis.getAllTaxSlabs();
-        handleTaxSlabChange(invoice?.dealer.dealer.province || '')
+        handleTaxSlabChange(
+          typeof invoice?.dealer?.dealer?.province === 'string'
+            ? invoice.dealer.dealer.province
+            : invoice?.dealer?.dealer?.province?.name || '' // Use the appropriate property of `taxSlab` that is a string
+        );
+        
         setTaxSlabs(response.data);
       } catch (error) {
         console.error("Error fetching tax slabs:", error);
