@@ -218,20 +218,25 @@ const DealerEditList: React.FC = () => {
                                 <span className='text-red-500'>*</span>Select Province
                             </label>
                             <select
-                                id="province"
-                                name="province"
-                                value={formData.province}
-                                onChange={handleChange}
-                                className={`w-full border ${errors.province ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
-                                required
-                            >
-                                <option value=""></option>
-                                {taxSlabs.filter(t => t.status === "ACTIVE").map((slab) => (
-                                    <option key={slab._id} value={slab._id}>
-                                        {slab.name}
-                                    </option>
-                                ))}
-                            </select>
+    id="province"
+    name="province"
+    value={typeof formData.province === 'string' ? formData.province : formData.province?._id}
+    onChange={handleChange}
+    className={`w-full border ${errors.province ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
+    required
+>
+    <option value="">
+        {typeof formData.province === 'object' && formData.province.name ? formData.province.name : 'Select a Province'}
+    </option>
+    {taxSlabs
+        .filter((t) => t.status === 'ACTIVE')
+        .map((slab) => (
+            <option key={slab._id} value={slab._id}>
+                {slab.name}
+            </option>
+        ))}
+</select>
+
                             {errors.province && <p className="text-red-500 text-sm">{errors.province}</p>}
                         </div>
 

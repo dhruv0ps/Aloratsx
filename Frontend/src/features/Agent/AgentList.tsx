@@ -108,18 +108,18 @@ export default function AgentList() {
                                          <Table.Cell>
                                             <div className="flex space-x-2 items-end justify-center">
                                                 <Button className='flex items-end' size="sm" color="dark" onClick={() => handleView(agent._id)}>
-                                                    <FaEye className="mr-2 mt-1" /> <p>View</p>
+                                                    <FaEye /> 
                                                 </Button>
                                                 <Button className='flex items-end' size="sm" color="warning" onClick={() => handleEdit(agent._id)}>
-                                                    <FaEdit className="mr-1 mt-1" /> <p>Edit</p>
+                                                    <FaEdit  /> 
                                                 </Button>
                                                 {agent.status === "ACTIVE" ? (
                                                     <Button className='flex items-end' size="sm" color="failure" onClick={() => handleDelete(agent._id, "DELETED")}>
-                                                        <FaTrash className="mr-1 mt-1" /> <p>Delete</p>
+                                                        <FaTrash  /> 
                                                     </Button>
                                                 ) : (
                                                     <Button className='flex items-end' size="sm" color="success" onClick={() => handleDelete(agent._id, "ACTIVE")}>
-                                                        <FaUndo className="mr-1 mt-1" /> <p>Restore</p>
+                                                        <FaUndo  /> 
                                                     </Button>
                                                 )}
                                             </div>

@@ -15,8 +15,11 @@ const getPackingSlipById = async (req, res) => {
 
 const getAllPackingSlips = async (req, res) => {
   try {
-    const { page, limit, filters } = req.body;
-    // const filters = { category, operation, detail };
+    const { page = 1, limit = 20, packingID = '', dealerName = '' } = req.query;
+
+    const filters = {};
+    if (packingID) filters.packingID = packingID;
+    if (dealerName) filters.dealerName = dealerName;
     const packingSlips = await packingSlipService.getAllPackingSlips(parseInt(page), parseInt(limit), filters);
     res.status(200).json({ status: true, data: packingSlips, err: {} });
   } catch (error) {

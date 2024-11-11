@@ -17,6 +17,7 @@ const Orders: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOption, setSortOption] = useState<'recent' | 'az' | 'za'>('recent');
     const [selectedOrder, setSelectedOrder] = useState<OrderWithData | null>(null);
+    const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<'all' | 'Pending' | 'Invoiced'>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -30,24 +31,32 @@ const Orders: React.FC = () => {
 
     useEffect(() => {
         if (orders.length > 0) {
-            const filtered = orders.filter((order) =>
-                order.dealer?.contactPersonName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                order.purchaseOrderNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            const filtered = orders
+                .filter((order) =>
+                    order.dealer?.contactPersonName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    order.purchaseOrderNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .filter((order) =>
+                    invoiceStatusFilter === 'all' || order.invoiceStatus === invoiceStatusFilter
+                );
 
             const sorted = [...filtered].sort((a, b) => {
                 if (sortOption === 'recent') {
                     return new Date(b.date).getTime() - new Date(a.date).getTime();
                 } else if (sortOption === 'az') {
                     return (a.dealer?.contactPersonName || '').localeCompare(b.dealer?.contactPersonName || '');
-                } else {
+                } else if (sortOption === 'za') {
                     return (b.dealer?.contactPersonName || '').localeCompare(a.dealer?.contactPersonName || '');
+                } else if (sortOption === 'orderID') {
+                    return a.purchaseOrderNumber.localeCompare(b.purchaseOrderNumber);
                 }
+                return 0;
             });
 
             setSortedOrders(sorted);
         }
-    }, [orders, sortOption, searchTerm]);
+    }, [orders, sortOption, searchTerm, invoiceStatusFilter]);
+
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -138,6 +147,15 @@ const Orders: React.FC = () => {
                             <option value="recent">Sort by Recent Date</option>
                             <option value="az">Sort A-Z</option>
                             <option value="za">Sort Z-A</option>
+                        </select>
+                        <select
+                            value={invoiceStatusFilter}
+                            onChange={(e) => setInvoiceStatusFilter(e.target.value as 'all' | 'Pending' | 'Invoiced')}
+                            className="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                        >
+                            <option value="all">All Invoices</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Invoiced">Invoiced</option>
                         </select>
                     </div>
 

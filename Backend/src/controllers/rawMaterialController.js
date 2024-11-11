@@ -3,8 +3,8 @@ const rawMaterialService = require('../services/rawMaterialService');
 
 const createRawMaterial = async (req, res) => {
     try {
-       
-        const rawMaterial = await rawMaterialService.createMaterial(req.body, req.file.path);
+        const imageUrl = req.file ? req.file.location : null;
+        const rawMaterial = await rawMaterialService.createMaterial(req.body, imageUrl);
         res.status(201).json({ status: true, data: rawMaterial, err: {} });
     } catch (error) {
         res.status(400).json({ status: false, data: {}, err: error.message });
@@ -38,12 +38,28 @@ const getRawMaterialById = async (req, res) => {
 
 const updateRawMaterialById = async (req, res) => {
     try {
-        const updatedRawMaterial = await rawMaterialService.updateMaterial(req.params.id, req.body);
+       
+        const rawMaterialId = req.params.id;
+        const updatedData = { ...req.body };
+
+     
+        if (req.file && req.file.location) {
+         
+            updatedData.image = req.file.location;
+        }
+
+       
+        const updatedRawMaterial = await rawMaterialService.updateMaterial(rawMaterialId, updatedData);
+
+      
         res.json({ status: true, data: updatedRawMaterial, err: {} });
     } catch (error) {
+        // Handle errors
+        console.error("Error updating raw material:", error);
         res.status(400).json({ status: false, data: {}, err: error.message });
     }
 };
+
 
 
 const deleteRawMaterialById = async (req, res) => {

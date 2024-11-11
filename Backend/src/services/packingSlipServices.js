@@ -22,7 +22,7 @@ const generateInvoiceId = async () => {
 };
 
 const getAllPackingSlips = async (page = 1, limit = 20, filters = {}) => {
-  const skip = (page - 1) * limit;
+  const skip = (page - 1) * limit;  
 
   let query = {};
 

@@ -190,7 +190,7 @@ const RawMaterialManager: React.FC = () => {
                                     <Table.Cell>
                                         {rawMaterial.image && (
                                             <img
-                                                src={`${import.meta.env.VITE_BASE_IMAGE_URL}/${rawMaterial.image}`}
+                                                src={`${import.meta.env.VITE_BASE_IMAGE_URL}/${rawMaterial.image}`} // src = {`${rawMaterial.image}`} in s3 bucket
                                                 alt={rawMaterial.material}
                                                 className="w-12 h-12 object-cover rounded border border-gray-300"
                                             />

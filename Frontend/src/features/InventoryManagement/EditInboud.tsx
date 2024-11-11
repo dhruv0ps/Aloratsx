@@ -132,7 +132,10 @@ const InboundCreation = () => {
       }
       if (res.status) {
         toast.success(`Inbound ${id ? 'updated' : 'created'} successfully`);
-        navigate('/yellowadmin/inventory/inbound');
+        if(!id){
+          navigate('/yellowadmin/inventory/inbound');
+        }
+       
       }
     } catch (error) {
       console.error(`Failed to ${id ? 'update' : 'create'} inbound`);

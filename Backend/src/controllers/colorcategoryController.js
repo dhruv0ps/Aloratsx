@@ -39,8 +39,12 @@ const deleteColor = async (req, res) => {
 
 // Category Controller Functions
 const addCategory = async (req, res) => {
+
     try {
-        const category = await configServices.addCategory(req.body, req.file.path);
+
+        const imageUrl = req.file ? req.file.location : null;
+
+        const category = await configServices.addCategory(req.body,imageUrl);
         return res.json({ status: true, data: category, err: {} });
     } catch (error) {
         return res.json({ status: false, data: {}, err: error.message });
@@ -58,7 +62,10 @@ const getAllCategories = async (req, res) => {
 
 const updateCategory = async (req, res) => {
     try {
-        const category = await configServices.updateCategory(req.params.id, req.body, req.file ? req.file.path : null);
+        const imageUrl = req.file ? req.file.location : null;
+
+        // Update the category with the provided ID
+        const category = await configServices.updateCategory(req.params.id, req.body, imageUrl);
         return res.json({ status: true, data: category, err: {} });
     } catch (error) {
         return res.json({ status: false, data: {}, err: error.message });

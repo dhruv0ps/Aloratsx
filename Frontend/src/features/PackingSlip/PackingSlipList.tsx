@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft } from 'react-icons/fa';
 import { packingSlipApis } from '../../config/apiRoutes/PackingslipRoutes';
 import Loading from '../../util/Loading';
 import { PackingSlip } from '../../config/models/PackingSlip';
-
 
 const PackingSlipList: React.FC = () => {
   const navigate = useNavigate();
@@ -34,6 +33,19 @@ const PackingSlipList: React.FC = () => {
     navigate(`/yellowadmin/PackingSlip/${id}`);
   };
 
+  // Memoize the packing slips to avoid recalculating if they haven’t changed
+  const memoizedPackingSlips = useMemo(() => packingSlips, [packingSlips]);
+
+  // Memoize pagination values (useful if pagination logic becomes more complex)
+  const paginationInfo = useMemo(() => {
+    return {
+      currentPage,
+      totalPages,
+      hasPrevious: currentPage > 1,
+      hasNext: currentPage < totalPages,
+    };
+  }, [currentPage, totalPages]);
+
   if (loading) return <Loading />;
 
   return (
@@ -56,16 +68,14 @@ const PackingSlipList: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-xl font-semibold text-gray-800">Packing Slips</h2>
-          </div> */}
+       
 
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-300">
                 <tr>
-                <th className="px-8 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-8 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -80,32 +90,33 @@ const PackingSlipList: React.FC = () => {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Customer Name
                   </th>
-              
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {packingSlips.map((slip) => (
+                {memoizedPackingSlips.map((slip) => (
                   <tr key={slip._id} className="hover:bg-gray-50">
-                     <td className="px-3 py-4 whitespace-nowrap ml-20 text-sm font-medium">
-
-<button
-  className=" bg-gray-900 text-white py-2.5 px-4 ml-3 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
-  onClick={() => handleView(slip._id)}>View</button>
-{/* <Button onClick={() => handleView(slip._id)}>Download</Button> */}
-
-{/* <button
-  className="text-green-600 hover:text-green-900"
->
-  <FaDownload className="w-5 h-5" />
-</button> */}
-</td>
+                    <td className="px-3 py-4 whitespace-nowrap ml-20 text-sm font-medium">
+                      <button
+                        className=" bg-gray-900 text-white py-2.5 px-4 ml-3 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
+                        onClick={() => handleView(slip._id)}
+                      >
+                        View
+                      </button>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {slip.packingID}
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-sm ">
-                <span className={`px-2 py-1 rounded-full text-xs ${slip.phase === 'Completed' ? 'bg-green-100 text-green-800' : slip.phase === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
-                      {slip.phase}
-                                                </span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${slip.phase === 'Completed'
+                          ? 'bg-green-100 text-green-800'
+                          : slip.phase === 'Draft'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                          }`}
+                      >
+                        {slip.phase}
+                      </span>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {slip.orderDetails?.purchaseOrderNumber}
@@ -113,7 +124,6 @@ const PackingSlipList: React.FC = () => {
                     <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                       {slip.orderDetails?.dealerName}
                     </td>
-                   
                   </tr>
                 ))}
               </tbody>
@@ -125,17 +135,17 @@ const PackingSlipList: React.FC = () => {
           <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              disabled={!paginationInfo.hasPrevious}
               className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
             >
               Previous
             </button>
             <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-              Page {currentPage} of {totalPages}
+              Page {paginationInfo.currentPage} of {paginationInfo.totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, paginationInfo.totalPages))}
+              disabled={!paginationInfo.hasNext}
               className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
             >
               Next

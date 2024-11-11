@@ -7,7 +7,7 @@ import AutocompleteChildInput from '../../util/AutoCompleteChild';
 import { inventoryApi } from '../../config/apiRoutes/inventoryApi';
 import Loading from '../../util/Loading';
 import { Child } from '../../config/models/Child';
-import { Product } from '../../config/models/product';
+// import { Product } from '../../config/models/product';
 import { useDropzone } from 'react-dropzone';
 
 const DamagedProducts: React.FC = () => {
@@ -35,9 +35,10 @@ const DamagedProducts: React.FC = () => {
         }
     };
 
-    const handleProductSelection = (product: Product) => {
+    const handleProductSelection = (product: any ) => {
         setSelectedProduct(product);
-        setProductInputValue(product.name);
+        console.log(product)
+        setProductInputValue(`${product.parentName} - ${product.name}`);
     };
 
     const handleChildChange = (child: Child) => {
